@@ -7,8 +7,6 @@ import Click from 'lesca-click';
 import Fetcher, { contentType, formatType } from 'lesca-fetcher';
 import { Suspense, lazy, memo, useContext, useMemo, useReducer } from 'react';
 import ReactDOM from 'react-dom/client';
-import { BrowserRouter, Route, Routes } from 'react-router-dom';
-import Landing from './landing';
 
 Click.install();
 
@@ -44,21 +42,12 @@ const Pages = memo(() => {
   return Page;
 });
 
-const RoutePages = memo(() => (
-  <Routes>
-    <Route path='/' element={<Landing>Route Pages</Landing>} />
-  </Routes>
-));
-
 const App = () => {
   const [state, setState] = useReducer(Reducer, InitialState);
   const value: TContext = useMemo(() => [state, setState], [state]);
   return (
     <div className='App'>
       <Context.Provider {...{ value }}>
-        <BrowserRouter basename=''>
-          <RoutePages />
-        </BrowserRouter>
         <Pages />
         {state[ActionType.LoadingProcess]?.enabled && <LoadingProcess />}
       </Context.Provider>
