@@ -8,6 +8,7 @@ import {
   TAlertState,
   TContext,
   TLoadingProcessState,
+  TModalState,
   TStatusState,
 } from './type';
 
@@ -28,10 +29,20 @@ export const AlertState: TAlertState = {
   time: 5000,
 };
 
+export const ModalState: TModalState = {
+  enabled: false,
+  title: 'title',
+  body: 'message',
+  label: 'close',
+  storage: {},
+  onClose: () => {},
+};
+
 export const InitialState: IState = {
   [ActionType.LoadingProcess]: LoadingProcessState,
   [ActionType.Status]: StatusState,
   [ActionType.Alert]: AlertState,
+  [ActionType.modal]: ModalState,
 };
 
 export const Context = createContext<TContext>([InitialState, () => {}]);

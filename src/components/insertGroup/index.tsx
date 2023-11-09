@@ -25,7 +25,7 @@ const InsertGroup = memo(({ type, table, onSubmit }: TParm) => {
   return (
     <div className='w-full flex justify-center'>
       <form onSubmit={submit}>
-        <div className='join'>
+        <div className='join join-vertical md:join-horizontal'>
           {Object.entries(type).map((item) => {
             const [key, value] = item;
             const type = String(value?.type).toLowerCase() === 'string' ? 'text' : 'number';
@@ -33,7 +33,7 @@ const InsertGroup = memo(({ type, table, onSubmit }: TParm) => {
               <div key={key}>
                 <div>
                   <input
-                    className='input input-bordered join-item'
+                    className='input input-sm input-bordered join-item'
                     placeholder={key}
                     name={key}
                     type={type}
@@ -43,7 +43,7 @@ const InsertGroup = memo(({ type, table, onSubmit }: TParm) => {
             );
           })}
           <div className='indicator'>
-            <button type='submit' className='btn join-item'>
+            <button type='submit' className='btn btn-sm join-item'>
               Submit
             </button>
           </div>

@@ -1,11 +1,14 @@
 import useSelect from '@/hooks/useSelect';
-import { Fragment, forwardRef, useContext, useEffect, useImperativeHandle } from 'react';
-import { SETTING } from '../../../setting';
 import { Context } from '@/settings/constant';
 import { ActionType, AlertType } from '@/settings/type';
+import { forwardRef, useContext, useEffect, useImperativeHandle } from 'react';
+import { SETTING } from '../../../setting';
+import Delete from './delete';
+import Edit from './edit';
 
 const { type } = SETTING.mongodb[0];
 type TParm = { type: typeof type; table: string };
+
 const Table = forwardRef(({ type, table }: TParm, ref) => {
   const [, setContext] = useContext(Context);
   const [data, getUsers] = useSelect();
@@ -24,10 +27,10 @@ const Table = forwardRef(({ type, table }: TParm, ref) => {
     }
   }, [data]);
 
+  const update = () => getUsers({ table });
+
   useImperativeHandle(ref, () => ({
-    update() {
-      getUsers({ table });
-    },
+    update,
   }));
 
   return (
@@ -37,29 +40,34 @@ const Table = forwardRef(({ type, table }: TParm, ref) => {
           <table className='table table-xs text-center'>
             <thead>
               <tr>
-                <th></th>
+                <th>index</th>
                 <th>_id</th>
                 {Object.keys(type).map((key) => {
                   return <th key={key}>{key}</th>;
                 })}
                 <th>__v</th>
+                <th></th>
+                <th></th>
               </tr>
             </thead>
             <tbody>
-              {currentData.map((item) => {
+              {currentData.map((item, index) => {
                 return (
                   <tr key={JSON.stringify(item)}>
-                    {Object.values(item).map((v, index) => {
-                      if (index === 0) {
-                        return (
-                          <Fragment key={`${JSON.stringify(v)}${index}`}>
-                            <th>{index + 1}</th>
-                            <td>{String(v)}</td>
-                          </Fragment>
-                        );
-                      }
-                      return <td key={`${JSON.stringify(v)}${index}`}>{String(v)}</td>;
+                    <th>{index}</th>
+                    {Object.values(item).map((v, sn) => {
+                      return <td key={`${JSON.stringify(v)}${sn}`}>{String(v)}</td>;
                     })}
+                    <td>
+                      <Delete update={update} table={table} data={item}>
+                        Delete
+                      </Delete>
+                    </td>
+                    <td>
+                      <Edit update={update} table={table} data={item}>
+                        Edit
+                      </Edit>
+                    </td>
                   </tr>
                 );
               })}

@@ -1,15 +1,16 @@
 import mongoose from 'mongoose';
-import { Respond } from '../type';
 import { messages } from '../config';
-import { table } from '../models';
+import models from '../models';
+import { IRespond } from '../../../setting';
 
 type Delete = { _id: string };
 
-const deleteOne = (data: Delete) => {
-  return new Promise<Respond>((resolve) => {
+const deleteOne = ({ table, data }: { table: string; data: Delete }) => {
+  return new Promise<IRespond>((resolve) => {
     if (mongoose.connections[0].readyState) {
       try {
-        table.deleteOne(data).then((e) => {
+        const currentModel = models[table] as typeof mongoose.Model;
+        currentModel.deleteOne(data).then((e) => {
           if (e.acknowledged) {
             resolve({ res: true, msg: messages.deleteSuccess });
           } else resolve({ res: false, msg: messages.deleteError });

@@ -15,6 +15,7 @@ import Login from './login';
 import { SETTING } from '../../setting';
 import useConnect from '@/hooks/useConnect';
 import Alert from '@/components/alert';
+import Modal from '@/components/modal/index.tsx';
 
 Click.install();
 
@@ -87,6 +88,7 @@ const App = () => {
       </div>
       {state[ActionType.LoadingProcess]?.enabled && <LoadingProcess />}
       {state[ActionType.Alert]?.enabled && <Alert />}
+      {state[ActionType.modal]?.enabled && <Modal />}
     </Context.Provider>
   );
 };

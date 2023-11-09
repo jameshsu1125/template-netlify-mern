@@ -6,16 +6,20 @@ import { REST_PATH } from '../settings/config';
 import { Context } from '../settings/constant';
 
 export type TResult = IRespond | undefined;
+type TUpdate = {
+  filter: string;
+  data: Partial<TYPE>;
+};
 
-const useInsert = () => {
+const useUpdate = () => {
   const [, setContext] = useContext(Context);
   const [state, setState] = useState<TResult>();
-  const fetch = async (parm: { table: string; data: TYPE }) => {
+  const fetch = async (parm: { table: string; data: TUpdate }) => {
     setContext({ type: ActionType.LoadingProcess, state: { enabled: true } });
-    const respond = (await Fetcher.post(REST_PATH.insert, parm)) as TResult;
+    const respond = (await Fetcher.post(REST_PATH.update, parm)) as TResult;
     setState(respond);
     setContext({ type: ActionType.LoadingProcess, state: { enabled: false } });
   };
   return [state, fetch] as const;
 };
-export default useInsert;
+export default useUpdate;

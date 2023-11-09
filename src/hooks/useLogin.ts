@@ -1,14 +1,10 @@
 import { ActionType } from '@/settings/type';
 import Fetcher from 'lesca-fetcher';
 import { useContext, useState } from 'react';
+import { IRespond } from '../../setting';
 import { REST_PATH } from '../settings/config';
 import { Context } from '../settings/constant';
 
-type IRespond = {
-  res: boolean;
-  msg: string;
-  data?: any[];
-};
 export type TParm = {
   username: string;
   password: string;

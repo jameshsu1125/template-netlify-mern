@@ -5,8 +5,8 @@ import serverless from 'serverless-http';
 import connect from './connect';
 import select from './select';
 import insert from './insert';
-// import deleteOne from './delete';
-// import update from './update';
+import deleteOne from './delete';
+import update from './update';
 
 dotenv.config({ path: `.env.${process.env.NODE_ENV}` });
 
@@ -42,15 +42,15 @@ router.post('/insert', async (req, res) => {
   res.status(200).json(respond);
 });
 
-// router.post('/delete', async (req, res) => {
-//   const respond = await deleteOne(req.body);
-//   res.status(200).json(respond);
-// });
+router.post('/delete', async (req, res) => {
+  const respond = await deleteOne(req.body);
+  res.status(200).json(respond);
+});
 
-// router.post('/update', async (req, res) => {
-//   const respond = await update(req.body);
-//   res.status(200).json(respond);
-// });
+router.post('/update', async (req, res) => {
+  const respond = await update(req.body);
+  res.status(200).json(respond);
+});
 
 api.use('/api/', router);
 

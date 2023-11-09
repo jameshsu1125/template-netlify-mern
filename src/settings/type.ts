@@ -8,6 +8,7 @@ export enum ActionType {
   LoadingProcess = 'loadingProcess',
   Status = 'status',
   Alert = 'alert',
+  modal = 'modal',
 }
 
 export enum LoadingProcessType {
@@ -60,10 +61,21 @@ export type TAlertState = Prettify<
 
 export type TStatusState = Prettify<IEnabled>;
 
+export type TModalState = Prettify<
+  IEnabled & {
+    title: string;
+    body: ReactNode;
+    label: string;
+    storage: any;
+    onClose: () => void;
+  }
+>;
+
 export interface IState {
   loadingProcess: TLoadingProcessState;
   status: TStatusState;
   alert: TAlertState;
+  modal: TModalState;
 }
 
 export interface IAction {
@@ -71,7 +83,8 @@ export interface IAction {
     | Partial<IState>
     | Partial<TLoadingProcessState>
     | Partial<TStatusState>
-    | Partial<TAlertState>;
+    | Partial<TAlertState>
+    | Partial<TModalState>;
   type: ActionType;
 }
 

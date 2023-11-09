@@ -3,6 +3,8 @@ export const REST_PATH = {
   connect: 'connect',
   select: 'select',
   insert: 'insert',
+  delete: 'delete',
+  update: 'update',
 };
 
 export const COLLECTIONS = {
