@@ -3,18 +3,20 @@ import { useContext, useState } from 'react';
 import { REST_PATH } from '../settings/config';
 import { Context } from '../settings/constant';
 import { ActionType } from '@/settings/type';
+import { IRespond } from '../../setting';
 
-export type TResult = { userID: string; id: number; title: string; completed: boolean } | undefined;
+export type TResult = IRespond | undefined;
 
-const useTodos = () => {
+const useSelect = () => {
   const [, setContext] = useContext(Context);
   const [state, setState] = useState<TResult>();
-  const fetch = async () => {
+  const fetch = async (parm: { table: string }) => {
     setContext({ type: ActionType.LoadingProcess, state: { enabled: true } });
-    const respond = (await Fetcher.get(REST_PATH.test)) as TResult;
+    const respond = (await Fetcher.post(REST_PATH.select, parm)) as TResult;
+
     setState(respond);
     setContext({ type: ActionType.LoadingProcess, state: { enabled: false } });
   };
   return [state, fetch] as const;
 };
-export default useTodos;
+export default useSelect;

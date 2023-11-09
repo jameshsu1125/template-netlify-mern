@@ -10,3 +10,5 @@
   for = "/*"
     [headers.values]
     Access-Control-Allow-Origin = "*"
+[dev]
+  autoLaunch = false

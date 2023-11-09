@@ -56,7 +56,7 @@ export default defineConfig(async ({ mode }) => {
       port: 5173,
       https: { key, cert },
       proxy: {
-        '/api': 'http://localhost:8888/api',
+        '/api': 'http://localhost:8888',
       },
     },
   };

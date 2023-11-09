@@ -7,15 +7,15 @@ Mock by intercepting requests on the network level. Seamlessly reuse the same mo
 ## Table of components
 
 - [MOCKS - Mock Service Worker](#mocks---mock-service-worker)
-	- [Table of components](#table-of-components)
-	- [browse](#browse)
-		- [Usage](#usage)
-	- [handler](#handler)
-		- [Usage](#usage-1)
-		- [Development](#development)
-			- [initialize](#initialize)
-			- [config](#config)
-			- [Hooks](#hooks)
+  - [Table of components](#table-of-components)
+  - [browse](#browse)
+    - [Usage](#usage)
+  - [handler](#handler)
+    - [Usage](#usage-1)
+    - [Development](#development)
+      - [initialize](#initialize)
+      - [config](#config)
+      - [Hooks](#hooks)
 
 ## browse
 
@@ -48,22 +48,21 @@ import { mergePath } from 'lesca-fetcher';
 import { rest } from 'msw';
 
 export const handlers = [
-	rest.get(mergePath(REST_PATH.test), (_, res, ctx) => {
-		return res(
-			ctx.status(200),
-			ctx.json({
-				userId: faker.string.uuid(),
-				id: faker.number.int(0, 10),
-				title: faker.lorem.lines(1),
-				completed: faker.datatype.boolean(),
-			}),
-		);
-	}),
+  rest.get(mergePath(REST_PATH.test), (_, res, ctx) => {
+    return res(
+      ctx.status(200),
+      ctx.json({
+        userId: faker.string.uuid(),
+        id: faker.number.int(0, 10),
+        title: faker.lorem.lines(1),
+        completed: faker.datatype.boolean(),
+      }),
+    );
+  }),
 ];
 ```
 
 ### Development
-
 
 #### initialize
 
@@ -71,9 +70,9 @@ export const handlers = [
 import Fetcher, { contentType, formatType } from 'lesca-fetcher';
 
 Fetcher.install({
-	hostUrl: process.env.API_PATH,
-	contentType: contentType.JSON,
-	formatType: formatType.JSON,
+  hostUrl: process.env.API_PATH,
+  contentType: contentType.JSON,
+  formatType: formatType.JSON,
 });
 ```
 
@@ -81,7 +80,7 @@ Fetcher.install({
 
 ```js
 export const REST_PATH = {
-	test: 'todos/1',
+  test: 'todos/1',
 };
 ```
 
@@ -94,13 +93,11 @@ import { REST_PATH } from '@/settings/config';
 
 const useTodos = () => {
   const [state, setState] = useState();
-	const fetch = async () => {
-    const respond = await Fetcher.get(REST_PATH.test);
+  const fetch = async () => {
+    const respond = await Fetcher.get(REST_PATH.connect);
     setState(respond);
   };
   return [state, fetch];
 };
 export default useTodos;
 ```
-
-

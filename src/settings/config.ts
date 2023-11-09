@@ -1,7 +1,10 @@
-export const PAGE = {
-  landing: 'landing',
+export const REST_PATH = {
+  login: 'login',
+  connect: 'connect',
+  select: 'select',
+  insert: 'insert',
 };
 
-export const REST_PATH = {
-  test: 'todos/1',
+export const COLLECTIONS = {
+  admin: 'admin',
 };

@@ -1,23 +1,37 @@
 import { createContext } from 'react';
-import { PAGE } from './config';
 import {
   ActionType,
+  AlertType,
   IAction,
   IState,
   LoadingProcessType,
+  TAlertState,
   TContext,
   TLoadingProcessState,
+  TStatusState,
 } from './type';
 
 export const LoadingProcessState: TLoadingProcessState = {
   enabled: false,
   type: LoadingProcessType.Spokes,
-  body: '',
+  body: 'loading',
+};
+
+export const StatusState: TStatusState = {
+  enabled: false,
+};
+
+export const AlertState: TAlertState = {
+  enabled: false,
+  type: AlertType.normal,
+  body: 'message',
+  time: 5000,
 };
 
 export const InitialState: IState = {
-  [ActionType.Page]: PAGE.landing,
   [ActionType.LoadingProcess]: LoadingProcessState,
+  [ActionType.Status]: StatusState,
+  [ActionType.Alert]: AlertState,
 };
 
 export const Context = createContext<TContext>([InitialState, () => {}]);
@@ -45,7 +59,7 @@ export const Reducer = (state: IState, action: IAction): IState => {
           const stringKey = String(key);
           const cloneVale = Object.fromEntries(
             Object.entries(state).filter((stateValue) => stateValue[0] === stringKey),
-          );
+          )[action.type];
           if (Object.prototype.hasOwnProperty.call(stateStorage, stringKey)) {
             stateStorage = {
               [stringKey]: { ...stateStorage[stringKey], ...value },

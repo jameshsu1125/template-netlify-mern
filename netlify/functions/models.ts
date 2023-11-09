@@ -1,11 +1,9 @@
 import mongoose from 'mongoose';
-import { useSchema } from './schema';
-import { Demo } from './type';
+import { SETTING, TYPE } from '../../setting';
 
-const { COLLECTION = 'test' } = process.env;
-
-const table =
-  mongoose.models[COLLECTION] ||
-  mongoose.model<Demo>(COLLECTION, new mongoose.Schema<Demo>(useSchema));
-
-export { table };
+export default SETTING.mongodb.reduce((prev, next) => {
+  const { table, schema } = next;
+  const model =
+    mongoose.models[table] || mongoose.model<TYPE>(table, new mongoose.Schema<TYPE>(schema));
+  return { ...prev, [table]: model };
+}, {});

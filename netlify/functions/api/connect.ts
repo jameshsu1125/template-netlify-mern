@@ -1,12 +1,12 @@
 import mongoose from 'mongoose';
 import { messages } from '../config';
-import { Respond } from '../type';
+import { IRespond } from '../../../setting';
 
 mongoose.set('strictQuery', true);
 
 const { DATABASE, URI } = process.env;
 const connect = () => {
-  return new Promise<Respond>((resolve) => {
+  return new Promise<IRespond>((resolve) => {
     if (mongoose.connections[0].readyState) {
       resolve({ res: true, msg: messages.connectConnected });
     } else {

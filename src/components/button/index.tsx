@@ -1,22 +1,13 @@
-import { IReactProps, ReadyOnlyProps, TransitionType } from '@/settings/type';
-import useTween from 'lesca-use-tween';
-import { useEffect } from 'react';
+import { IReactProps, ReadyOnlyProps } from '@/settings/type';
 import Regular from './regular';
 
 type TRegularProps = ReadyOnlyProps<{
   onClick?: () => void;
-  transition?: TransitionType;
 }>;
 
-const Button = ({ children, onClick, transition }: IReactProps & TRegularProps) => {
-  const [style, setStyle] = useTween({ opacity: 0 });
-
-  useEffect(() => {
-    if (transition === TransitionType.FadeIn) setStyle({ opacity: 1 });
-  }, [setStyle, transition]);
-
+const Button = ({ children, onClick }: IReactProps & TRegularProps) => {
   return (
-    <button style={style} onClick={onClick}>
+    <button className='btn' onClick={onClick}>
       {children}
     </button>
   );

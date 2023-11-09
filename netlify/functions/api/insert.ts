@@ -1,16 +1,17 @@
 import mongoose from 'mongoose';
-import { Demo, DemoID, Respond } from '../type';
-import { table } from '../models';
+import { IRespond, TYPE } from '../../../setting';
 import { messages } from '../config';
+import models from '../models';
 
-const insert = (data: Demo) => {
-  return new Promise<Respond>((resolve) => {
+const insert = ({ table, data }: { table: string; data: TYPE }) => {
+  return new Promise<IRespond>((resolve) => {
     if (mongoose.connections[0].readyState) {
       try {
-        const tab = new table(data);
+        const currentModel = models[table] as typeof mongoose.Model;
+        const tab = new currentModel(data);
         tab
           .save()
-          .then((e: DemoID) => {
+          .then((e: any) => {
             resolve({ res: true, msg: messages.insertSuccess, data: [e] });
           })
           .catch((e: unknown) => {

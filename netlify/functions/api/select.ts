@@ -1,13 +1,14 @@
 import mongoose from 'mongoose';
 import { messages } from '../config';
-import { table } from '../models';
-import { Respond } from '../type';
+import models from '../models';
+import { IRespond } from '../../../setting';
 
-const select = () => {
-  return new Promise<Respond>((resolve) => {
+const select = ({ table }: { table: string }) => {
+  return new Promise<IRespond>((resolve) => {
     if (mongoose.connections[0].readyState) {
       try {
-        table.find().then((data) => {
+        const currentModel = models[table] as typeof mongoose.Model;
+        currentModel.find().then((data) => {
           resolve({ res: true, msg: messages.selectSuccess, data });
         });
       } catch (error: unknown) {

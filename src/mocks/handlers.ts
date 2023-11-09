@@ -4,7 +4,7 @@ import { mergePath } from 'lesca-fetcher';
 import { HttpResponse, http } from 'msw';
 
 export const handlers = [
-  http.get(mergePath(REST_PATH.test), () => {
+  http.get(mergePath(REST_PATH.connect), () => {
     return HttpResponse.json({
       userId: faker.string.uuid(),
       id: faker.number.int(10),

@@ -1,12 +1,20 @@
+import Drawer from '@/components/drawer';
 import LoadingProcess from '@/components/loadingProcess';
-import { PAGE } from '@/settings/config';
+import Navbar from '@/components/navbar';
 import { Context, InitialState, Reducer } from '@/settings/constant';
 import '@/settings/global.less';
-import { ActionType, TContext } from '@/settings/type';
+import { ActionType, AlertType, TContext } from '@/settings/type';
 import Click from 'lesca-click';
 import Fetcher, { contentType, formatType } from 'lesca-fetcher';
-import { Suspense, lazy, memo, useContext, useMemo, useReducer } from 'react';
+import Storage from 'lesca-local-storage';
+import { Suspense, lazy, memo, useCallback, useEffect, useMemo, useReducer } from 'react';
 import ReactDOM from 'react-dom/client';
+import { BrowserRouter, Route, Routes } from 'react-router-dom';
+import Home from './home';
+import Login from './login';
+import { SETTING } from '../../setting';
+import useConnect from '@/hooks/useConnect';
+import Alert from '@/components/alert';
 
 Click.install();
 
@@ -22,36 +30,64 @@ if (import.meta.env.VITE_MOCKING === 'true') {
   });
 }
 
-const Pages = memo(() => {
-  const [context] = useContext(Context);
-  const page = context[ActionType.Page];
+const RoutePages = memo(() => {
+  const ComponentLoader = useCallback(() => {
+    const Element = lazy(() => import('./collection/index.tsx'));
+    if (!Element) return null;
+    return (
+      <Suspense fallback=''>
+        <Element />
+      </Suspense>
+    );
+  }, []);
 
-  const Page = useMemo(() => {
-    const [target] = Object.values(PAGE).filter((data) => data === page);
-    if (target) {
-      const Element = lazy(() => import(`./${target}/index.tsx`));
-      return (
-        <Suspense fallback=''>
-          <Element>Static Pages</Element>
-        </Suspense>
-      );
-    }
-    return '';
-  }, [page]);
-
-  return Page;
+  return (
+    <Routes>
+      <Route path='/' element={<Home />} />
+      <Route path='/home' element={<Home />} />
+      <Route path='*' element={ComponentLoader()} />
+    </Routes>
+  );
 });
 
 const App = () => {
   const [state, setState] = useReducer(Reducer, InitialState);
   const value: TContext = useMemo(() => [state, setState], [state]);
+  const [res, getConnect] = useConnect();
+  const { data, timestamp } = Storage.get(SETTING.dashboard.session.name);
+  const status = useMemo(() => {
+    if (!data) return false;
+    else if (timestamp > SETTING.dashboard.session.time) return false;
+    return true;
+  }, [data, timestamp]);
+
+  useEffect(() => {
+    if (status && !res) getConnect();
+    if (res?.res) {
+      setState({
+        type: ActionType.Alert,
+        state: { enabled: true, body: res?.msg, type: AlertType.Success },
+      });
+    }
+  }, [status, res]);
+
   return (
-    <div className='App'>
-      <Context.Provider {...{ value }}>
-        <Pages />
-        {state[ActionType.LoadingProcess]?.enabled && <LoadingProcess />}
-      </Context.Provider>
-    </div>
+    <Context.Provider {...{ value }}>
+      <div className='App'>
+        <BrowserRouter>
+          {status ? (
+            <Drawer>
+              <Navbar />
+              <RoutePages />
+            </Drawer>
+          ) : (
+            <Login />
+          )}
+        </BrowserRouter>
+      </div>
+      {state[ActionType.LoadingProcess]?.enabled && <LoadingProcess />}
+      {state[ActionType.Alert]?.enabled && <Alert />}
+    </Context.Provider>
   );
 };
 
