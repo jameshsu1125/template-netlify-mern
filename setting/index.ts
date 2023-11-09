@@ -1,3 +1,10 @@
+export enum IType {
+  String = 'String',
+  Number = 'Number',
+  Boolean = 'Boolean',
+  Date = 'Date',
+}
+
 export const SETTING = {
   mongodb: [
     {
@@ -8,8 +15,8 @@ export const SETTING = {
         password: { type: String, required: true },
       },
       type: {
-        username: { type: 'String', required: true },
-        password: { type: 'String', required: true },
+        username: { type: IType.String, required: true },
+        password: { type: IType.String, required: true },
       },
     },
     {
@@ -19,13 +26,13 @@ export const SETTING = {
         title: { type: String, required: true },
         description: { type: String, required: true },
         close: { type: Boolean, default: false },
-        timestamp: { type: Date, default: 'Date.now()' },
+        timestamp: { type: Date, default: Date.now() },
       },
       type: {
-        title: { type: 'String', required: true },
-        description: { type: 'String', required: true },
-        close: { type: 'Boolean', default: false },
-        timestamp: { type: 'Date', default: 'Date.now()' },
+        title: { type: IType.String, required: true },
+        description: { type: IType.String, required: true },
+        close: { type: IType.Boolean, default: false },
+        timestamp: { type: IType.Date, default: 'Date.now()' },
       },
     },
   ],

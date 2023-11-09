@@ -1,26 +1,66 @@
-import { FormEvent, memo, useCallback, useEffect } from 'react';
-import { SETTING, TYPE } from '../../../setting';
 import useInsert from '@/hooks/useInsert';
+import { FormEvent, memo, useCallback, useEffect } from 'react';
+import { IType, SETTING, TYPE } from '../../../setting';
 
 const { type } = SETTING.mongodb[0];
 type TParm = { type: typeof type; table: string; onSubmit: () => void };
+type TData = { [k: string]: any };
 
 const InsertGroup = memo(({ type, table, onSubmit }: TParm) => {
   const [respond, getInsert] = useInsert();
 
   const submit = useCallback((e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    const data = Object.fromEntries([...new FormData(e.currentTarget)]) as TYPE;
-    getInsert({ table, data });
+    const formData = new FormData(e.currentTarget);
+    const data: TData = Object.fromEntries([...formData]);
+    const checkbox = Object.entries(type).filter((item) => item[1].type === IType.Boolean);
+    checkbox.forEach((item) => {
+      const [key] = item;
+      const [value] = Object.entries(data)
+        .filter((item) => item[0] === key)
+        .map((e) => e[1]);
+      if (value) data[key] = true;
+      else data[key] = false;
+    });
+    const currentData = data as TYPE;
+    getInsert({ table, data: currentData });
   }, []);
 
   useEffect(() => {
-    if (respond) {
-      if (respond.res) {
-        onSubmit();
-      }
-    }
+    if (respond?.res) onSubmit();
   }, [respond, onSubmit]);
+
+  const Element = ({ key, type }: { key: string; type: IType }) => {
+    switch (type) {
+      case IType.String:
+        return (
+          <input
+            className='input input-sm input-bordered join-item'
+            placeholder={key}
+            name={key}
+            type='text'
+          />
+        );
+      case IType.Number:
+        return (
+          <input
+            className='input input-sm input-bordered join-item'
+            placeholder={key}
+            name={key}
+            type='number'
+          />
+        );
+      case IType.Boolean:
+        return (
+          <div className='form-control mx-2'>
+            <label className='label cursor-pointer space-x-2 pt-1'>
+              <span className='label-text'>{key}</span>
+              <input type='checkbox' name={key} className='checkbox' />
+            </label>
+          </div>
+        );
+    }
+  };
 
   return (
     <div className='w-full flex justify-center'>
@@ -28,17 +68,10 @@ const InsertGroup = memo(({ type, table, onSubmit }: TParm) => {
         <div className='join join-vertical md:join-horizontal'>
           {Object.entries(type).map((item) => {
             const [key, value] = item;
-            const type = String(value?.type).toLowerCase() === 'string' ? 'text' : 'number';
+            const type = String(value?.type) as IType;
             return (
               <div key={key}>
-                <div>
-                  <input
-                    className='input input-sm input-bordered join-item'
-                    placeholder={key}
-                    name={key}
-                    type={type}
-                  />
-                </div>
+                <div>{Element({ key, type })}</div>
               </div>
             );
           })}
