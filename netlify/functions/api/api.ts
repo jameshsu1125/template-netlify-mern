@@ -21,8 +21,8 @@ router.post('/login', (req, res) => {
   const { body } = req;
   const { USERNAME = 'admin', PASSWORD = '1234' } = process.env;
   if (body.username === USERNAME && body.password === PASSWORD) {
-    res.status(200).json({ res: true, msg: '登入成功', data: body });
-  } else res.status(200).json({ res: false, msg: '帳號密碼錯誤' });
+    res.status(200).json({ res: true, msg: 'login success', data: body });
+  } else res.status(200).json({ res: false, msg: 'username or password incorrect.' });
 });
 
 router.get('/connect', async (_, res) => {
