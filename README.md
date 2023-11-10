@@ -56,10 +56,10 @@
 
     - copy [.env.defaults variable](https://github.com/jameshsu1125/template-netlify-mern/blob/main/.env.defaults) to `.env.local` file.
 
-  - .create `.env` file for vite development
+  - .create `.env.local` file for vite development
 
     ```sh
-    touch src/pages/.env
+    touch src/pages/.env.local
     ```
 
     - copy [.env.defaults variable](https://github.com/jameshsu1125/template-netlify-mern/blob/main/src/pages/.env.defaults) to `.env.local` file.
