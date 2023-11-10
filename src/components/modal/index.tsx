@@ -8,7 +8,7 @@ const Modal = memo(() => {
 
   return (
     <dialog id='my_modal_4' className='modal modal-open'>
-      <div className='modal-box w-11/12 max-w-5xl'>
+      <div className='modal-box w-11/12 max-w-7xl'>
         <h3 className='font-bold text-lg'>{title}</h3>
         <div className='py-4'>{body}</div>
         <div className='modal-action'>
