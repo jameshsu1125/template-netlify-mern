@@ -1,6 +1,6 @@
 import useUpdate from '@/hooks/useUpdate';
 import { Context } from '@/settings/constant';
-import { ActionType, IReactProps } from '@/settings/type';
+import { ActionType, AlertType, IReactProps } from '@/settings/type';
 import {
   ChangeEvent,
   memo,
@@ -140,7 +140,14 @@ const Edit = memo(({ children, type, table, data, update }: IReactProps & TProps
   };
 
   useEffect(() => {
-    if (respond) update();
+    if (respond) {
+      let type = AlertType.Error;
+      if (respond.res) {
+        type = AlertType.Success;
+        update();
+      }
+      setContext({ type: ActionType.Alert, state: { enabled: true, type, body: respond.msg } });
+    }
   }, [respond]);
 
   return (

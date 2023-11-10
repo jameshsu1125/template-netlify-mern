@@ -12,23 +12,29 @@ const InsertGroup = memo(({ type, table, onSubmit }: TParm) => {
   const [, setContext] = useContext(Context);
   const [respond, getInsert] = useInsert();
 
-  const submit = useCallback((e: FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
-    const formData = new FormData(e.currentTarget);
-    const data: TData = Object.fromEntries([...formData]);
-    const checkbox = Object.entries(type).filter((item) => item[1].type === IType.Boolean);
-    checkbox.forEach((item) => {
-      const [key] = item;
-      const [value] = Object.entries(data)
-        .filter((item) => item[0] === key)
-        .map((e) => e[1]);
-      if (value) data[key] = true;
-      else data[key] = false;
-    });
-    const currentData = data as TYPE;
+  const submit = useCallback(
+    (e: FormEvent<HTMLFormElement>) => {
+      e.preventDefault();
+      const formData = new FormData(e.currentTarget);
+      const data: TData = Object.fromEntries([...formData]);
+      console.log(data);
 
-    getInsert({ table, data: currentData });
-  }, []);
+      const checkbox = Object.entries(type).filter((item) => item[1].type === IType.Boolean);
+      checkbox.forEach((item) => {
+        const [key] = item;
+        const [value] = Object.entries(data)
+          .filter((item) => item[0] === key)
+          .map((e) => e[1]);
+        if (value) data[key] = true;
+        else data[key] = false;
+      });
+      const currentData = data as TYPE;
+      getInsert({ table, data: currentData });
+    },
+    [type, table],
+  );
+
+  useEffect(() => {}, []);
 
   useEffect(() => {
     if (respond) {
