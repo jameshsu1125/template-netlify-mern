@@ -17,8 +17,8 @@ const Drawer = memo(({ children }: IReactProps) => (
         <li>
           {SETTING.mongodb.map((collection) => {
             return (
-              <Link key={collection.table} to={`/${collection.table}`}>
-                {collection.table}
+              <Link key={collection.collection} to={`/${collection.collection}`}>
+                {collection.collection}
               </Link>
             );
           })}

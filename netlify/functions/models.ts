@@ -3,11 +3,11 @@ import { SETTING, TYPE } from '../../setting';
 import { IType } from '../../setting/type';
 
 export default SETTING.mongodb.reduce((prev, next) => {
-  const { table, schema } = next;
+  const { collection, schema } = next;
 
   const currentSchema = Object.fromEntries(
-    Object.entries(schema).map((tab) => {
-      const [name, value] = tab;
+    Object.entries(schema).map((sch) => {
+      const [name, value] = sch;
       const currentTab: { [key: string]: any } = {};
       let currentType: any = String;
       if (value.type) {
@@ -38,6 +38,7 @@ export default SETTING.mongodb.reduce((prev, next) => {
   );
 
   const model =
-    mongoose.models[table] || mongoose.model<TYPE>(table, new mongoose.Schema<TYPE>(currentSchema));
-  return { ...prev, [table]: model };
+    mongoose.models[collection] ||
+    mongoose.model<TYPE>(collection, new mongoose.Schema<TYPE>(currentSchema));
+  return { ...prev, [collection]: model };
 }, {});

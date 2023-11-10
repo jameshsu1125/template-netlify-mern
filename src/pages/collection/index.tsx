@@ -14,28 +14,28 @@ const Collection = memo(() => {
   const value = useState<TCollectionState>(CollectionState);
   const [, setState] = value;
 
-  const tableRef = useRef<RefObject>(null);
+  const collectionRef = useRef<RefObject>(null);
 
   const { pathname } = useLocation();
-  const table = pathname.slice(1);
+  const collection = pathname.slice(1);
 
-  const [collection] = SETTING.mongodb.filter((collection) => collection.table === table);
-  const { schema } = collection;
+  const [col] = SETTING.mongodb.filter((c) => c.collection === collection);
+  const { schema } = col;
 
   useEffect(() => {
-    setState((S) => ({ ...S, page: table }));
-  }, [table]);
+    setState((S) => ({ ...S, page: collection }));
+  }, [collection]);
 
   const onSubmit = useCallback(() => {
-    tableRef.current?.update();
+    collectionRef.current?.update();
   }, []);
 
   return (
     <CollectionContext.Provider value={value}>
       <div className='Table max-w-7xl'>
-        <h2 className='uppercase'>{table}</h2>
-        <Table ref={tableRef} type={schema} table={table} />
-        <InsertGroup type={schema} table={table} onSubmit={onSubmit} />
+        <h2 className='uppercase'>{collection}</h2>
+        <Table ref={collectionRef} type={schema} collection={collection} />
+        <InsertGroup type={schema} collection={collection} onSubmit={onSubmit} />
       </div>
     </CollectionContext.Provider>
   );

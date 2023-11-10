@@ -14,7 +14,7 @@ type TUpdate = {
 const useUpdate = () => {
   const [, setContext] = useContext(Context);
   const [state, setState] = useState<TResult>();
-  const fetch = async (parm: { table: string; data: TUpdate }) => {
+  const fetch = async (parm: { collection: string; data: TUpdate }) => {
     setContext({ type: ActionType.LoadingProcess, state: { enabled: true } });
     const respond = (await Fetcher.post(REST_PATH.update, parm)) as TResult;
     setState(respond);

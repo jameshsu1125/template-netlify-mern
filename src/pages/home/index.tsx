@@ -11,7 +11,7 @@ const Home = memo(() => {
     <div className='Home'>
       <HomeContext.Provider value={[state, setState]}>
         {SETTING.mongodb.map((data) => (
-          <Table key={data.table} data={[data]} />
+          <Table key={data.collection} data={[data]} />
         ))}
       </HomeContext.Provider>
     </div>

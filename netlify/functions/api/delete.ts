@@ -5,11 +5,11 @@ import { IRespond } from '../../../setting';
 
 type Delete = { _id: string };
 
-const deleteOne = ({ table, data }: { table: string; data: Delete }) => {
+const deleteOne = ({ collection, data }: { collection: string; data: Delete }) => {
   return new Promise<IRespond>((resolve) => {
     if (mongoose.connections[0].readyState) {
       try {
-        const currentModel = models[table] as typeof mongoose.Model;
+        const currentModel = models[collection] as typeof mongoose.Model;
         currentModel.deleteOne(data).then((e) => {
           if (e.acknowledged) {
             resolve({ res: true, msg: messages.deleteSuccess });

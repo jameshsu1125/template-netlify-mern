@@ -4,7 +4,7 @@ import { IType } from './type';
 export const SETTING = {
   mongodb: [
     {
-      table: 'user',
+      collection: 'user',
       description: '登入使用者帳號密碼',
       schema: {
         username: { type: IType.String, required: true },
@@ -12,7 +12,7 @@ export const SETTING = {
       },
     },
     {
-      table: 'todo',
+      collection: 'todo',
       description: '工作列表',
       schema: {
         title: { type: IType.String, required: true },
