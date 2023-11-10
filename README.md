@@ -84,7 +84,7 @@
     $ npm run dev:serve
     ```
 
-    _something netlify-cli or vite-cli will crash_
+    _sometimes netlify-cli or vite-cli will crash_
 
 - build and deployment
 
