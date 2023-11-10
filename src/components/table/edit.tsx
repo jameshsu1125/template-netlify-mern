@@ -81,6 +81,7 @@ const InputGroup = forwardRef(({ data, type }: TEditProps, ref) => {
   const dataRef = useRef(data);
 
   const onChange = (e: ChangeEvent<HTMLInputElement>) => {
+    e.preventDefault();
     const { name, value, type, checked } = e.target;
     if (type === 'checkbox') dataRef.current[name] = checked;
     else dataRef.current[name] = value;
