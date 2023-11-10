@@ -110,7 +110,7 @@
 
     - set `Netlify` environment variables same as `.env.local`.
 
-      <img src="./misc/screenshot-0.png" alt="Getting started" />
+      <img src="./misc/screenshot-1.png" alt="Netlify set environment variables" />
 
     - deploy `Netlify` functions.
 
