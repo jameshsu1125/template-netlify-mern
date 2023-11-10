@@ -86,6 +86,10 @@
 
     _sometimes netlify-cli or vite-cli will crash_
 
+  - design your schema and types
+
+    <b><i> Edit `setting/index.ts` for your database schema </i></b>
+
 - build and deployment
 
   - build static pages
