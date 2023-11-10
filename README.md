@@ -108,7 +108,7 @@
       netlify link
       ```
 
-    - set netlify environment variables same as `.env.local`.
+    - set `Netlify` environment variables same as `.env.local`.
 
       <img src="./misc/screenshot-0.png" alt="Getting started" />
 
