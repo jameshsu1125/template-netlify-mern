@@ -34,7 +34,7 @@ const Collection = memo(() => {
     <CollectionContext.Provider value={value}>
       <div className='Table max-w-7xl'>
         <h2 className='uppercase'>{table}</h2>
-        <Table ref={tableRef} type={collection.type} table={table} />
+        <Table ref={tableRef} type={type} table={table} />
         <InsertGroup type={type} table={table} onSubmit={onSubmit} />
       </div>
     </CollectionContext.Provider>

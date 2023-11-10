@@ -1,22 +1,13 @@
 import { Context } from '@/settings/constant';
 import { ActionType } from '@/settings/type';
-import { memo, useContext, useEffect } from 'react';
-
-interface TModal extends HTMLElement {
-  showModal: () => void;
-}
+import { memo, useContext } from 'react';
 
 const Modal = memo(() => {
   const [context, setContext] = useContext(Context);
   const { title, body, label, onClose } = context[ActionType.modal];
 
-  useEffect(() => {
-    const modal = document.getElementById('my_modal_4') as TModal;
-    if (modal) modal.showModal();
-  }, []);
-
   return (
-    <dialog id='my_modal_4' className='modal'>
+    <dialog id='my_modal_4' className='modal modal-open'>
       <div className='modal-box w-11/12 max-w-5xl'>
         <h3 className='font-bold text-lg'>{title}</h3>
         <div className='py-4'>{body}</div>
@@ -24,10 +15,16 @@ const Modal = memo(() => {
           <form method='dialog'>
             <button
               onClick={() => {
-                setTimeout(() => {
-                  onClose();
-                  setContext({ type: ActionType.modal, state: { enabled: false } });
-                }, 500);
+                setContext({ type: ActionType.modal, state: { enabled: false } });
+              }}
+              className='btn btn-sm btn-circle btn-ghost absolute right-2 top-2'
+            >
+              ✕
+            </button>
+            <button
+              onClick={() => {
+                onClose();
+                setContext({ type: ActionType.modal, state: { enabled: false } });
               }}
               className='btn'
             >

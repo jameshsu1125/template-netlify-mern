@@ -25,12 +25,14 @@ export const SETTING = {
       schema: {
         title: { type: String, required: true },
         description: { type: String, required: true },
+        age: { type: Number },
         close: { type: Boolean, default: false },
         timestamp: { type: Date, default: Date.now() },
       },
       type: {
         title: { type: IType.String, required: true },
         description: { type: IType.String, required: true },
+        age: { type: IType.Number },
         close: { type: IType.Boolean, default: false },
         timestamp: { type: IType.Date, default: 'Date.now()' },
       },

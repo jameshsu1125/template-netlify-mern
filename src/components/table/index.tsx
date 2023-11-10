@@ -1,7 +1,5 @@
 import useSelect from '@/hooks/useSelect';
-import { Context } from '@/settings/constant';
-import { ActionType, AlertType } from '@/settings/type';
-import { forwardRef, useContext, useEffect, useImperativeHandle } from 'react';
+import { forwardRef, useEffect, useImperativeHandle } from 'react';
 import { SETTING } from '../../../setting';
 import Delete from './delete';
 import Edit from './edit';
@@ -10,22 +8,12 @@ const { type } = SETTING.mongodb[0];
 type TParm = { type: typeof type; table: string };
 
 const Table = forwardRef(({ type, table }: TParm, ref) => {
-  const [, setContext] = useContext(Context);
   const [data, getUsers] = useSelect();
   const currentData = data?.data ? data.data : [];
 
   useEffect(() => {
     getUsers({ table });
   }, [table]);
-
-  useEffect(() => {
-    if (data) {
-      setContext({
-        type: ActionType.Alert,
-        state: { enabled: true, body: data.msg, type: AlertType.Info },
-      });
-    }
-  }, [data]);
 
   const update = () => getUsers({ table });
 
@@ -56,7 +44,11 @@ const Table = forwardRef(({ type, table }: TParm, ref) => {
                   <tr key={JSON.stringify(item)}>
                     <th>{index}</th>
                     {Object.values(item).map((v, sn) => {
-                      return <td key={`${JSON.stringify(v)}${sn}`}>{String(v)}</td>;
+                      return (
+                        <td key={`${JSON.stringify(v)}${sn}`}>
+                          <p>{String(v)}</p>
+                        </td>
+                      );
                     })}
                     <td>
                       <Delete update={update} table={table} data={item}>
@@ -64,7 +56,7 @@ const Table = forwardRef(({ type, table }: TParm, ref) => {
                       </Delete>
                     </td>
                     <td>
-                      <Edit update={update} table={table} data={item}>
+                      <Edit type={type} update={update} table={table} data={item}>
                         Edit
                       </Edit>
                     </td>

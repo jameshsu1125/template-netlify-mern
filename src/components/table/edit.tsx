@@ -9,15 +9,20 @@ import {
   forwardRef,
   useImperativeHandle,
   useEffect,
+  ChangeEventHandler,
 } from 'react';
+import { IType, SETTING } from '../../../setting';
 
+const { type } = SETTING.mongodb[0];
 type TProps = {
+  type: typeof type;
   table: string;
   data: any;
   update: () => void;
 };
 
 type TEditProps = {
+  type: typeof type;
   data: {
     [key: string]: any;
   };
@@ -27,11 +32,72 @@ interface RefObject {
   getChange: () => object;
 }
 
-const InputGroup = forwardRef(({ data }: TEditProps, ref) => {
+const Element = ({
+  key,
+  type,
+  value,
+  index,
+  onChange,
+}: {
+  key: string;
+  type: IType;
+  value: string | boolean | number;
+  index: number;
+  onChange: ChangeEventHandler<HTMLInputElement>;
+}) => {
+  switch (type) {
+    case IType.String:
+      return (
+        <input
+          key={JSON.stringify(key) + index}
+          className='input input-sm input-bordered join-item'
+          placeholder={key}
+          name={key}
+          type='text'
+          defaultValue={String(value)}
+          onChange={onChange}
+        />
+      );
+    case IType.Number:
+      return (
+        <input
+          key={JSON.stringify(key) + index}
+          className='input input-sm input-bordered join-item'
+          placeholder={key}
+          name={key}
+          type='number'
+          defaultValue={String(value)}
+          onChange={onChange}
+        />
+      );
+    case IType.Boolean:
+      return (
+        <div className='form-control mx-2' key={JSON.stringify(key) + index}>
+          <label className='label cursor-pointer space-x-2 pt-1'>
+            <span className='label-text'>{key}</span>
+            <input
+              type='checkbox'
+              name={key}
+              className='checkbox'
+              defaultChecked={value === true ? true : false}
+              onChange={onChange}
+            />
+          </label>
+        </div>
+      );
+  }
+};
+
+const InputGroup = forwardRef(({ data, type }: TEditProps, ref) => {
   const dataRef = useRef(data);
+
   const onChange = (e: ChangeEvent<HTMLInputElement>) => {
-    const { name, value } = e.target;
-    dataRef.current[name] = value;
+    const { name, value, type, checked } = e.target;
+
+    if (type === 'checkbox') dataRef.current[name] = checked;
+    else dataRef.current[name] = value;
+
+    console.log(dataRef.current);
   };
 
   useImperativeHandle(ref, () => ({
@@ -42,21 +108,18 @@ const InputGroup = forwardRef(({ data }: TEditProps, ref) => {
 
   return (
     <div className='join'>
-      {Object.entries(data).map((item) => (
-        <input
-          key={JSON.stringify(item)}
-          className='input input-bordered join-item'
-          placeholder={item[0]}
-          defaultValue={String(item[1])}
-          onChange={onChange}
-          name={item[0]}
-        />
-      ))}
+      {Object.entries(data).map((item, index) => {
+        const [key, value] = item;
+        const [currentTarget] = Object.entries(type).filter((typeItem) => typeItem[0] === key);
+        const [, currentValue] = currentTarget;
+        const { type: currentType } = currentValue;
+        return Element({ type: currentType, key: key, value, onChange, index });
+      })}
     </div>
   );
 });
 
-const Edit = memo(({ children, table, data, update }: IReactProps & TProps) => {
+const Edit = memo(({ children, type, table, data, update }: IReactProps & TProps) => {
   const inputRef = useRef<RefObject>();
 
   const [respond, getUpdate] = useUpdate();
@@ -95,7 +158,7 @@ const Edit = memo(({ children, table, data, update }: IReactProps & TProps) => {
             enabled: true,
             title: 'Edit and submit',
             label: 'submit',
-            body: <InputGroup ref={inputRef} data={editableData} />,
+            body: <InputGroup ref={inputRef} data={editableData} type={type} />,
             onClose,
           },
         });

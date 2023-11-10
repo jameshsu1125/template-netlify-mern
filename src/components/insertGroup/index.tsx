@@ -1,12 +1,15 @@
 import useInsert from '@/hooks/useInsert';
-import { FormEvent, memo, useCallback, useEffect } from 'react';
+import { FormEvent, memo, useCallback, useContext, useEffect } from 'react';
 import { IType, SETTING, TYPE } from '../../../setting';
+import { Context } from '@/settings/constant';
+import { ActionType, AlertType } from '@/settings/type';
 
 const { type } = SETTING.mongodb[0];
 type TParm = { type: typeof type; table: string; onSubmit: () => void };
 type TData = { [k: string]: any };
 
 const InsertGroup = memo(({ type, table, onSubmit }: TParm) => {
+  const [, setContext] = useContext(Context);
   const [respond, getInsert] = useInsert();
 
   const submit = useCallback((e: FormEvent<HTMLFormElement>) => {
@@ -27,7 +30,14 @@ const InsertGroup = memo(({ type, table, onSubmit }: TParm) => {
   }, []);
 
   useEffect(() => {
-    if (respond?.res) onSubmit();
+    if (respond) {
+      let type = AlertType.Error;
+      if (respond.res) {
+        type = AlertType.Success;
+        onSubmit();
+      }
+      setContext({ type: ActionType.Alert, state: { enabled: true, type, body: respond.msg } });
+    }
   }, [respond, onSubmit]);
 
   const Element = ({ key, type }: { key: string; type: IType }) => {
@@ -68,10 +78,10 @@ const InsertGroup = memo(({ type, table, onSubmit }: TParm) => {
         <div className='join join-vertical md:join-horizontal'>
           {Object.entries(type).map((item) => {
             const [key, value] = item;
-            const type = String(value?.type) as IType;
+            const t = String(value?.type) as IType;
             return (
               <div key={key}>
-                <div>{Element({ key, type })}</div>
+                <div>{Element({ key, type: t })}</div>
               </div>
             );
           })}
