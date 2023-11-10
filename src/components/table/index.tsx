@@ -5,21 +5,18 @@ import Delete from './delete';
 import Edit from './edit';
 
 const { schema } = SETTING.mongodb[0];
-type TParm = { type: typeof schema; table: string };
+type TProps = { type: typeof schema; collection: string };
 
-const Table = forwardRef(({ type, table }: TParm, ref) => {
+const Table = forwardRef(({ type, collection }: TProps, ref) => {
   const [data, getUsers] = useSelect();
   const currentData = data?.data ? data.data : [];
 
   useEffect(() => {
-    getUsers({ table });
-  }, [table]);
+    getUsers({ collection });
+  }, [collection]);
 
-  const update = () => getUsers({ table });
-
-  useImperativeHandle(ref, () => ({
-    update,
-  }));
+  const update = () => getUsers({ collection });
+  useImperativeHandle(ref, () => ({ update }));
 
   return (
     data && (
@@ -51,12 +48,12 @@ const Table = forwardRef(({ type, table }: TParm, ref) => {
                       );
                     })}
                     <td>
-                      <Delete update={update} table={table} data={item}>
+                      <Delete update={update} collection={collection} data={item}>
                         Delete
                       </Delete>
                     </td>
                     <td>
-                      <Edit type={type} update={update} table={table} data={item}>
+                      <Edit type={type} update={update} collection={collection} data={item}>
                         Edit
                       </Edit>
                     </td>

@@ -3,11 +3,11 @@ import { IRespond, TYPE } from '../../../setting';
 import { messages } from '../config';
 import models from '../models';
 
-const insert = ({ table, data }: { table: string; data: TYPE }) => {
+const insert = ({ collection, data }: { collection: string; data: TYPE }) => {
   return new Promise<IRespond>((resolve) => {
     if (mongoose.connections[0].readyState) {
       try {
-        const currentModel = models[table] as typeof mongoose.Model;
+        const currentModel = models[collection] as typeof mongoose.Model;
         const tab = new currentModel(data);
         tab
           .save()

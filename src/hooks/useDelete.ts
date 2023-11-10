@@ -11,7 +11,7 @@ type TDelete = { _id: string };
 const useDelete = () => {
   const [, setContext] = useContext(Context);
   const [state, setState] = useState<TResult>();
-  const fetch = async (parm: { table: string; data: TDelete }) => {
+  const fetch = async (parm: { collection: string; data: TDelete }) => {
     setContext({ type: ActionType.LoadingProcess, state: { enabled: true } });
     const respond = (await Fetcher.post(REST_PATH.delete, parm)) as TResult;
     setState(respond);

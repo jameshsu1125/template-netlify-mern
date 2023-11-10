@@ -15,7 +15,7 @@ import { SETTING } from '../../../setting';
 import { IType } from '../../../setting/type';
 
 const { schema } = SETTING.mongodb[0];
-type TProps = { type: typeof schema; table: string; data: any; update: () => void };
+type TProps = { type: typeof schema; collection: string; data: any; update: () => void };
 type TEditProps = { type: typeof schema; data: { [key: string]: any } };
 interface RefObject {
   getChange: () => object;
@@ -81,6 +81,7 @@ const InputGroup = forwardRef(({ data, type }: TEditProps, ref) => {
   const dataRef = useRef(data);
 
   const onChange = (e: ChangeEvent<HTMLInputElement>) => {
+    e.preventDefault();
     const { name, value, type, checked } = e.target;
     if (type === 'checkbox') dataRef.current[name] = checked;
     else dataRef.current[name] = value;
@@ -105,7 +106,7 @@ const InputGroup = forwardRef(({ data, type }: TEditProps, ref) => {
   );
 });
 
-const Edit = memo(({ children, type, table, data, update }: IReactProps & TProps) => {
+const Edit = memo(({ children, type, collection, data, update }: IReactProps & TProps) => {
   const inputRef = useRef<RefObject>();
 
   const [respond, getUpdate] = useUpdate();
@@ -118,13 +119,7 @@ const Edit = memo(({ children, type, table, data, update }: IReactProps & TProps
   const onClose = () => {
     const currentData = inputRef.current?.getChange();
     if (data._id && currentData) {
-      getUpdate({
-        table,
-        data: {
-          filter: String(data._id),
-          data: currentData,
-        },
-      });
+      getUpdate({ collection, data: { filter: String(data._id), data: currentData } });
     }
   };
 

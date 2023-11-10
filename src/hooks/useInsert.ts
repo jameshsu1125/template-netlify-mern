@@ -10,7 +10,7 @@ export type TResult = IRespond | undefined;
 const useInsert = () => {
   const [, setContext] = useContext(Context);
   const [state, setState] = useState<TResult>();
-  const fetch = async (parm: { table: string; data: TYPE }) => {
+  const fetch = async (parm: { collection: string; data: TYPE }) => {
     setContext({ type: ActionType.LoadingProcess, state: { enabled: true } });
     const respond = (await Fetcher.post(REST_PATH.insert, parm)) as TResult;
     setState(respond);

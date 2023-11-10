@@ -6,10 +6,10 @@ import { SETTING, TYPE } from '../../../setting';
 import { IType } from '../../../setting/type';
 
 const { schema } = SETTING.mongodb[0];
-type TProps = { type: typeof schema; table: string; onSubmit: () => void };
+type TProps = { type: typeof schema; collection: string; onSubmit: () => void };
 type TData = { [k: string]: any };
 
-const InsertGroup = memo(({ type, table, onSubmit }: TProps) => {
+const InsertGroup = memo(({ type, collection, onSubmit }: TProps) => {
   const [, setContext] = useContext(Context);
   const [respond, getInsert] = useInsert();
 
@@ -18,9 +18,8 @@ const InsertGroup = memo(({ type, table, onSubmit }: TProps) => {
       e.preventDefault();
       const formData = new FormData(e.currentTarget);
       const data: TData = Object.fromEntries([...formData]);
-      console.log(data);
-
       const checkbox = Object.entries(type).filter((item) => item[1].type === IType.Boolean);
+
       checkbox.forEach((item) => {
         const [key] = item;
         const [value] = Object.entries(data)
@@ -29,13 +28,12 @@ const InsertGroup = memo(({ type, table, onSubmit }: TProps) => {
         if (value) data[key] = true;
         else data[key] = false;
       });
-      const currentData = data as TYPE;
-      getInsert({ table, data: currentData });
-    },
-    [type, table],
-  );
 
-  useEffect(() => {}, []);
+      const currentData = data as TYPE;
+      getInsert({ collection, data: currentData });
+    },
+    [type, collection],
+  );
 
   useEffect(() => {
     if (respond) {

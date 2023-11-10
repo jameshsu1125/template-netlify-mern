@@ -4,12 +4,12 @@ import { ActionType, AlertType, IReactProps } from '@/settings/type';
 import { memo, useContext, useEffect } from 'react';
 
 type TParm = {
-  table: string;
+  collection: string;
   data: any;
   update: () => void;
 };
 
-const Delete = memo(({ children, table, data, update }: IReactProps & TParm) => {
+const Delete = memo(({ children, collection, data, update }: IReactProps & TParm) => {
   const [, setContext] = useContext(Context);
   const [respond, getDelete] = useDelete();
 
@@ -30,7 +30,7 @@ const Delete = memo(({ children, table, data, update }: IReactProps & TParm) => 
         const { _id } = data;
         if (_id) {
           const currentData = { _id };
-          getDelete({ table, data: currentData });
+          getDelete({ collection, data: currentData });
         }
       }}
       className='btn btn-xs btn-warning'

@@ -10,7 +10,7 @@ export type TResult = IRespond | undefined;
 const useSelect = () => {
   const [, setContext] = useContext(Context);
   const [state, setState] = useState<TResult>();
-  const fetch = async (parm: { table: string }) => {
+  const fetch = async (parm: { collection: string }) => {
     setContext({ type: ActionType.LoadingProcess, state: { enabled: true } });
     const respond = (await Fetcher.post(REST_PATH.select, parm)) as TResult;
 
