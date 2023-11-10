@@ -36,8 +36,6 @@ router.post('/select', async (req, res) => {
 });
 
 router.post('/insert', async (req, res) => {
-  console.log(req.body);
-
   const respond = await insert(req.body);
   res.status(200).json(respond);
 });

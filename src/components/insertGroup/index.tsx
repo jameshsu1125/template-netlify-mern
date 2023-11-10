@@ -26,6 +26,7 @@ const InsertGroup = memo(({ type, table, onSubmit }: TParm) => {
       else data[key] = false;
     });
     const currentData = data as TYPE;
+
     getInsert({ table, data: currentData });
   }, []);
 
