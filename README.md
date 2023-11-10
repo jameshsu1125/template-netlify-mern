@@ -88,7 +88,7 @@
 
   - design your schema and types
 
-    <b><i> Edit `setting/index.ts` for your database schema </i></b>
+    <b><i> Edit [setting/index.ts](https://github.com/jameshsu1125/template-netlify-mern/blob/main/setting/index.ts) for your database schema. </i></b>
 
 - build and deployment
 
