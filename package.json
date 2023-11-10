@@ -15,7 +15,6 @@
   },
   "dependencies": {
     "@faker-js/faker": "^8.2.0",
-    "lesca-click": "^4.3.5",
     "lesca-fetcher": "^1.1.6",
     "lesca-local-storage": "^1.1.2",
     "lesca-react-onload": "^1.0.14",

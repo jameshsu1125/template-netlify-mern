@@ -1,23 +1,20 @@
+import Alert from '@/components/alert';
 import Drawer from '@/components/drawer';
 import LoadingProcess from '@/components/loadingProcess';
+import Modal from '@/components/modal/index.tsx';
 import Navbar from '@/components/navbar';
+import useConnect from '@/hooks/useConnect';
 import { Context, InitialState, Reducer } from '@/settings/constant';
 import '@/settings/global.less';
 import { ActionType, AlertType, TContext } from '@/settings/type';
-import Click from 'lesca-click';
 import Fetcher, { contentType, formatType } from 'lesca-fetcher';
 import Storage from 'lesca-local-storage';
 import { Suspense, lazy, memo, useCallback, useEffect, useMemo, useReducer } from 'react';
 import ReactDOM from 'react-dom/client';
 import { BrowserRouter, Route, Routes } from 'react-router-dom';
+import { SETTING } from '../../setting';
 import Home from './home';
 import Login from './login';
-import { SETTING } from '../../setting';
-import useConnect from '@/hooks/useConnect';
-import Alert from '@/components/alert';
-import Modal from '@/components/modal/index.tsx';
-
-Click.install();
 
 Fetcher.install({
   hostUrl: import.meta.env.VITE_API_PATH || './api',
