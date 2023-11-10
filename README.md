@@ -102,7 +102,7 @@
       netlify sites:create
       ```
 
-    - link `Netlify` site id
+    - or link `Netlify` site id
 
       ```sh
       netlify link
