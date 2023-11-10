@@ -118,7 +118,7 @@
       $ npm run deploy
       ```
 
-      **_check more detail for Netlify cli_**
+      **_check more detail for [Netlify cli](https://docs.netlify.com/cli/get-started/)_**
 
 ## Status
 
