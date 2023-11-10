@@ -37,8 +37,24 @@ export const SETTING = {
 };
 
 // type for mongodb
-export type TUser = { username: string; password: string };
-export type TTodo = { title: string; description: string; close: boolean; timestamp: Date };
+export type TUser = {
+  userID: string;
+  firstName: string;
+  lastName: string;
+  email: string;
+  photo: string;
+  age: number;
+  timestamp: string;
+};
+
+export type TTodo = {
+  task: string;
+  description: string;
+  who: string;
+  done: boolean;
+  timestamp: Date;
+};
+
 export type TYPE = TUser | TTodo;
 
 // type for Rest api respond
