@@ -118,6 +118,8 @@
       $ npm run deploy
       ```
 
+      **_check more detail for Netlify cli_**
+
 ## Status
 
 - Development since November 2023
