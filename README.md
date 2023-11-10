@@ -96,13 +96,13 @@
 
   - deploy on `netlify`
 
-    - create netlify site
+    - create `Netlify` site
 
       ```sh
       netlify sites:create
       ```
 
-    - link netlify site id
+    - link `Netlify` site id
 
       ```sh
       netlify link
@@ -112,7 +112,7 @@
 
       <img src="./misc/screenshot-0.png" alt="Getting started" />
 
-    - deploy netlify functions.
+    - deploy `Netlify` functions.
 
       ```sh
       $ npm run deploy
