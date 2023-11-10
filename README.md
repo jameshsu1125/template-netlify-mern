@@ -34,68 +34,108 @@
 
 ## Quick start
 
-- install netlify-cli globally
+- install and initialize
 
-```sh
-npm install netlify-cli -g
-```
+  - install netlify-cli globally
 
-- install module
+    ```sh
+    $ npm install netlify-cli -g
+    ```
 
-```sh
-$ npm i
-```
+  - install module
 
-- create `.env.local` file for netlify function development.
+    ```sh
+    $ npm i
+    ```
 
-```sh
-touch src/pages/.env.local
-```
+  - create `.env.local` file for netlify functions development
 
-- create `.env` file
+    ```sh
+    touch .env.local
+    ```
 
-```sh
-touch src/pages/.env
-```
+    - copy [.env.defaults variable](https://github.com/jameshsu1125/template-netlify-mern/blob/main/.env.defaults) to `.env.local` file.
 
-- copy variables to `.env` file.
+  - .create `.env` file for vite development
 
-```text
-VITE_MOCKING=false
-VITE_API_PATH='./api'
+    ```sh
+    touch src/pages/.env
+    ```
 
-VITE_TITLE=title
-VITE_SUBSCRIPTION=description
-VITE_URL=https://jameshsu1125.github.io
-VITE_FACEBOOK_ID=your-facebook-id
-```
+    - copy [.env.defaults variable](https://github.com/jameshsu1125/template-netlify-mern/blob/main/src/pages/.env.defaults) to `.env.local` file.
 
-- start project
+- development
 
-```sh
-$ npm run dev
-```
+  - start `vite` (front-end)
 
-- build static file to `/dist`
+    ```sh
+    $ npm run dev
+    ```
 
-```sh
-$ npm run build
-```
+  - start `netlify functions` (back-end)
+
+    ```sh
+    $ npm run serve
+    ```
+
+  - start together ( `vite` + `netlify functions`)
+
+    ```sh
+    $ npm run dev:serve
+    ```
+
+    _something netlify-cli or vite-cli will crash_
+
+- build ans deployment
+
+  - build static pages
+
+    ```sh
+    $ npm run build
+    ```
+
+  - deploy on `netlify`
+
+    - create netlify site
+
+      ```sh
+      netlify sites:create
+      ```
+
+    - link netlify site id
+
+      ```sh
+      netlify link
+      ```
+
+    - set environment variables same as `.env.local`.
+
+      <img src="./misc/screenshot-0.png" alt="Getting started" />
+
+    - deploy netlify functions.
+
+      ```sh
+      $ npm run deploy
+      ```
 
 ## Status
 
-- Development since January 2023
+- Development since November 2023
 - use [vite](https://vitejs.dev/) for development environment and bundler.
 - use [React](https://react.dev/) for main javascript library.
 - use [Typescript](https://www.typescriptlang.org/) for syntax.
 - use [LessCSS](https://lesscss.org/) and [TailwindCSS](https://tailwindcss.com/) for css library.
 - use [ESLint](https://eslint.org/) rules for coding style.
-- use [Mocks](https://mswjs.io/) and [faker](https://fakerjs.dev/) for testing API
+- use [Mocks](https://mswjs.io/) and [faker](https://fakerjs.dev/) for testing API.
+- use [Netlify](https://www.netlify.com/) for deployment.
+- use [Express](https://expressjs.com/) for api router.
 
 ## What's included
 
 - `public` folder will copy to `/dist`
 - `src` folder is reactJs entry point. default file is named as `pages/index.tsx`
+- `netlify/functions` folder is RestAPI source code.
+- `setting/index.ts` config for mongodb quick setting.
 
 ## Bugs and feature requests
 

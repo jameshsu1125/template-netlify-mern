@@ -1,3 +1,4 @@
+// mongodb types
 export enum IType {
   String = 'String',
   Number = 'Number',
@@ -5,6 +6,8 @@ export enum IType {
   Date = 'Date',
 }
 
+// mongodb collection schema setting.
+// TODO => type convert to schema for mongodb
 export const SETTING = {
   mongodb: [
     {
@@ -46,10 +49,12 @@ export const SETTING = {
   },
 };
 
+// type for mongodb
 export type TUser = { username: string; password: string };
 export type TTodo = { title: string; description: string; close: boolean; timestamp: Date };
 export type TYPE = TUser | TTodo;
 
+// type for Rest api respond
 export type IRespond = {
   res: boolean;
   msg: string;
