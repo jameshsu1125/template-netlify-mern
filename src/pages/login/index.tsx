@@ -47,6 +47,7 @@ const Login = memo(() => {
                 type='password'
               />
             </div>
+            {respond?.res === false && <div className='text-error'>{respond.msg}</div>}
             <div className='card-actions justify-end'>
               <button type='submit' className='btn btn-primary'>
                 Login

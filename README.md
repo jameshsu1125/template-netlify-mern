@@ -3,8 +3,11 @@
 [![React](https://img.shields.io/badge/-ReactJs-61DAFB?style=for-the-badge&logo=react&logoColor=white)](https://zh-hant.reactjs.org/)
 [![TS](https://img.shields.io/badge/Typescript-4277c0?style=for-the-badge&logo=typescript&logoColor=white)](https://www.typescriptlang.org/)
 [![LESS](https://img.shields.io/badge/Less-1d365d?style=for-the-badge&logo=less&logoColor=white)](https://lesscss.org/)
-[![TW](https://img.shields.io/badge/Tailwind_CSS-38B2AC?style=for-the-badge&logo=npm&logoColor=white)](https://lesscss.org/)
-[![ROUTER](https://img.shields.io/badge/React_Router-CA4245?style=for-the-badge&logo=npm&logoColor=white)](https://lesscss.org/)
+[![TW](https://img.shields.io/badge/Tailwind_CSS-38B2AC?style=for-the-badge&logo=npm&logoColor=white)](https://tailwindcss.com/)
+[![ROUTER](https://img.shields.io/badge/React_Router-CA4245?style=for-the-badge&logo=npm&logoColor=white)](https://reactrouter.com/)
+[![EXPRESS](https://img.shields.io/badge/express-%23404d59?style=for-the-badge&logo=express&logoColor=white)](https://expressjs.com/)
+[![TS](https://img.shields.io/badge/Typescript-4277c0?style=for-the-badge&logo=typescript&logoColor=white)](https://www.typescriptlang.org/)
+[![NETLIFY](https://img.shields.io/badge/netlify-%23000000?style=for-the-badge&logo=netlify&logoColor=white)](https://www.netlify.com/)
 
 <p align="center">
   <a href="https://github.com/jameshsu1125">
@@ -31,10 +34,22 @@
 
 ## Quick start
 
+- install netlify-cli globally
+
+```sh
+npm install netlify-cli -g
+```
+
 - install module
 
 ```sh
 $ npm i
+```
+
+- create `.env.local` file for netlify function development.
+
+```sh
+touch src/pages/.env.local
 ```
 
 - create `.env` file
