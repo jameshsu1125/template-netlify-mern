@@ -86,7 +86,7 @@
 
     _something netlify-cli or vite-cli will crash_
 
-- build ans deployment
+- build and deployment
 
   - build static pages
 
