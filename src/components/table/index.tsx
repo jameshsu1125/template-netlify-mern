@@ -4,8 +4,8 @@ import { SETTING } from '../../../setting';
 import Delete from './delete';
 import Edit from './edit';
 
-const { type } = SETTING.mongodb[0];
-type TParm = { type: typeof type; table: string };
+const { schema } = SETTING.mongodb[0];
+type TParm = { type: typeof schema; table: string };
 
 const Table = forwardRef(({ type, table }: TParm, ref) => {
   const [data, getUsers] = useSelect();

@@ -31,7 +31,7 @@ const Table = memo(({ data }: Prettify<{ data: T }>) => {
               <tr>
                 <td>{currentData.table}</td>
                 <td>{currentData.description}</td>
-                <td>{JSON.stringify(currentData.type)}</td>
+                <td>{JSON.stringify(currentData.schema)}</td>
               </tr>
             </tbody>
           </table>

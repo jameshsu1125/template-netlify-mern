@@ -20,7 +20,7 @@ const Collection = memo(() => {
   const table = pathname.slice(1);
 
   const [collection] = SETTING.mongodb.filter((collection) => collection.table === table);
-  const { type } = collection;
+  const { schema } = collection;
 
   useEffect(() => {
     setState((S) => ({ ...S, page: table }));
@@ -34,8 +34,8 @@ const Collection = memo(() => {
     <CollectionContext.Provider value={value}>
       <div className='Table max-w-7xl'>
         <h2 className='uppercase'>{table}</h2>
-        <Table ref={tableRef} type={type} table={table} />
-        <InsertGroup type={type} table={table} onSubmit={onSubmit} />
+        <Table ref={tableRef} type={schema} table={table} />
+        <InsertGroup type={schema} table={table} onSubmit={onSubmit} />
       </div>
     </CollectionContext.Provider>
   );

@@ -1,23 +1,12 @@
-// mongodb types
-export enum IType {
-  String = 'String',
-  Number = 'Number',
-  Boolean = 'Boolean',
-  Date = 'Date',
-}
+import { IType } from './type';
 
 // mongodb collection schema setting.
-// TODO => type convert to schema for mongodb
 export const SETTING = {
   mongodb: [
     {
       table: 'user',
       description: '登入使用者帳號密碼',
       schema: {
-        username: { type: String, required: true },
-        password: { type: String, required: true },
-      },
-      type: {
         username: { type: IType.String, required: true },
         password: { type: IType.String, required: true },
       },
@@ -26,13 +15,6 @@ export const SETTING = {
       table: 'todo',
       description: '工作列表',
       schema: {
-        title: { type: String, required: true },
-        description: { type: String, required: true },
-        age: { type: Number },
-        close: { type: Boolean, default: false },
-        timestamp: { type: Date, default: Date.now() },
-      },
-      type: {
         title: { type: IType.String, required: true },
         description: { type: IType.String, required: true },
         age: { type: IType.Number },

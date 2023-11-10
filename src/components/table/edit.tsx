@@ -11,23 +11,12 @@ import {
   useEffect,
   ChangeEventHandler,
 } from 'react';
-import { IType, SETTING } from '../../../setting';
+import { SETTING } from '../../../setting';
+import { IType } from '../../../setting/type';
 
-const { type } = SETTING.mongodb[0];
-type TProps = {
-  type: typeof type;
-  table: string;
-  data: any;
-  update: () => void;
-};
-
-type TEditProps = {
-  type: typeof type;
-  data: {
-    [key: string]: any;
-  };
-};
-
+const { schema } = SETTING.mongodb[0];
+type TProps = { type: typeof schema; table: string; data: any; update: () => void };
+type TEditProps = { type: typeof schema; data: { [key: string]: any } };
 interface RefObject {
   getChange: () => object;
 }

@@ -1,14 +1,15 @@
 import useInsert from '@/hooks/useInsert';
-import { FormEvent, memo, useCallback, useContext, useEffect } from 'react';
-import { IType, SETTING, TYPE } from '../../../setting';
 import { Context } from '@/settings/constant';
 import { ActionType, AlertType } from '@/settings/type';
+import { FormEvent, memo, useCallback, useContext, useEffect } from 'react';
+import { SETTING, TYPE } from '../../../setting';
+import { IType } from '../../../setting/type';
 
-const { type } = SETTING.mongodb[0];
-type TParm = { type: typeof type; table: string; onSubmit: () => void };
+const { schema } = SETTING.mongodb[0];
+type TProps = { type: typeof schema; table: string; onSubmit: () => void };
 type TData = { [k: string]: any };
 
-const InsertGroup = memo(({ type, table, onSubmit }: TParm) => {
+const InsertGroup = memo(({ type, table, onSubmit }: TProps) => {
   const [, setContext] = useContext(Context);
   const [respond, getInsert] = useInsert();
 
