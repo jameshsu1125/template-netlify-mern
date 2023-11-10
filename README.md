@@ -136,8 +136,8 @@
 
 - `public` folder will copy to `/dist`
 - `src` folder is reactJs entry point. default file is named as `pages/index.tsx`
-- `netlify/functions` folder is RestAPI source code.
-- `setting/index.ts` config for mongodb quick setting.
+- `netlify/functions` folder for express and Netlify functions source code.
+- `setting/index.ts` config for schema and typescript setting.
 
 ## Bugs and feature requests
 
