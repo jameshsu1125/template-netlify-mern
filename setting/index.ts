@@ -5,20 +5,25 @@ export const SETTING = {
   mongodb: [
     {
       collection: 'user',
-      description: '登入使用者帳號密碼',
+      description: 'user profile schema demonstration',
       schema: {
-        username: { type: IType.String, required: true },
-        password: { type: IType.String, required: true },
+        userID: { type: IType.String, required: true },
+        firstName: { type: IType.String, required: true },
+        lastName: { type: IType.String, required: true },
+        email: { type: IType.String, required: true },
+        photo: { type: IType.String, required: true },
+        age: { type: IType.Number, required: true },
+        timestamp: { type: IType.Date, default: 'Date.now()' },
       },
     },
     {
       collection: 'todo',
-      description: '工作列表',
+      description: 'todo list schema demonstration',
       schema: {
-        title: { type: IType.String, required: true },
+        task: { type: IType.String, required: true },
         description: { type: IType.String, required: true },
-        age: { type: IType.Number },
-        close: { type: IType.Boolean, default: false },
+        who: { type: IType.String, required: true },
+        done: { type: IType.Boolean, default: false },
         timestamp: { type: IType.Date, default: 'Date.now()' },
       },
     },

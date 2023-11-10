@@ -39,6 +39,9 @@ export default SETTING.mongodb.reduce((prev, next) => {
 
   const model =
     mongoose.models[collection] ||
-    mongoose.model<TYPE>(collection, new mongoose.Schema<TYPE>(currentSchema));
+    mongoose.model<TYPE>(
+      collection,
+      new mongoose.Schema<TYPE>(currentSchema, { versionKey: false }),
+    );
   return { ...prev, [collection]: model };
 }, {});

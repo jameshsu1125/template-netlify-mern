@@ -30,7 +30,6 @@ const Table = forwardRef(({ type, collection }: TProps, ref) => {
                 {Object.keys(type).map((key) => {
                   return <th key={key}>{key}</th>;
                 })}
-                <th>__v</th>
                 <th></th>
                 <th></th>
               </tr>
@@ -68,7 +67,8 @@ const Table = forwardRef(({ type, collection }: TProps, ref) => {
                 {Object.keys(type).map((key) => {
                   return <th key={key}>{key}</th>;
                 })}
-                <th>__v</th>
+                <th></th>
+                <th></th>
               </tr>
             </tfoot>
           </table>
