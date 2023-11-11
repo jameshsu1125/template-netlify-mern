@@ -22,7 +22,7 @@ const Table = forwardRef(({ type, collection }: TProps, ref) => {
     data && (
       <div className='w-full my-5'>
         <div className='overflow-x-auto'>
-          <table className='table table-xs text-center'>
+          <table className='table table-xs text-center table-pin-rows table-pin-cols'>
             <thead>
               <tr>
                 <th>index</th>

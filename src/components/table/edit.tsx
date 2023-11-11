@@ -94,7 +94,7 @@ const InputGroup = forwardRef(({ data, type }: TEditProps, ref) => {
   }));
 
   return (
-    <div className='join'>
+    <div className='join join-vertical md:join-horizontal'>
       {Object.entries(data).map((item, index) => {
         const [key, value] = item;
         const [currentTarget] = Object.entries(type).filter((typeItem) => typeItem[0] === key);

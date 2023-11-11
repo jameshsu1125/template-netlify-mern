@@ -32,7 +32,7 @@ const Collection = memo(() => {
 
   return (
     <CollectionContext.Provider value={value}>
-      <div className='Table max-w-7xl'>
+      <div className='Table'>
         <h2 className='uppercase'>{collection}</h2>
         <Table ref={collectionRef} type={schema} collection={collection} />
         <InsertGroup type={schema} collection={collection} onSubmit={onSubmit} />
