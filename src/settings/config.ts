@@ -6,7 +6,3 @@ export const REST_PATH = {
   delete: 'delete',
   update: 'update',
 };
-
-export const COLLECTIONS = {
-  admin: 'admin',
-};
