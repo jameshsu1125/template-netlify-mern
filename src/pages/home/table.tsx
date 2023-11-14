@@ -35,7 +35,7 @@ const Table = memo(({ data }: Prettify<{ data: T }>) => {
       </div>
       <div className='flex justify-center px-4 py-16 border-t bg-base-300 border-base-300'>
         <div className='overflow-x-auto w-full'>
-          <table className='table'>
+          <table className='table-zebra'>
             <thead>
               <tr>
                 {keys

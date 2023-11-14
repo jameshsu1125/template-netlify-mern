@@ -119,7 +119,7 @@ const Edit = memo(({ children, type, collection, data, update }: IReactProps & T
   const onClose = () => {
     const currentData = inputRef.current?.getChange();
     if (data._id && currentData) {
-      getUpdate({ collection, data: { filter: String(data._id), data: currentData } });
+      getUpdate({ collection, data: { _id: String(data._id), data: currentData } });
     }
   };
 

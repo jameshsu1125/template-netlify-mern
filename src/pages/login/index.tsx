@@ -1,4 +1,4 @@
-import useLogin, { TParm } from '@/hooks/useLogin';
+import useLogin, { TArgument } from '@/hooks/useLogin';
 import { SETTING } from '../../../setting';
 import { Context } from '@/settings/constant';
 import { ActionType } from '@/settings/type';
@@ -12,7 +12,9 @@ const Login = memo(() => {
 
   const onSubmit = useCallback((event: FormEvent) => {
     event.preventDefault();
-    const data = Object.fromEntries([...new FormData(event.target as HTMLFormElement)]) as TParm;
+    const data = Object.fromEntries([
+      ...new FormData(event.target as HTMLFormElement),
+    ]) as TArgument;
     fetchLogin(data);
   }, []);
 

@@ -4,7 +4,7 @@ import models from '../models';
 import { IRespond, TYPE } from '../../../setting';
 
 type UpdateData = {
-  filter: string;
+  _id: string;
   data: Partial<TYPE>;
 };
 const update = ({ collection, data }: { collection: string; data: UpdateData }) => {
@@ -12,7 +12,8 @@ const update = ({ collection, data }: { collection: string; data: UpdateData }) 
     if (mongoose.connections[0].readyState) {
       try {
         const currentModel = models[collection] as typeof mongoose.Model;
-        currentModel.findOneAndUpdate({ _id: data.filter }, data.data).then(() => {
+        const { _id } = data;
+        currentModel.findOneAndUpdate({ _id }, data.data).then(() => {
           resolve({ res: true, msg: messages.updateSuccess });
         });
       } catch (error: unknown) {

@@ -1,6 +1,6 @@
-import { IReactProps, ReadyOnlyProps } from '@/settings/type';
+import { IReactProps, ReadyOnly } from '@/settings/type';
 
-type TRegularProps = ReadyOnlyProps<{
+type TRegularProps = ReadyOnly<{
   onClick?: () => void;
 }>;
 

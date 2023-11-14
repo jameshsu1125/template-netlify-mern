@@ -22,7 +22,7 @@ const Table = forwardRef(({ type, collection }: TProps, ref) => {
     data && (
       <div className='w-full my-5'>
         <div className='overflow-x-auto'>
-          <table className='table table-xs text-center table-pin-rows table-pin-cols'>
+          <table className='table-zebra table-xs text-center table-pin-rows table-pin-cols'>
             <thead>
               <tr>
                 <th>index</th>
@@ -62,7 +62,7 @@ const Table = forwardRef(({ type, collection }: TProps, ref) => {
             </tbody>
             <tfoot>
               <tr>
-                <th></th>
+                <th>index</th>
                 <th>_id</th>
                 {Object.keys(type).map((key) => {
                   return <th key={key}>{key}</th>;
