@@ -1,3 +1,4 @@
+import { ReadyOnly } from '@/settings/type';
 import { IType } from './type';
 
 // mongodb collection schema setting.
@@ -58,8 +59,8 @@ export type TTodo = {
 export type TYPE = TUser | TTodo;
 
 // type for Rest api respond
-export type IRespond = {
+export type IRespond = ReadyOnly<{
   res: boolean;
   msg: string;
   data?: TYPE[];
-};
+}>;

@@ -1,7 +1,7 @@
 import { Dispatch, ReactNode } from 'react';
 
 export type Prettify<T> = { [P in keyof T]: T[P] };
-export type ReadyOnlyProps<T> = { readonly [P in keyof T]: T[P] };
+export type ReadyOnly<T> = { readonly [P in keyof T]: T[P] };
 export type Extension<T, E> = T & E;
 
 export enum ActionType {
