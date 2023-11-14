@@ -61,5 +61,5 @@ export type TYPE = TUser | TTodo;
 export type IRespond = {
   res: boolean;
   msg: string;
-  data?: any[];
+  data?: TYPE[];
 };
