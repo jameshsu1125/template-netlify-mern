@@ -26,8 +26,8 @@ const Login = memo(() => {
   }, [respond]);
 
   return (
-    <div className='w-full h-full flex justify-center items-center'>
-      <div className='card max-w-2xl lg:card-side bg-base-100 shadow-xl'>
+    <div className='flex h-full w-full items-center justify-center'>
+      <div className='card max-w-2xl bg-base-100 shadow-xl lg:card-side'>
         <figure>
           <img src={coverImage} alt='Album' />
         </figure>
@@ -37,13 +37,13 @@ const Login = memo(() => {
           <form onSubmit={onSubmit}>
             <div className='join join-vertical my-5'>
               <input
-                className='input border-secondary join-item'
+                className='input join-item border-secondary'
                 placeholder='username'
                 name='username'
                 type='text'
               />
               <input
-                className='input  border-primary join-item'
+                className='input  join-item border-primary'
                 placeholder='password'
                 name='password'
                 type='password'
