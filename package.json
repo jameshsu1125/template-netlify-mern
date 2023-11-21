@@ -4,7 +4,7 @@
   "version": "0.0.0",
   "type": "module",
   "scripts": {
-    "dev": "vite",
+    "dev": "vite --host",
     "dev:serve": "concurrently \"npm run dev\" \"npm run serve\"",
     "build": "tsc && vite build",
     "preview": "vite preview",
