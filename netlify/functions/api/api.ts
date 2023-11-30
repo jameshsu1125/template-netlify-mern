@@ -4,9 +4,10 @@ import express, { Router } from 'express';
 import serverless from 'serverless-http';
 import connect from './connect';
 import select from './select';
-import insert from './insert';
+import insert, { insertMany } from './insert';
 import deleteOne from './delete';
 import update from './update';
+import { messages } from '../config';
 
 dotenv.config({ path: `.env.${process.env.NODE_ENV}` });
 
@@ -31,23 +32,53 @@ router.get('/connect', async (_, res) => {
 });
 
 router.post('/select', async (req, res) => {
-  const respond = await select(req.body);
-  res.status(200).json(respond);
+  const connection = await connect();
+  if (!connection.res) {
+    res.status(200).json({ res: false, msg: messages.connectError });
+  } else {
+    const respond = await select(req.body);
+    res.status(200).json(respond);
+  }
 });
 
 router.post('/insert', async (req, res) => {
-  const respond = await insert(req.body);
-  res.status(200).json(respond);
+  const connection = await connect();
+  if (!connection.res) {
+    res.status(200).json({ res: false, msg: messages.connectError });
+  } else {
+    const respond = await insert(req.body);
+    res.status(200).json(respond);
+  }
+});
+
+router.post('/insertMany', async (req, res) => {
+  const connection = await connect();
+  if (!connection.res) {
+    res.status(200).json({ res: false, msg: messages.connectError });
+  } else {
+    const respond = await insertMany(req.body);
+    res.status(200).json(respond);
+  }
 });
 
 router.post('/delete', async (req, res) => {
-  const respond = await deleteOne(req.body);
-  res.status(200).json(respond);
+  const connection = await connect();
+  if (!connection.res) {
+    res.status(200).json({ res: false, msg: messages.connectError });
+  } else {
+    const respond = await deleteOne(req.body);
+    res.status(200).json(respond);
+  }
 });
 
 router.post('/update', async (req, res) => {
-  const respond = await update(req.body);
-  res.status(200).json(respond);
+  const connection = await connect();
+  if (!connection.res) {
+    res.status(200).json({ res: false, msg: messages.connectError });
+  } else {
+    const respond = await update(req.body);
+    res.status(200).json(respond);
+  }
 });
 
 api.use('/api/', router);

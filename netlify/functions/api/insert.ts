@@ -25,3 +25,25 @@ const insert = ({ collection, data }: { collection: string; data: TYPE }) => {
 };
 
 export default insert;
+
+const insertMany = ({ collection, data }: { collection: string; data: TYPE[] }) => {
+  return new Promise<IRespond>((resolve) => {
+    if (mongoose.connections[0].readyState) {
+      try {
+        const currentModel = models[collection] as typeof mongoose.Model;
+        currentModel
+          .insertMany(data)
+          .then((e: unknown) => {
+            resolve({ res: true, msg: messages.insertSuccess, data: [e] });
+          })
+          .catch((e: unknown) => {
+            resolve({ res: false, msg: JSON.stringify(e) });
+          });
+      } catch (e: unknown) {
+        resolve({ res: false, msg: messages.insertError });
+      }
+    } else resolve({ res: false, msg: messages.insertError });
+  });
+};
+
+export { insertMany };
