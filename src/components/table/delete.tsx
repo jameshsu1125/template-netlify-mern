@@ -33,7 +33,7 @@ const Delete = memo(({ children, collection, data, update }: IReactProps & TParm
           getDelete({ collection, data: currentData });
         }
       }}
-      className='btn btn-xs btn-warning'
+      className='btn btn-warning btn-xs'
     >
       {children}
     </button>
