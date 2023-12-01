@@ -9,12 +9,12 @@ const select = ({ collection }: { collection: string }) => {
       try {
         const currentModel = models[collection] as typeof mongoose.Model;
         currentModel.find().then((data) => {
-          resolve({ res: true, msg: messages.selectSuccess, data });
+          resolve({ res: true, msg: messages.selectSuccess, collection, data });
         });
       } catch (error: unknown) {
-        resolve({ res: false, msg: messages.selectError });
+        resolve({ res: false, msg: messages.selectError, collection });
       }
-    } else resolve({ res: false, msg: messages.selectError });
+    } else resolve({ res: false, msg: messages.selectError, collection });
   });
 };
 

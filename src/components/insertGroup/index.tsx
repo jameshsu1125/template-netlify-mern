@@ -2,7 +2,7 @@ import useInsert from '@/hooks/useInsert';
 import { Context } from '@/settings/constant';
 import { ActionType, AlertType } from '@/settings/type';
 import { FormEvent, memo, useCallback, useContext, useEffect } from 'react';
-import { SETTING, TYPE } from '../../../setting';
+import { SETTING, TType } from '../../../setting';
 import { IType } from '../../../setting/type';
 
 const { schema } = SETTING.mongodb[0];
@@ -29,7 +29,7 @@ const InsertGroup = memo(({ type, collection, onSubmit }: TProps) => {
         else data[key] = false;
       });
 
-      const currentData = data as TYPE;
+      const currentData = data as TType;
       getInsert({ collection, data: currentData });
     },
     [type, collection],
@@ -51,7 +51,7 @@ const InsertGroup = memo(({ type, collection, onSubmit }: TProps) => {
       case IType.String:
         return (
           <input
-            className='input input-sm input-bordered join-item'
+            className='input join-item input-bordered input-sm'
             placeholder={key}
             name={key}
             type='text'
@@ -60,7 +60,7 @@ const InsertGroup = memo(({ type, collection, onSubmit }: TProps) => {
       case IType.Number:
         return (
           <input
-            className='input input-sm input-bordered join-item'
+            className='input join-item input-bordered input-sm'
             placeholder={key}
             name={key}
             type='number'
@@ -79,7 +79,7 @@ const InsertGroup = memo(({ type, collection, onSubmit }: TProps) => {
   };
 
   return (
-    <div className='w-full flex justify-center'>
+    <div className='flex w-full justify-center'>
       <form onSubmit={submit}>
         <div className='join join-vertical md:join-horizontal'>
           {Object.entries(type).map((item) => {
@@ -92,7 +92,7 @@ const InsertGroup = memo(({ type, collection, onSubmit }: TProps) => {
             );
           })}
           <div className='indicator'>
-            <button type='submit' className='btn btn-sm join-item'>
+            <button type='submit' className='btn join-item btn-sm'>
               Submit
             </button>
           </div>

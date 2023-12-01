@@ -5,14 +5,14 @@ import { IRespond } from '../../setting';
 import { REST_PATH } from '../settings/config';
 import { Context } from '../settings/constant';
 
-type TDelete = { _id: string };
+type TArgument = { collection: string; data: { _id: string } };
 
 const useDelete = () => {
   const [, setContext] = useContext(Context);
   const [state, setState] = useState<IRespond | undefined>();
-  const fetch = async (parm: { collection: string; data: TDelete }) => {
+  const fetch = async (Argument: TArgument) => {
     setContext({ type: ActionType.LoadingProcess, state: { enabled: true } });
-    const respond = (await Fetcher.post(REST_PATH.delete, parm)) as IRespond;
+    const respond = (await Fetcher.post(REST_PATH.delete, Argument)) as IRespond;
     setState(respond);
     setContext({ type: ActionType.LoadingProcess, state: { enabled: false } });
   };

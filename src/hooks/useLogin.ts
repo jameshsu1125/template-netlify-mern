@@ -10,9 +10,9 @@ export type TArgument = { username: string; password: string };
 const useLogin = () => {
   const [, setContext] = useContext(Context);
   const [state, setState] = useState<IRespond | undefined>();
-  const fetch = async (data: TArgument) => {
+  const fetch = async (argument: TArgument) => {
     setContext({ type: ActionType.LoadingProcess, state: { enabled: true } });
-    const respond = (await Fetcher.post(REST_PATH.login, data)) as IRespond;
+    const respond = (await Fetcher.post(REST_PATH.login, argument)) as IRespond;
     setState(respond);
     setContext({ type: ActionType.LoadingProcess, state: { enabled: false } });
   };

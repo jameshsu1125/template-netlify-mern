@@ -38,7 +38,7 @@ export const SETTING = {
 };
 
 // set type for mongodb
-export type TYPE =
+export type TType =
   | {
       userID: string;
       firstName: string;
@@ -60,5 +60,6 @@ export type TYPE =
 export type IRespond = ReadyOnly<{
   res: boolean;
   msg: string;
-  data?: TYPE[];
+  collection: string;
+  data?: TType[];
 }>;

@@ -1,5 +1,5 @@
 import mongoose from 'mongoose';
-import { SETTING, TYPE } from '../../setting';
+import { SETTING, TType } from '../../setting';
 import { IType } from '../../setting/type';
 
 export default SETTING.mongodb.reduce((prev, next) => {
@@ -39,9 +39,9 @@ export default SETTING.mongodb.reduce((prev, next) => {
 
   const model =
     mongoose.models[collection] ||
-    mongoose.model<TYPE>(
+    mongoose.model<TType>(
       collection,
-      new mongoose.Schema<TYPE>(currentSchema, { versionKey: false }),
+      new mongoose.Schema<TType>(currentSchema, { versionKey: false }),
     );
   return { ...prev, [collection]: model };
 }, {});

@@ -3,6 +3,7 @@ export const REST_PATH = {
   connect: 'connect',
   select: 'select',
   insert: 'insert',
+  insertMany: 'insertMany',
   delete: 'delete',
   update: 'update',
 };

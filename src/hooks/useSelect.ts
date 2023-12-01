@@ -5,12 +5,14 @@ import { Context } from '../settings/constant';
 import { ActionType } from '@/settings/type';
 import { IRespond } from '../../setting';
 
+type TArgument = { collection: string };
+
 const useSelect = () => {
   const [, setContext] = useContext(Context);
   const [state, setState] = useState<IRespond | undefined>();
-  const fetch = async (parm: { collection: string }) => {
+  const fetch = async (argument: TArgument) => {
     setContext({ type: ActionType.LoadingProcess, state: { enabled: true } });
-    const respond = (await Fetcher.post(REST_PATH.select, parm)) as IRespond;
+    const respond = (await Fetcher.post(REST_PATH.select, argument)) as IRespond;
     setState(respond);
     setContext({ type: ActionType.LoadingProcess, state: { enabled: false } });
   };

@@ -12,7 +12,7 @@ const deleteOne = ({ collection, data }: { collection: string; data: Delete }) =
         const currentModel = models[collection] as typeof mongoose.Model;
         currentModel.deleteOne(data).then((e) => {
           if (e.acknowledged) {
-            resolve({ res: true, msg: messages.deleteSuccess });
+            resolve({ res: true, msg: messages.deleteSuccess, collection });
           } else resolve({ res: false, msg: messages.deleteError });
         });
       } catch (e: unknown) {
