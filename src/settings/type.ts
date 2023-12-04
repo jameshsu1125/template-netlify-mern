@@ -1,8 +1,5 @@
 import { Dispatch, ReactNode } from 'react';
-
-export type Prettify<T> = { [P in keyof T]: T[P] };
-export type ReadyOnly<T> = { readonly [P in keyof T]: T[P] };
-export type Extension<T, E> = T & E;
+import { Debug } from './type-unity';
 
 export enum ActionType {
   LoadingProcess = 'loadingProcess',
@@ -44,14 +41,14 @@ export interface IEnabled {
   enabled: boolean;
 }
 
-export type TLoadingProcessState = Prettify<
+export type TLoadingProcessState = Debug<
   IEnabled & {
     type: LoadingProcessType;
     body: ReactNode;
   }
 >;
 
-export type TAlertState = Prettify<
+export type TAlertState = Debug<
   IEnabled & {
     type: AlertType;
     body: ReactNode;
@@ -59,9 +56,9 @@ export type TAlertState = Prettify<
   }
 >;
 
-export type TStatusState = Prettify<IEnabled>;
+export type TStatusState = Debug<IEnabled>;
 
-export type TModalState = Prettify<
+export type TModalState = Debug<
   IEnabled & {
     title: string;
     body: ReactNode;
