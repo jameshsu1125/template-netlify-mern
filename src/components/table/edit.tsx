@@ -39,7 +39,7 @@ const Element = ({
       return (
         <input
           key={JSON.stringify(key) + index}
-          className='input input-sm input-bordered join-item'
+          className='input join-item input-bordered input-sm w-28'
           placeholder={key}
           name={key}
           type='text'
@@ -51,7 +51,7 @@ const Element = ({
       return (
         <input
           key={JSON.stringify(key) + index}
-          className='input input-sm input-bordered join-item'
+          className='input join-item input-bordered input-sm w-28'
           placeholder={key}
           name={key}
           type='number'
@@ -94,14 +94,22 @@ const InputGroup = forwardRef(({ data, type }: TEditProps, ref) => {
   }));
 
   return (
-    <div className='join join-vertical md:join-horizontal'>
-      {Object.entries(data).map((item, index) => {
-        const [key, value] = item;
-        const [currentTarget] = Object.entries(type).filter((typeItem) => typeItem[0] === key);
-        const [, currentValue] = currentTarget;
-        const { type: currentType } = currentValue;
-        return Element({ type: currentType, key: key, value, onChange, index });
-      })}
+    <div className='mockup-code'>
+      <pre>
+        <code>
+          <div className='join join-vertical w-full items-center justify-center md:join-horizontal'>
+            {Object.entries(data).map((item, index) => {
+              const [key, value] = item;
+              const [currentTarget] = Object.entries(type).filter(
+                (typeItem) => typeItem[0] === key,
+              );
+              const [, currentValue] = currentTarget;
+              const { type: currentType } = currentValue;
+              return Element({ type: currentType, key: key, value, onChange, index });
+            })}
+          </div>
+        </code>
+      </pre>
     </div>
   );
 });
@@ -148,7 +156,7 @@ const Edit = memo(({ children, type, collection, data, update }: IReactProps & T
           },
         });
       }}
-      className='btn btn-xs btn-info'
+      className='btn btn-info btn-xs'
     >
       {children}
     </button>

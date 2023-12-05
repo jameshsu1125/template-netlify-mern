@@ -32,10 +32,16 @@ const Collection = memo(() => {
 
   return (
     <CollectionContext.Provider value={value}>
-      <div className='Table'>
-        <h2 className='uppercase'>{collection}</h2>
-        <Table ref={collectionRef} type={schema} collection={collection} />
-        <InsertGroup type={schema} collection={collection} onSubmit={onSubmit} />
+      <div className='Collection p-5'>
+        <div className='mockup-code w-full'>
+          <pre className='p-5'>
+            <code>
+              <h2 className='uppercase'>{collection}</h2>
+              <Table ref={collectionRef} type={schema} collection={collection} />
+              <InsertGroup type={schema} collection={collection} onSubmit={onSubmit} />
+            </code>
+          </pre>
+        </div>
       </div>
     </CollectionContext.Provider>
   );

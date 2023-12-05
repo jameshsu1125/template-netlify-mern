@@ -20,32 +20,35 @@ const Table = forwardRef(({ type, collection }: TProps, ref) => {
 
   return (
     data && (
-      <div className='w-full my-5'>
+      <div className='my-5 w-full'>
         <div className='overflow-x-auto'>
-          <table className='table-zebra table-xs text-center table-pin-rows table-pin-cols'>
+          <table className='table-zebra table-pin-rows table-pin-cols table-xs w-full text-center'>
             <thead>
               <tr>
                 <th>index</th>
-                <th>_id</th>
-                {Object.keys(type).map((key) => {
-                  return <th key={key}>{key}</th>;
-                })}
-                <th></th>
-                <th></th>
+                {Object.keys(type)
+                  .filter((key) => key !== 'timestamp')
+                  .map((key) => {
+                    return <th key={key}>{key}</th>;
+                  })}
+                <th>del</th>
+                <th>edit</th>
               </tr>
             </thead>
             <tbody>
               {currentData.map((item, index) => {
                 return (
                   <tr key={JSON.stringify(item)}>
-                    <th>{index}</th>
-                    {Object.values(item).map((v, sn) => {
-                      return (
-                        <td key={`${JSON.stringify(v)}${sn}`}>
-                          <p>{String(v)}</p>
-                        </td>
-                      );
-                    })}
+                    <th>{index + 1}</th>
+                    {Object.entries(item)
+                      .filter(([key]) => key !== '_id' && key !== 'timestamp')
+                      .map(([, value], sn) => {
+                        return (
+                          <td key={`${JSON.stringify(value)}${sn}`}>
+                            <p>{String(value)}</p>
+                          </td>
+                        );
+                      })}
                     <td>
                       <Delete update={update} collection={collection} data={item}>
                         Delete
@@ -63,12 +66,13 @@ const Table = forwardRef(({ type, collection }: TProps, ref) => {
             <tfoot>
               <tr>
                 <th>index</th>
-                <th>_id</th>
-                {Object.keys(type).map((key) => {
-                  return <th key={key}>{key}</th>;
-                })}
-                <th></th>
-                <th></th>
+                {Object.keys(type)
+                  .filter((key) => key !== 'timestamp')
+                  .map((key) => {
+                    return <th key={key}>{key}</th>;
+                  })}
+                <th>del</th>
+                <th>edit</th>
               </tr>
             </tfoot>
           </table>

@@ -51,7 +51,7 @@ const InsertGroup = memo(({ type, collection, onSubmit }: TProps) => {
       case IType.String:
         return (
           <input
-            className='input join-item input-bordered input-sm'
+            className='input join-item input-bordered input-sm w-full md:w-28'
             placeholder={key}
             name={key}
             type='text'
@@ -60,7 +60,7 @@ const InsertGroup = memo(({ type, collection, onSubmit }: TProps) => {
       case IType.Number:
         return (
           <input
-            className='input join-item input-bordered input-sm'
+            className='input join-item input-bordered input-sm w-full md:w-28'
             placeholder={key}
             name={key}
             type='number'
@@ -68,8 +68,8 @@ const InsertGroup = memo(({ type, collection, onSubmit }: TProps) => {
         );
       case IType.Boolean:
         return (
-          <div className='form-control mx-2'>
-            <label className='label cursor-pointer space-x-2 pt-1'>
+          <div className='md:w-18 form-control mx-2'>
+            <label className='label cursor-pointer space-x-1 pt-1'>
               <span className='label-text'>{key}</span>
               <input type='checkbox' name={key} className='checkbox' />
             </label>

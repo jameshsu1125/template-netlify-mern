@@ -15,7 +15,7 @@
   },
   "dependencies": {
     "@faker-js/faker": "^8.3.1",
-    "lesca-fetcher": "^1.1.6",
+    "lesca-fetcher": "^1.1.7",
     "lesca-local-storage": "^1.1.2",
     "lesca-react-onload": "^1.0.15",
     "lesca-use-tween": "^3.0.6",
@@ -56,7 +56,7 @@
     "prettier-plugin-tailwindcss": "^0.5.7",
     "tailwind-merge": "^2.1.0",
     "tailwindcss": "^3.3.6",
-    "typescript": "^5.3.2",
+    "typescript": "^5.2.2",
     "vite": "^5.0.5",
     "vite-plugin-html": "^3.2.0"
   },
