@@ -10,7 +10,8 @@
     "preview": "vite preview",
     "rm": "rm -rf node_modules/ dist/ package-lock.json",
     "lint": "eslint . --ext ts,tsx --report-unused-disable-directives --max-warnings 0",
-    "deploy": "NODE_ENV=production netlify deploy --dir=dist --prod",
+    "deploy": "NODE_ENV=production netlify deploy --dir=dist",
+    "deploy:prod": "NODE_ENV=production netlify deploy --dir=dist --prod",
     "serve": "NODE_ENV=local netlify dev --dir=dist"
   },
   "dependencies": {

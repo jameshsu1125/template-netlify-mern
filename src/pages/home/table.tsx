@@ -1,31 +1,35 @@
-import { Prettify } from '@/settings/type';
+import { Debug } from '@/settings/type-unity';
 import { memo, useMemo } from 'react';
 import { SETTING } from '../../../setting';
 import './index.less';
+import { IType } from '../../../setting/type';
 
 type T = typeof SETTING.mongodb;
 
-const Table = memo(({ data }: Prettify<{ data: T }>) => {
+const Table = memo(({ data }: Debug<{ data: T }>) => {
   const [currentData] = data;
   const keys = Object.keys(currentData);
   const { collection } = currentData;
 
   const { schema } = currentData;
   const table = useMemo(() => {
-    return Object.entries(schema).map((each) => {
-      const [tableName, tableValue] = each;
-      const { type, required, default: def } = tableValue;
-      let requiredDefault = '';
+    return Object.entries(schema).map(
+      (each: [string, { type: IType; required: boolean; default: string }]) => {
+        const [tableName, tableValue] = each;
 
-      if (required !== undefined) {
-        requiredDefault = 'required : ' + JSON.stringify(required).split('"').join('');
-      }
+        const { type, required, default: def } = tableValue;
+        let requiredDefault = '';
 
-      if (def !== undefined) {
-        requiredDefault = 'default : ' + JSON.stringify(def).split('"').join('');
-      }
-      return [tableName, type, requiredDefault];
-    });
+        if (required !== undefined) {
+          requiredDefault = 'required : ' + JSON.stringify(required).split('"').join('');
+        }
+
+        if (def !== undefined) {
+          requiredDefault = 'default : ' + JSON.stringify(def).split('"').join('');
+        }
+        return [tableName, type, requiredDefault];
+      },
+    );
   }, [schema]);
 
   return (
@@ -33,9 +37,9 @@ const Table = memo(({ data }: Prettify<{ data: T }>) => {
       <div className='mockup-browser-toolbar'>
         <div className='input border border-base-300'>{`/ ${collection}`}</div>
       </div>
-      <div className='flex justify-center px-4 py-16 border-t bg-base-300 border-base-300'>
-        <div className='overflow-x-auto w-full'>
-          <table className='table-zebra'>
+      <div className='flex justify-center border-t border-base-300 bg-base-300 px-4 py-16'>
+        <div className='w-full overflow-x-auto'>
+          <table className='table-zebra w-full text-center'>
             <thead>
               <tr>
                 {keys
