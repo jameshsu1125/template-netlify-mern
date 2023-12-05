@@ -1,4 +1,4 @@
-import { ReadyOnly } from '@/settings/type';
+import { ReadyOnly } from '@/settings/type-unity';
 import { IType } from './type';
 
 // mongodb collection schema setting.
