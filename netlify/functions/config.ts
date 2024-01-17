@@ -10,4 +10,6 @@ export const messages = {
   deleteError: 'Data deletion failed',
   updateSuccess: 'Data updated successfully',
   updateError: 'Data update failed',
+  uploadError: 'Upload failed',
+  uploadSuccess: 'Upload successful',
 };

@@ -1,5 +1,5 @@
 import { ReadyOnly } from '@/settings/type-unity';
-import { IType } from './type';
+import { IType, TUploadRespond } from './type';
 
 // mongodb collection schema setting.
 export const SETTING = {
@@ -62,4 +62,10 @@ export type IRespond = ReadyOnly<{
   msg: string;
   collection: string;
   data?: TType[];
+}>;
+
+export type TUploadResult = ReadyOnly<{
+  res: boolean;
+  msg: string;
+  data: TUploadRespond[];
 }>;

@@ -15,6 +15,7 @@ import { BrowserRouter, Route, Routes } from 'react-router-dom';
 import { SETTING } from '../../setting';
 import Home from './home';
 import Login from './login';
+import Upload from './upload/index.tsx';
 
 Fetcher.install({
   hostUrl: import.meta.env.VITE_API_PATH || './api',
@@ -43,6 +44,7 @@ const RoutePages = memo(() => {
     <Routes>
       <Route path='/' element={<Home />} />
       <Route path='/home' element={<Home />} />
+      <Route path='/upload' element={<Upload />} />
       <Route path='*' element={ComponentLoader()} />
     </Routes>
   );

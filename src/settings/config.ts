@@ -6,4 +6,6 @@ export const REST_PATH = {
   insertMany: 'insertMany',
   delete: 'delete',
   update: 'update',
+  upload: 'upload',
+  resources: 'resources',
 };
