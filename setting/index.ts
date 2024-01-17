@@ -61,11 +61,12 @@ export type IRespond = ReadyOnly<{
   res: boolean;
   msg: string;
   collection: string;
-  data?: TType[];
+  data: TType[];
 }>;
 
 export type TUploadResult = ReadyOnly<{
   res: boolean;
   msg: string;
+  collection: string;
   data: TUploadRespond[];
 }>;

@@ -1,8 +1,8 @@
 import Button from '@/components/button';
+import useUpload from '@/hooks/useUpload';
 import CaptureProvider from 'lesca-react-capture-button';
 import { memo, useEffect } from 'react';
 import './index.less';
-import useUpload from '@/hooks/useUpload';
 import List from './list';
 
 const Upload = memo(() => {
@@ -11,7 +11,8 @@ const Upload = memo(() => {
     if (respond) console.log(respond);
   }, [respond]);
   return (
-    <div className='Upload'>
+    <div className='flex w-full flex-col p-5'>
+      <List />
       <CaptureProvider
         size={200}
         onCapture={(e) => {
@@ -21,7 +22,6 @@ const Upload = memo(() => {
       >
         <Button>Upload</Button>
       </CaptureProvider>
-      <List />
     </div>
   );
 });

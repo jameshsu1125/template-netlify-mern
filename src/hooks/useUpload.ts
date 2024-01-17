@@ -5,7 +5,7 @@ import Fetcher from 'lesca-fetcher';
 import { useContext, useState } from 'react';
 import { IRespond } from '../../setting';
 
-type T = { image: string };
+type T = { image: string; folder: string };
 
 const useUpload = () => {
   const [, setContext] = useContext(Context);
