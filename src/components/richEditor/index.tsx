@@ -1,16 +1,25 @@
 import { EditorState } from 'draft-js';
 import { stateToHTML } from 'draft-js-export-html';
-import { memo, useState } from 'react';
+import { Ref, forwardRef, useImperativeHandle, useState } from 'react';
 import { Editor } from 'react-draft-wysiwyg';
 import 'react-draft-wysiwyg/dist/react-draft-wysiwyg.css';
-import './index.less';
 
-const Edit = memo(() => {
+export interface RefObject {
+  getHTML: () => string;
+}
+
+const RichEditor = forwardRef((_, ref: Ref<RefObject>) => {
   const [editorState, setEditorState] = useState(() => EditorState.createEmpty());
   const onEditorStateChange = (e: EditorState) => {
-    console.log(stateToHTML(e.getCurrentContent()));
     setEditorState(e);
   };
+
+  useImperativeHandle(ref, () => ({
+    getHTML() {
+      return stateToHTML(editorState.getCurrentContent());
+    },
+  }));
+
   return (
     <Editor
       editorState={editorState}
@@ -21,4 +30,4 @@ const Edit = memo(() => {
     />
   );
 });
-export default Edit;
+export default RichEditor;
