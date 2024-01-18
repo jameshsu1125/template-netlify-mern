@@ -13,9 +13,10 @@ import { Suspense, lazy, memo, useCallback, useEffect, useMemo, useReducer } fro
 import ReactDOM from 'react-dom/client';
 import { BrowserRouter, Route, Routes } from 'react-router-dom';
 import { SETTING } from '../../setting';
+import Album from './album';
+import Edit from './editor';
 import Home from './home';
 import Login from './login';
-import Upload from './upload/index.tsx';
 
 Fetcher.install({
   hostUrl: import.meta.env.VITE_API_PATH || './api',
@@ -44,7 +45,8 @@ const RoutePages = memo(() => {
     <Routes>
       <Route path='/' element={<Home />} />
       <Route path='/home' element={<Home />} />
-      <Route path='/upload' element={<Upload />} />
+      <Route path='/album' element={<Album />} />
+      <Route path='/editor' element={<Edit />} />
       <Route path='*' element={ComponentLoader()} />
     </Routes>
   );

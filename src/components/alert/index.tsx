@@ -34,7 +34,7 @@ const Alert = memo(() => {
   }, [body]);
 
   return (
-    <div className='fixed bottom-1 right-1'>
+    <div className='fixed bottom-1 right-1 z-50'>
       <div className={twMerge('alert', type)}>
         {icon}
         <span>{body}</span>

@@ -93,24 +93,54 @@ router.post(`/${REST_PATH.update}`, async (req, res) => {
 
 router.post(`/${REST_PATH.upload}`, async (req, res) => {
   try {
-    cloudinary.v2.uploader.upload(req.body.image, { folder: 'user' }, (error, result) => {
-      if (error) res.status(200).json({ res: false, msg: error });
-      else res.status(200).json({ res: true, msg: messages.updateSuccess, data: result });
+    cloudinary.v2.uploader.upload(
+      req.body.image,
+      { folder: `${process.env.CLOUDINARY_BASE_FOLDER}/${req.body.folder}` },
+      (error, result) => {
+        if (error) res.status(200).json({ res: false, msg: error });
+        else res.status(200).json({ res: true, msg: messages.updateSuccess, data: result });
+      },
+    );
+  } catch (e) {
+    res.status(200).json({ res: false, msg: messages.uploadError });
+  }
+});
+
+router.post(`/${REST_PATH.search}`, async (req, res) => {
+  try {
+    cloudinary.v2.search
+      .expression(
+        `folder=${process.env.CLOUDINARY_BASE_FOLDER}${req.body.folder ? `/${req.body.folder}` : ''}`,
+      )
+      .max_results(30)
+      .execute()
+      .then((result) => {
+        res.status(200).json({ res: true, msg: messages.searchSuccess, data: result.resources });
+      });
+  } catch (e) {
+    res.status(200).json({ res: false, msg: messages.searchError });
+  }
+});
+
+router.post(`/${REST_PATH.remove}`, async (req, res) => {
+  try {
+    cloudinary.v2.uploader.destroy(req.body.public_id, (error, result) => {
+      if (error) res.status(200).json({ res: false, msg: messages.removeError });
+      else res.status(200).json({ res: true, msg: messages.removeSuccess, data: result });
     });
   } catch (e) {
     res.status(200).json({ res: false, msg: messages.uploadError });
   }
 });
 
-router.get(`/${REST_PATH.resources}`, async (_, res) => {
+router.post(`/${REST_PATH.removeMany}`, async (req, res) => {
   try {
-    cloudinary.v2.search
-      .expression('folder:user')
-      .max_results(30)
-      .execute()
-      .then((result) => {
-        res.status(200).json({ res: true, msg: messages.uploadSuccess, data: result.resources });
-      });
+    console.log(req.body.public_ids);
+
+    cloudinary.v2.api.delete_resources(req.body.public_ids, (error, result) => {
+      if (error) res.status(200).json({ res: false, msg: messages.removeError });
+      else res.status(200).json({ res: true, msg: messages.removeSuccess, data: result });
+    });
   } catch (e) {
     res.status(200).json({ res: false, msg: messages.uploadError });
   }

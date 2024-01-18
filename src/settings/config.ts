@@ -1,4 +1,5 @@
 export const REST_PATH = {
+  // mongodb
   login: 'login',
   connect: 'connect',
   select: 'select',
@@ -6,6 +7,9 @@ export const REST_PATH = {
   insertMany: 'insertMany',
   delete: 'delete',
   update: 'update',
+  // cloudinary images
   upload: 'upload',
-  resources: 'resources',
+  search: 'search',
+  remove: 'remove',
+  removeMany: 'removeMany',
 };

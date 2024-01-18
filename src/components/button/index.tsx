@@ -1,13 +1,15 @@
 import { IReactProps } from '@/settings/type';
 import { ReadyOnly } from '@/settings/type-unity';
+import { twMerge } from 'tailwind-merge';
 
 type TRegularProps = ReadyOnly<{
   onClick?: () => void;
+  className?: string;
 }>;
 
-const Button = ({ children, onClick }: IReactProps & TRegularProps) => {
+const Button = ({ children, className = '', onClick }: IReactProps & TRegularProps) => {
   return (
-    <button className='btn' onClick={onClick}>
+    <button className={twMerge('btn', className)} onClick={onClick}>
       {children}
     </button>
   );
