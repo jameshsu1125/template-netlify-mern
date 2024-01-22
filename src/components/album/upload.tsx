@@ -1,5 +1,6 @@
 import Button from '@/components/button';
 import useUpload from '@/hooks/useUpload';
+import { CAPTURE_PROPERTY } from '@/settings/config';
 import { Context } from '@/settings/constant';
 import { ActionType } from '@/settings/type';
 import CaptureProvider from 'lesca-react-capture-button';
@@ -61,8 +62,8 @@ const Upload = memo(({ reload }: { reload: Dispatch<SetStateAction<number>> }) =
       )}
       {!result.image && (
         <CaptureProvider
-          maxWidth={1000}
-          compress={0.5}
+          maxWidth={CAPTURE_PROPERTY.maxWidth}
+          compress={CAPTURE_PROPERTY.compress}
           onCapture={(e) => {
             setResult(e);
           }}

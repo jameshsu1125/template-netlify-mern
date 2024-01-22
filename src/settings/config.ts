@@ -13,3 +13,8 @@ export const REST_PATH = {
   remove: 'remove',
   removeMany: 'removeMany',
 };
+
+export const CAPTURE_PROPERTY = {
+  maxWidth: 1000,
+  compress: 0.5,
+};

@@ -1,33 +1,54 @@
-import { EditorState } from 'draft-js';
-import { stateToHTML } from 'draft-js-export-html';
-import { Ref, forwardRef, useImperativeHandle, useState } from 'react';
-import { Editor } from 'react-draft-wysiwyg';
-import 'react-draft-wysiwyg/dist/react-draft-wysiwyg.css';
+import Button from '@/components/button';
+import RichEditor, { RefObject } from '@/components/richEditor/draft';
+import { memo, useRef, useState } from 'react';
+import Album from './album';
+import './index.less';
 
-export interface RefObject {
-  getHTML: () => string;
-}
+type T = {
+  getHTML: (html: string) => void;
+  defaultHTML?: string;
+};
 
-const RichEditor = forwardRef((_, ref: Ref<RefObject>) => {
-  const [editorState, setEditorState] = useState(() => EditorState.createEmpty());
-  const onEditorStateChange = (e: EditorState) => {
-    setEditorState(e);
-  };
-
-  useImperativeHandle(ref, () => ({
-    getHTML() {
-      return stateToHTML(editorState.getCurrentContent());
-    },
-  }));
+const Editor = memo(({ getHTML, defaultHTML }: T) => {
+  const ref = useRef<RefObject>(null);
+  const [html, setHTML] = useState(defaultHTML || '');
 
   return (
-    <Editor
-      editorState={editorState}
-      toolbarClassName='toolbarClassName'
-      wrapperClassName='wrapperClassName'
-      editorClassName='editorClassName'
-      onEditorStateChange={onEditorStateChange}
-    />
+    <div className='Editor prose flex max-w-full flex-row'>
+      <div className='flex-1'>
+        <div className='bg-white p-3 text-black'>
+          <RichEditor
+            defaultHTML={defaultHTML}
+            onChange={(h) => {
+              setHTML(h);
+            }}
+            ref={ref}
+          />
+        </div>
+        <div className='w-full bg-base-300 py-2 text-center text-primary'>
+          ⇡⇡⇡⇡ HTML Editor ⇣⇣⇣⇣⇣
+        </div>
+        <textarea
+          className='h-52 w-full'
+          value={html}
+          onChange={(e) => {
+            setHTML(e.target.value);
+            ref.current?.setHTML(e.target.value);
+          }}
+        />
+        <Button
+          className='btn-secondary btn-lg btn-wide'
+          onClick={() => {
+            getHTML(ref.current?.getHTML() || '');
+          }}
+        >
+          save
+        </Button>
+      </div>
+      <div className='w-44'>
+        <Album />
+      </div>
+    </div>
   );
 });
-export default RichEditor;
+export default Editor;

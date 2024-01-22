@@ -13,7 +13,7 @@ import { Suspense, lazy, memo, useCallback, useEffect, useMemo, useReducer } fro
 import ReactDOM from 'react-dom/client';
 import { BrowserRouter, Route, Routes } from 'react-router-dom';
 import { SETTING } from '../../setting';
-import Album from './album';
+import Album from './album/index.tsx';
 import Edit from './editor';
 import Home from './home';
 import Login from './login';
@@ -80,7 +80,7 @@ const App = () => {
           {status ? (
             <Drawer>
               <Navbar />
-              <RoutePages />
+              {res?.res && <RoutePages />}
             </Drawer>
           ) : (
             <Login />

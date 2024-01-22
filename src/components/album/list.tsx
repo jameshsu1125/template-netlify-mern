@@ -1,13 +1,5 @@
-import useResource from '@/hooks/useResource';
-import {
-  Dispatch,
-  SetStateAction,
-  memo,
-  useCallback,
-  useContext,
-  useEffect,
-  useState,
-} from 'react';
+import useSearch from '@/hooks/useSearch';
+import { memo, useCallback, useContext, useEffect, useState } from 'react';
 import Table from './table';
 import { TUploadRespond } from '../../../setting/type';
 import useRemove from '@/hooks/useRemove';
@@ -16,9 +8,9 @@ import { ActionType, AlertType } from '@/settings/type';
 import useRemoveMany from '@/hooks/useRemoveMany';
 import Button from '@/components/button';
 
-const List = memo(({ reload }: { reload: Dispatch<SetStateAction<number>> }) => {
+const List = memo(({ reload }: { reload: React.Dispatch<React.SetStateAction<number>> }) => {
   const [, setContext] = useContext(Context);
-  const [respond, getResource] = useResource();
+  const [respond] = useSearch();
   const [list, setList] = useState<TUploadRespond[]>();
   const [removeRespond, removeResource] = useRemove();
   const [checkRespond, checkResource] = useRemoveMany();
@@ -62,10 +54,6 @@ const List = memo(({ reload }: { reload: Dispatch<SetStateAction<number>> }) => 
       setList(data);
     }
   }, [respond]);
-
-  useEffect(() => {
-    getResource({ folder: '' });
-  }, []);
 
   return (
     <div className='List'>

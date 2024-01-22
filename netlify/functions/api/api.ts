@@ -93,14 +93,11 @@ router.post(`/${REST_PATH.update}`, async (req, res) => {
 
 router.post(`/${REST_PATH.upload}`, async (req, res) => {
   try {
-    cloudinary.v2.uploader.upload(
-      req.body.image,
-      { folder: `${process.env.CLOUDINARY_BASE_FOLDER}/${req.body.folder}` },
-      (error, result) => {
-        if (error) res.status(200).json({ res: false, msg: error });
-        else res.status(200).json({ res: true, msg: messages.updateSuccess, data: result });
-      },
-    );
+    const folder = `${process.env.CLOUDINARY_BASE_FOLDER}${req.body.folder ? `/${req.body.folder}` : ''}`;
+    cloudinary.v2.uploader.upload(req.body.image, { folder }, (error, result) => {
+      if (error) res.status(200).json({ res: false, msg: error });
+      else res.status(200).json({ res: true, msg: messages.updateSuccess, data: result });
+    });
   } catch (e) {
     res.status(200).json({ res: false, msg: messages.uploadError });
   }
@@ -112,10 +109,12 @@ router.post(`/${REST_PATH.search}`, async (req, res) => {
       .expression(
         `folder=${process.env.CLOUDINARY_BASE_FOLDER}${req.body.folder ? `/${req.body.folder}` : ''}`,
       )
-      .max_results(30)
       .execute()
       .then((result) => {
         res.status(200).json({ res: true, msg: messages.searchSuccess, data: result.resources });
+      })
+      .catch(() => {
+        res.status(200).json({ res: false, msg: messages.searchError });
       });
   } catch (e) {
     res.status(200).json({ res: false, msg: messages.searchError });

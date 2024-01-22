@@ -1,0 +1,20 @@
+.Album {
+  .List {
+    @apply flex flex-col items-center justify-start space-y-5 p-5;
+
+    a {
+      @apply cursor-pointer;
+      &::after {
+        content: '';
+        @apply absolute left-0 top-0 flex h-full w-full items-center justify-center bg-black opacity-0;
+      }
+
+      &:hover {
+        &::after {
+          content: 'copy';
+          @apply opacity-70;
+        }
+      }
+    }
+  }
+}

@@ -1,7 +1,6 @@
-import { memo } from 'react';
 import copy from 'copy-text-to-clipboard';
+import { memo } from 'react';
 import { TUploadRespond } from '../../../setting/type';
-import './index.less';
 
 type T = {
   data: TUploadRespond[];

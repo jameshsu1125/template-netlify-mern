@@ -62,9 +62,9 @@ export type TModalState = Debug<
   IEnabled & {
     title: string;
     body: ReactNode;
-    label: string;
+    label: string[] | string;
     storage: any;
-    onClose: () => void;
+    onClose: (label: string) => void;
   }
 >;
 
