@@ -1,8 +1,9 @@
 import Button from '@/components/button';
 import RichEditor, { RefObject } from '@/components/richEditor/draft';
-import { memo, useRef, useState } from 'react';
+import { memo, useEffect, useRef, useState } from 'react';
 import Album from './album';
 import './index.less';
+import { useDebounce } from 'usehooks-ts';
 
 type T = {
   getHTML: (html: string) => void;
@@ -12,6 +13,11 @@ type T = {
 const Editor = memo(({ getHTML, defaultHTML }: T) => {
   const ref = useRef<RefObject>(null);
   const [html, setHTML] = useState(defaultHTML || '');
+  const debouncedValue = useDebounce(html, 2000);
+
+  useEffect(() => {
+    ref.current?.setHTML(html);
+  }, [debouncedValue]);
 
   return (
     <div className='Editor prose flex max-w-full flex-row'>
@@ -33,7 +39,6 @@ const Editor = memo(({ getHTML, defaultHTML }: T) => {
           value={html}
           onChange={(e) => {
             setHTML(e.target.value);
-            ref.current?.setHTML(e.target.value);
           }}
         />
         <Button
