@@ -3,6 +3,7 @@ import Confirm from '../confirm';
 import { AlbumContext, AlbumState } from './config';
 import List from './list';
 import Upload from './upload';
+import Tab from '../tab';
 
 const Album = memo(() => {
   const value = useState(AlbumState);
@@ -25,30 +26,14 @@ const Album = memo(() => {
       <div className='w-full overflow-scroll' style={{ height }}>
         <div className='relative flex w-full flex-col'>
           <div className='w-full p-5'>
-            <div role='tablist' className='tabs tabs-lifted'>
-              <input
-                id='Manage'
-                type='radio'
-                name='tab'
-                role='tab'
-                className='tab'
-                aria-label='Manage'
-                defaultChecked
-              />
-              <div
-                role='tabpanel'
-                className='tab-content rounded-box border-base-300 bg-base-100 p-6'
-              >
+            <Tab>
+              <Tab.Panel label='Manage'>
                 <List key={key} reload={setKey} />
-              </div>
-              <input type='radio' name='tab' role='tab' className='tab' aria-label='Upload' />
-              <div
-                role='tabpanel'
-                className='tab-content rounded-box border-base-300 bg-base-100 p-6'
-              >
+              </Tab.Panel>
+              <Tab.Panel label='Upload'>
                 <Upload reload={setKey} />
-              </div>
-            </div>
+              </Tab.Panel>
+            </Tab>
           </div>
         </div>
       </div>
