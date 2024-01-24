@@ -8,9 +8,7 @@ const Album = memo(() => {
   const value = useState(AlbumState);
   const [state, setState] = value;
   const [key, setKey] = useState(0);
-
   const height = window.innerHeight - (state.enabled ? 66 + 64 : 64) + 'px';
-
   return (
     <AlbumContext.Provider value={value}>
       {state.enabled && (

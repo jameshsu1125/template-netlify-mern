@@ -30,7 +30,6 @@ const List = memo(({ reload }: T) => {
         state: { enabled: true, type: currentType, body: removeRespond.msg },
       });
       reload((prev) => prev + 1);
-      setState((S) => ({ ...S, submit: false, public_id: '' }));
     }
     if (checkRespond) {
       const currentType = checkRespond.res ? AlertType.Success : AlertType.Error;
@@ -40,10 +39,14 @@ const List = memo(({ reload }: T) => {
       });
       reload((prev) => prev + 1);
     }
+    setState((S) => ({ ...S, submit: false, public_id: [] }));
   }, [removeRespond, checkRespond]);
 
   useEffect(() => {
-    if (state.submit) removeResource({ public_id: state.public_id });
+    if (state.submit) {
+      if (state.public_id.length === 1) removeResource({ public_id: state.public_id[0] });
+      else checkResource({ public_ids: state.public_id });
+    }
   }, [state]);
 
   const check = useCallback((check: boolean, public_id: string) => {
@@ -52,7 +55,12 @@ const List = memo(({ reload }: T) => {
   }, []);
 
   const removeSelect = useCallback(() => {
-    checkResource({ public_ids: checkList });
+    setState((S) => ({
+      ...S,
+      enabled: true,
+      body: 'Are you sure to remove selected?',
+      public_id: checkList,
+    }));
   }, [checkList]);
 
   useEffect(() => {

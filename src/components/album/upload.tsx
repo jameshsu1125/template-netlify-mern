@@ -55,8 +55,10 @@ const Upload = memo(({ reload }: { reload: Dispatch<SetStateAction<number>> }) =
           data={result}
           onComplete={() => {
             setResult({ image: '', width: 0, height: 0 });
-            document.querySelector<HTMLInputElement>('#Manage')?.click();
-            reload((prev) => prev + 1);
+            setTimeout(() => {
+              document.querySelector<HTMLInputElement>('#Manage')?.click();
+              reload((prev) => prev + 1);
+            }, 500);
           }}
         />
       )}

@@ -12,6 +12,8 @@ const Photos = memo(({ data }: T) => {
   const [, setContext] = useContext(Context);
   const [, copy] = useCopyToClipboard();
 
+  const height = window.innerHeight - 210 + 'px';
+
   const alertMessage = useCallback((status: boolean) => {
     if (status) {
       setContext({
@@ -27,7 +29,7 @@ const Photos = memo(({ data }: T) => {
   }, []);
 
   return (
-    <>
+    <div className='w-full space-y-1 overflow-y-scroll' style={{ height }}>
       {data.map((data) => {
         return (
           <div key={JSON.stringify(data)} className='relative w-full pb-[100%]'>
@@ -46,7 +48,7 @@ const Photos = memo(({ data }: T) => {
           </div>
         );
       })}
-    </>
+    </div>
   );
 });
 export default Photos;
