@@ -1,15 +1,21 @@
-import useSearch from '@/hooks/useSearch';
-import { memo, useCallback, useContext, useEffect, useState } from 'react';
-import Table from './table';
-import { TUploadRespond } from '../../../setting/type';
+import Button from '@/components/button';
 import useRemove from '@/hooks/useRemove';
+import useRemoveMany from '@/hooks/useRemoveMany';
+import useSearch from '@/hooks/useSearch';
 import { Context } from '@/settings/constant';
 import { ActionType, AlertType } from '@/settings/type';
-import useRemoveMany from '@/hooks/useRemoveMany';
-import Button from '@/components/button';
+import { memo, useCallback, useContext, useEffect, useState } from 'react';
+import { TUploadRespond } from '../../../setting/type';
+import { AlbumContext } from './config';
+import Table from './table';
 
-const List = memo(({ reload }: { reload: React.Dispatch<React.SetStateAction<number>> }) => {
+type T = {
+  reload: React.Dispatch<React.SetStateAction<number>>;
+};
+
+const List = memo(({ reload }: T) => {
   const [, setContext] = useContext(Context);
+  const [state, setState] = useContext(AlbumContext);
   const [respond] = useSearch();
   const [list, setList] = useState<TUploadRespond[]>();
   const [removeRespond, removeResource] = useRemove();
@@ -24,6 +30,7 @@ const List = memo(({ reload }: { reload: React.Dispatch<React.SetStateAction<num
         state: { enabled: true, type: currentType, body: removeRespond.msg },
       });
       reload((prev) => prev + 1);
+      setState((S) => ({ ...S, submit: false, public_id: '' }));
     }
     if (checkRespond) {
       const currentType = checkRespond.res ? AlertType.Success : AlertType.Error;
@@ -35,9 +42,9 @@ const List = memo(({ reload }: { reload: React.Dispatch<React.SetStateAction<num
     }
   }, [removeRespond, checkRespond]);
 
-  const remove = useCallback((public_id: string) => {
-    removeResource({ public_id });
-  }, []);
+  useEffect(() => {
+    if (state.submit) removeResource({ public_id: state.public_id });
+  }, [state]);
 
   const check = useCallback((check: boolean, public_id: string) => {
     if (check) setCheckList((S) => [...S, public_id]);
@@ -57,7 +64,7 @@ const List = memo(({ reload }: { reload: React.Dispatch<React.SetStateAction<num
 
   return (
     <div className='List'>
-      {list && <Table data={list} remove={remove} check={check} />}
+      {list && <Table data={list} check={check} />}
       {checkList.length !== 0 && <Button onClick={removeSelect}>remove selected</Button>}
     </div>
   );

@@ -1,14 +1,35 @@
-import copy from 'copy-text-to-clipboard';
-import { memo } from 'react';
+import { memo, useCallback, useContext } from 'react';
+import { useCopyToClipboard } from 'usehooks-ts';
 import { TUploadRespond } from '../../../setting/type';
+import { Context } from '@/settings/constant';
+import { ActionType, AlertType } from '@/settings/type';
+import { AlbumContext } from './config';
 
 type T = {
   data: TUploadRespond[];
-  remove: (public_id: string) => void;
   check: (check: boolean, public_id: string) => void;
 };
 
-const Table = memo(({ data, remove, check }: T) => {
+const Table = memo(({ data, check }: T) => {
+  const [, setContext] = useContext(Context);
+  const [, setState] = useContext(AlbumContext);
+
+  const [, copy] = useCopyToClipboard();
+
+  const alertMessage = useCallback((status: boolean) => {
+    if (status) {
+      setContext({
+        type: ActionType.Alert,
+        state: { enabled: true, body: '網址已經複製到剪貼簿', type: AlertType.Success },
+      });
+    } else {
+      setContext({
+        type: ActionType.Alert,
+        state: { enabled: true, body: '剪貼簿功能不支援', type: AlertType.Error },
+      });
+    }
+  }, []);
+
   return (
     <div className='overflow-x-auto'>
       <table className='table'>
@@ -58,14 +79,9 @@ const Table = memo(({ data, remove, check }: T) => {
                     </button>
                     <button
                       onClick={() => {
-                        if (navigator.clipboard === undefined) {
-                          if (copy(item.url)) alert('網址已經複製到剪貼簿');
-                        } else {
-                          navigator.clipboard?.writeText?.(item.url).then(
-                            () => alert('網址已經複製到剪貼簿'),
-                            () => alert('剪貼簿功能不支援'),
-                          );
-                        }
+                        copy(item.url)
+                          .then(() => alertMessage(true))
+                          .catch(() => alertMessage(false));
                       }}
                       className='btn join-item btn-xs'
                     >
@@ -73,7 +89,13 @@ const Table = memo(({ data, remove, check }: T) => {
                     </button>
                     <button
                       onClick={() => {
-                        remove(item.public_id);
+                        setState((S) => ({
+                          ...S,
+                          enabled: true,
+                          body: `Delete "${item.folder}/${item.filename}.${item.format}" from cloudinary?`,
+                          public_id: item.public_id,
+                          submit: false,
+                        }));
                       }}
                       className='btn join-item btn-xs'
                     >
@@ -85,7 +107,6 @@ const Table = memo(({ data, remove, check }: T) => {
             );
           })}
         </tbody>
-        {/* foot */}
         <tfoot>
           <tr>
             <th></th>
