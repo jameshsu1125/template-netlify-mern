@@ -74,12 +74,15 @@ const Table = memo(({ data, check }: T) => {
                 </td>
                 <th>
                   <div className='join'>
-                    <button onClick={() => window.open(item.url)} className='btn join-item btn-xs'>
+                    <button
+                      onClick={() => window.open(item.secure_url)}
+                      className='btn join-item btn-xs'
+                    >
                       open
                     </button>
                     <button
                       onClick={() => {
-                        copy(item.url)
+                        copy(item.secure_url)
                           .then(() => alertMessage(true))
                           .catch(() => alertMessage(false));
                       }}
@@ -93,7 +96,7 @@ const Table = memo(({ data, check }: T) => {
                           ...S,
                           enabled: true,
                           body: `Delete "${item.folder}/${item.filename}.${item.format}" from cloudinary?`,
-                          public_id: item.public_id,
+                          public_id: [item.public_id],
                           submit: false,
                         }));
                       }}

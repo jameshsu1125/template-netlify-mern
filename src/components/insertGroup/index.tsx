@@ -81,7 +81,7 @@ const InsertGroup = memo(({ type, collection, onSubmit }: TProps) => {
   return (
     <div className='flex w-full justify-center'>
       <form onSubmit={submit}>
-        <div className='join join-vertical md:join-horizontal'>
+        <div className='join join-horizontal'>
           {Object.entries(type).map((item) => {
             const [key, value] = item;
             const t = String(value?.type) as IType;

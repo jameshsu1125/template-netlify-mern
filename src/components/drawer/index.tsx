@@ -1,7 +1,12 @@
 import { IReactProps } from '@/settings/type';
 import { memo } from 'react';
+import { AiFillDatabase } from 'react-icons/ai';
+import { BsTools } from 'react-icons/bs';
 import { Link } from 'react-router-dom';
 import { SETTING } from '../../../setting';
+import { BiSolidPhotoAlbum } from 'react-icons/bi';
+import { IoDocumentTextSharp } from 'react-icons/io5';
+import { RiDatabaseLine } from 'react-icons/ri';
 
 const Drawer = memo(({ children }: IReactProps) => (
   <div className='drawer lg:drawer-open'>
@@ -12,16 +17,29 @@ const Drawer = memo(({ children }: IReactProps) => (
     <div className='drawer-side'>
       <label htmlFor='my-drawer-2' aria-label='close sidebar' className='drawer-overlay'></label>
       <ul className='menu min-h-full w-80 bg-base-200 p-4 text-base-content'>
-        <div className='w-full py-5'>TOOLS</div>
+        <div className='flex w-full flex-row items-center justify-start py-5'>
+          <BsTools className='mr-1' />
+          TOOLS
+        </div>
         <li>
-          <Link to='/album'>Album</Link>
-          <Link to='/editor'>Editor</Link>
+          <Link to='/album'>
+            <BiSolidPhotoAlbum />
+            Album
+          </Link>
+          <Link to='/editor'>
+            <IoDocumentTextSharp />
+            Editor
+          </Link>
         </li>
-        <div className='w-full py-5'>COLLECTION LIST</div>
+        <div className='flex w-full flex-row items-center justify-start py-5'>
+          <AiFillDatabase className='mr-1' />
+          COLLECTION LIST
+        </div>
         <li>
           {SETTING.mongodb.map((collection) => {
             return (
               <Link key={collection.collection} to={`/${collection.collection}`}>
+                <RiDatabaseLine />
                 {collection.collection}
               </Link>
             );
