@@ -6,6 +6,7 @@ import { ActionType } from '@/settings/type';
 import CaptureProvider from 'lesca-react-capture-button';
 import { TResult } from 'lesca-react-capture-button/lib/type';
 import { Dispatch, SetStateAction, memo, useContext, useEffect, useRef, useState } from 'react';
+import { FaImage } from 'react-icons/fa6';
 
 const Information = memo(({ data, onComplete }: { data: TResult; onComplete?: () => void }) => {
   const [, setContext] = useContext(Context);
@@ -70,7 +71,10 @@ const Upload = memo(({ reload }: { reload: Dispatch<SetStateAction<number>> }) =
             setResult(e);
           }}
         >
-          <Button>Capture</Button>
+          <Button>
+            <FaImage />
+            Capture
+          </Button>
         </CaptureProvider>
       )}
     </div>

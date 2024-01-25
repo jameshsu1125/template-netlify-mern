@@ -45,7 +45,7 @@ const Table = forwardRef(({ type, collection }: TProps, ref) => {
                       .map(([, value], sn) => {
                         return (
                           <td key={`${JSON.stringify(value)}${sn}`}>
-                            <p>{String(value)}</p>
+                            <p className='py-3'>{String(value)}</p>
                           </td>
                         );
                       })}

@@ -7,6 +7,7 @@ import { SETTING } from '../../../setting';
 import { BiSolidPhotoAlbum } from 'react-icons/bi';
 import { IoDocumentTextSharp } from 'react-icons/io5';
 import { RiDatabaseLine } from 'react-icons/ri';
+import { FaPowerOff } from 'react-icons/fa';
 
 const Drawer = memo(({ children }: IReactProps) => (
   <div className='drawer lg:drawer-open'>
@@ -16,7 +17,7 @@ const Drawer = memo(({ children }: IReactProps) => (
     </div>
     <div className='drawer-side'>
       <label htmlFor='my-drawer-2' aria-label='close sidebar' className='drawer-overlay'></label>
-      <ul className='menu min-h-full w-80 bg-base-200 p-4 text-base-content'>
+      <ul className='menu relative min-h-full w-80 bg-base-200 p-4 text-base-content'>
         <div className='flex w-full flex-row items-center justify-start py-5'>
           <BsTools className='mr-1' />
           TOOLS
@@ -45,6 +46,23 @@ const Drawer = memo(({ children }: IReactProps) => (
             );
           })}
         </li>
+        <div className='absolute bottom-0 left-0 flex w-full flex-row items-center justify-start py-5'>
+          <ul className='menu relative min-h-full w-80 bg-base-200 p-4 text-base-content'>
+            <li>
+              <a
+                onClick={() => {
+                  localStorage.clear();
+                  requestAnimationFrame(() => {
+                    window.location.reload();
+                  });
+                }}
+              >
+                <FaPowerOff />
+                Logout
+              </a>
+            </li>
+          </ul>
+        </div>
       </ul>
     </div>
   </div>
