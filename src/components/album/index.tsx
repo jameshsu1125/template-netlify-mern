@@ -27,7 +27,7 @@ const Album = memo(() => {
         <div className='relative flex w-full flex-col'>
           <div className='w-full p-5'>
             <Tab>
-              <Tab.Panel label='Manage'>
+              <Tab.Panel id='Manage' label='Manage'>
                 <List key={key} reload={setKey} />
               </Tab.Panel>
               <Tab.Panel label='Upload'>

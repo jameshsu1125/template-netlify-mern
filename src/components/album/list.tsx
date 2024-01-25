@@ -8,6 +8,7 @@ import { memo, useCallback, useContext, useEffect, useState } from 'react';
 import { TUploadRespond } from '../../../setting/type';
 import { AlbumContext } from './config';
 import Table from './table';
+import { MdAutoDelete } from 'react-icons/md';
 
 type T = {
   reload: React.Dispatch<React.SetStateAction<number>>;
@@ -73,7 +74,12 @@ const List = memo(({ reload }: T) => {
   return (
     <div className='List'>
       {list && <Table data={list} check={check} />}
-      {checkList.length !== 0 && <Button onClick={removeSelect}>remove selected</Button>}
+      {checkList.length !== 0 && (
+        <Button onClick={removeSelect} className='btn-block uppercase'>
+          <MdAutoDelete />
+          remove selected
+        </Button>
+      )}
     </div>
   );
 });

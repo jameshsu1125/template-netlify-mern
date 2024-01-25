@@ -26,6 +26,7 @@ const Editor = memo(({ onSubmit, defaultHTML }: T) => {
       <div className='flex-1'>
         <Tab>
           <Tab.Panel label='Rich Editor'>
+            <div className='w-full bg-base-300 py-2 text-center text-primary'>Rich Editor</div>
             <div className='bg-white text-black'>
               <RichEditor
                 defaultHTML={defaultHTML}
@@ -47,9 +48,9 @@ const Editor = memo(({ onSubmit, defaultHTML }: T) => {
             />
           </Tab.Panel>
         </Tab>
-        <div className='flex w-full justify-center pt-5'>
+        <div className='flex w-full justify-center px-5 pt-10'>
           <Button
-            className='btn-secondary btn-lg btn-wide'
+            className='btn-lg btn-block uppercase'
             onClick={() => {
               onSubmit(ref.current?.getHTML() || '');
             }}
