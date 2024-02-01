@@ -62,7 +62,7 @@ const Table = memo(({ data, check }: T) => {
                   <div className='flex items-center gap-3'>
                     <div className='avatar'>
                       <div className='mask mask-squircle h-20 w-20'>
-                        <img src={item.url} alt='Avatar Tailwind CSS Component' />
+                        <img src={item.secure_url} alt='Avatar Tailwind CSS Component' />
                       </div>
                     </div>
                     <div>
