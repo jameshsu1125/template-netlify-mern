@@ -2,10 +2,10 @@ import Button from '@/components/button';
 import RichEditor, { RefObject } from '@/components/richEditor/draft';
 import { memo, useEffect, useRef, useState } from 'react';
 import { IoIosSave } from 'react-icons/io';
-import { useDebounce } from 'usehooks-ts';
 import Tab from '../tab';
 import Album from './album';
 import './index.less';
+import { useDebounce } from '@uidotdev/usehooks';
 
 type T = {
   onSubmit: (html: string) => void;

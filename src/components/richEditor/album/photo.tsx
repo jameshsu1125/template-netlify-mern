@@ -1,8 +1,8 @@
 import { Context } from '@/settings/constant';
 import { ActionType, AlertType } from '@/settings/type';
-import { memo, useCallback, useContext } from 'react';
-import { useCopyToClipboard } from 'usehooks-ts';
+import { memo, useCallback, useContext, useEffect } from 'react';
 import { TUploadRespond } from '../../../../setting/type';
+import { useCopyToClipboard } from '@uidotdev/usehooks';
 
 type T = {
   data: TUploadRespond[];
@@ -10,8 +10,7 @@ type T = {
 
 const Photos = memo(({ data }: T) => {
   const [, setContext] = useContext(Context);
-  const [, copy] = useCopyToClipboard();
-
+  const [copiedText, copy] = useCopyToClipboard();
   const height = window.innerHeight - 210 + 'px';
 
   const alertMessage = useCallback((status: boolean) => {
@@ -28,6 +27,10 @@ const Photos = memo(({ data }: T) => {
     }
   }, []);
 
+  useEffect(() => {
+    if (copiedText) alertMessage(true);
+  }, [copiedText]);
+
   return (
     <div className='w-full space-y-1 overflow-y-scroll' style={{ height }}>
       {data.map((data) => {
@@ -37,9 +40,7 @@ const Photos = memo(({ data }: T) => {
               <a
                 className='prose'
                 onClick={() => {
-                  copy(data.secure_url)
-                    .then(() => alertMessage(true))
-                    .catch(() => alertMessage(false));
+                  copy(data.secure_url);
                 }}
               >
                 <img className='h-full w-full object-cover' src={data.secure_url} alt='' />

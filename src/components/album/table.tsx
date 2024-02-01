@@ -1,9 +1,9 @@
-import { memo, useCallback, useContext } from 'react';
-import { useCopyToClipboard } from 'usehooks-ts';
+import { memo, useCallback, useContext, useEffect } from 'react';
 import { TUploadRespond } from '../../../setting/type';
 import { Context } from '@/settings/constant';
 import { ActionType, AlertType } from '@/settings/type';
 import { AlbumContext } from './config';
+import { useCopyToClipboard } from '@uidotdev/usehooks';
 
 type T = {
   data: TUploadRespond[];
@@ -13,8 +13,7 @@ type T = {
 const Table = memo(({ data, check }: T) => {
   const [, setContext] = useContext(Context);
   const [, setState] = useContext(AlbumContext);
-
-  const [, copy] = useCopyToClipboard();
+  const [copiedText, copy] = useCopyToClipboard();
 
   const alertMessage = useCallback((status: boolean) => {
     if (status) {
@@ -29,6 +28,10 @@ const Table = memo(({ data, check }: T) => {
       });
     }
   }, []);
+
+  useEffect(() => {
+    if (copiedText) alertMessage(true);
+  }, [copiedText]);
 
   return (
     <div className='overflow-x-auto'>
@@ -82,9 +85,7 @@ const Table = memo(({ data, check }: T) => {
                     </button>
                     <button
                       onClick={() => {
-                        copy(item.secure_url)
-                          .then(() => alertMessage(true))
-                          .catch(() => alertMessage(false));
+                        copy(item.secure_url);
                       }}
                       className='btn join-item btn-xs'
                     >
