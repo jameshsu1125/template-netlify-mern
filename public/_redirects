@@ -1,2 +1,3 @@
 /api/*  /.netlify/functions/api/:splat 200
 /admin  /index.html  200
+/album  /index.html  200 

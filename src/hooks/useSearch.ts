@@ -15,8 +15,12 @@ const useSearch = () => {
 
   const fetch = async (parm: T) => {
     setContext({ type: ActionType.LoadingProcess, state: { enabled: true } });
-    const respond = (await Fetcher.post(REST_PATH.search, parm)) as TUploadResult;
-    setState(respond);
+    try {
+      const respond = (await Fetcher.post(REST_PATH.search, parm)) as TUploadResult;
+      setState(respond);
+    } catch (e) {
+      alert(e);
+    }
     setContext({ type: ActionType.LoadingProcess, state: { enabled: false } });
   };
 

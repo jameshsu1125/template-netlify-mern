@@ -134,8 +134,6 @@ router.post(`/${REST_PATH.remove}`, async (req, res) => {
 
 router.post(`/${REST_PATH.removeMany}`, async (req, res) => {
   try {
-    console.log(req.body.public_ids);
-
     cloudinary.v2.api.delete_resources(req.body.public_ids, (error, result) => {
       if (error) res.status(200).json({ res: false, msg: messages.removeError });
       else res.status(200).json({ res: true, msg: messages.removeSuccess, data: result });
