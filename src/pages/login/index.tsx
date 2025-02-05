@@ -4,11 +4,14 @@ import { Context } from '@/settings/constant';
 import { ActionType } from '@/settings/type';
 import Storage from 'lesca-local-storage';
 import { FormEvent, memo, useCallback, useContext, useEffect } from 'react';
-import coverImage from './img/cover.png';
+import coverImage from './img/OT-integrations-logo-auth0.png';
+import { useAuth0 } from '@auth0/auth0-react';
 
 const Login = memo(() => {
   const [, setContext] = useContext(Context);
   const [respond, fetchLogin] = useLogin();
+
+  const { loginWithRedirect } = useAuth0();
 
   const onSubmit = useCallback((event: FormEvent) => {
     event.preventDefault();
@@ -27,35 +30,21 @@ const Login = memo(() => {
 
   return (
     <div className='flex h-full w-full items-center justify-center'>
-      <div className='card max-w-2xl bg-base-100 shadow-xl lg:card-side'>
+      <div className='card w-96 bg-base-300 shadow-xl'>
         <figure>
-          <img src={coverImage} alt='Album' />
+          <img src={coverImage} alt='logo' />
         </figure>
         <div className='card-body'>
-          <h2 className='card-title'>Welcome to MMORPG dashboard.</h2>
-          <p>Please Login to continue...</p>
-          <form onSubmit={onSubmit}>
-            <div className='join join-vertical my-5'>
-              <input
-                className='input join-item border-secondary'
-                placeholder='username'
-                name='username'
-                type='text'
-              />
-              <input
-                className='input  join-item border-primary'
-                placeholder='password'
-                name='password'
-                type='password'
-              />
-            </div>
-            {respond?.res === false && <div className='text-error'>{respond.msg}</div>}
-            <div className='card-actions justify-end'>
-              <button type='submit' className='btn btn-primary'>
-                Login
-              </button>
-            </div>
-          </form>
+          <h2 className='card-title'>Login Auth0 to continue</h2>
+          <p>
+            The Auth0 identity platform allows you to customize login services to fit your business,
+            your technology, and your customer base.
+          </p>
+          <div className='card-actions justify-end'>
+            <button className='btn btn-primary' onClick={() => loginWithRedirect()}>
+              Login
+            </button>
+          </div>
         </div>
       </div>
     </div>

@@ -15,6 +15,7 @@
     "serve": "NODE_ENV=local netlify dev --dir=dist"
   },
   "dependencies": {
+    "@auth0/auth0-react": "^2.2.4",
     "@faker-js/faker": "^9.3.0",
     "@uidotdev/usehooks": "^2.4.1",
     "body-parser": "^1.20.3",
