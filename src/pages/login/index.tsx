@@ -1,32 +1,9 @@
-import useLogin, { TArgument } from '@/hooks/useLogin';
-import { SETTING } from '../../../setting';
-import { Context } from '@/settings/constant';
-import { ActionType } from '@/settings/type';
-import Storage from 'lesca-local-storage';
-import { FormEvent, memo, useCallback, useContext, useEffect } from 'react';
-import coverImage from './img/OT-integrations-logo-auth0.png';
 import { useAuth0 } from '@auth0/auth0-react';
+import { memo } from 'react';
+import coverImage from './img/OT-integrations-logo-auth0.png';
 
 const Login = memo(() => {
-  const [, setContext] = useContext(Context);
-  const [respond, fetchLogin] = useLogin();
-
   const { loginWithRedirect } = useAuth0();
-
-  const onSubmit = useCallback((event: FormEvent) => {
-    event.preventDefault();
-    const data = Object.fromEntries([
-      ...new FormData(event.target as HTMLFormElement),
-    ]) as TArgument;
-    fetchLogin(data);
-  }, []);
-
-  useEffect(() => {
-    if (respond?.res) {
-      Storage.set(SETTING.dashboard.session.name, respond);
-      setContext({ type: ActionType.Status, state: { enabled: true } });
-    }
-  }, [respond]);
 
   return (
     <div className='flex h-full w-full items-center justify-center'>

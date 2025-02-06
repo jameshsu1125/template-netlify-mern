@@ -1,0 +1,24 @@
+.User {
+  @apply flex h-full w-full flex-row items-start justify-start;
+
+  & > div:nth-child(1) {
+    @apply flex h-full w-12 flex-col items-center justify-between bg-base-100 px-2 py-4;
+
+    .photo {
+      padding-bottom: 100%;
+      @apply relative w-full;
+
+      & > div {
+        @apply absolute bottom-0 left-0 right-0 top-0 flex items-end justify-center overflow-hidden rounded-full bg-base-300 bg-cover text-xs;
+      }
+    }
+
+    .tools {
+      @apply flex w-full flex-col items-center justify-center;
+    }
+  }
+
+  & > div:nth-child(2) {
+    @apply h-full flex-1;
+  }
+}

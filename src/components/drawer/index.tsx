@@ -1,17 +1,14 @@
 import { IReactProps } from '@/settings/type';
 import { memo } from 'react';
 import { AiFillDatabase } from 'react-icons/ai';
-import { BsTools } from 'react-icons/bs';
-import { Link } from 'react-router-dom';
-import { SETTING } from '../../../setting';
 import { BiSolidPhotoAlbum } from 'react-icons/bi';
+import { BsTools } from 'react-icons/bs';
 import { IoDocumentTextSharp } from 'react-icons/io5';
 import { RiDatabaseLine } from 'react-icons/ri';
-import { FaPowerOff } from 'react-icons/fa';
-import { useAuth0 } from '@auth0/auth0-react';
+import { Link } from 'react-router-dom';
+import { SETTING } from '../../../setting';
 
 const Drawer = memo(({ children }: IReactProps) => {
-  const { logout } = useAuth0();
   return (
     <div className='drawer lg:drawer-open'>
       <input id='my-drawer-2' type='checkbox' className='drawer-toggle' />
@@ -52,14 +49,14 @@ const Drawer = memo(({ children }: IReactProps) => {
           <div className='absolute bottom-0 left-0 flex w-full flex-row items-center justify-start py-5'>
             <ul className='menu relative min-h-full w-80 bg-base-200 p-4 text-base-content'>
               <li>
-                <a
+                {/* <a
                   onClick={() => {
                     logout();
                   }}
                 >
                   <FaPowerOff />
                   Logout
-                </a>
+                </a> */}
               </li>
             </ul>
           </div>
