@@ -21,19 +21,26 @@ const Add = memo(({ update }: { update: React.Dispatch<React.SetStateAction<numb
   }, [respond]);
 
   return (
-    <form className='join join-vertical h-auto md:join-horizontal' onSubmit={onSubmit}>
+    <form
+      className='join join-vertical h-auto w-full md:join-horizontal md:w-auto'
+      onSubmit={onSubmit}
+    >
       <div>
         <div>
           <input
             name='userName'
-            className='input join-item input-bordered'
+            className='input join-item input-bordered w-full md:w-auto'
             placeholder='user name'
           />
         </div>
       </div>
       <div>
         <div>
-          <input name='email' className='input join-item input-bordered' placeholder='email' />
+          <input
+            name='email'
+            className='input join-item input-bordered w-full md:w-auto'
+            placeholder='email'
+          />
         </div>
       </div>
       <select name='type' className='join-item select select-bordered' defaultValue={'type'}>
@@ -42,8 +49,8 @@ const Add = memo(({ update }: { update: React.Dispatch<React.SetStateAction<numb
         <option>inHouse</option>
         <option>user</option>
       </select>
-      <div className='indicator'>
-        <button type='submit' className='btn join-item'>
+      <div className='indicator w-full md:w-auto'>
+        <button type='submit' className='btn join-item w-full md:w-auto'>
           add user
         </button>
       </div>
