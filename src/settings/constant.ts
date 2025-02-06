@@ -10,6 +10,8 @@ import {
   TLoadingProcessState,
   TModalState,
   TStatusState,
+  TUserState,
+  UserType,
 } from './type';
 
 export const LoadingProcessState: TLoadingProcessState = {
@@ -38,11 +40,19 @@ export const ModalState: TModalState = {
   onClose: () => {},
 };
 
+export const UserState: TUserState = {
+  type: UserType.guest,
+  name: 'guest',
+  email: 'demo@host.com',
+  picture: 'https://www.gravatar.com/avatar/',
+};
+
 export const InitialState: IState = {
   [ActionType.LoadingProcess]: LoadingProcessState,
   [ActionType.Status]: StatusState,
   [ActionType.Alert]: AlertState,
   [ActionType.modal]: ModalState,
+  [ActionType.user]: UserState,
 };
 
 export const Context = createContext<TContext>([InitialState, () => {}]);

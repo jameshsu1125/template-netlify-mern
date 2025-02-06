@@ -6,6 +6,7 @@ export enum ActionType {
   Status = 'status',
   Alert = 'alert',
   modal = 'modal',
+  user = 'user',
 }
 
 export enum LoadingProcessType {
@@ -35,6 +36,13 @@ export enum AlertType {
   Success = 'alert-success',
   Warning = 'alert-warning',
   Error = 'alert-error',
+}
+
+export enum UserType {
+  Admin = 'admin',
+  inHouse = 'inHouse',
+  user = 'user',
+  guest = 'guest',
 }
 
 export interface IEnabled {
@@ -68,11 +76,19 @@ export type TModalState = Debug<
   }
 >;
 
+export type TUserState = {
+  type: UserType;
+  email: string;
+  name: string;
+  picture: string;
+};
+
 export interface IState {
   loadingProcess: TLoadingProcessState;
   status: TStatusState;
   alert: TAlertState;
   modal: TModalState;
+  user: TUserState;
 }
 
 export interface IAction {
@@ -81,7 +97,8 @@ export interface IAction {
     | Partial<TLoadingProcessState>
     | Partial<TStatusState>
     | Partial<TAlertState>
-    | Partial<TModalState>;
+    | Partial<TModalState>
+    | Partial<TUserState>;
   type: ActionType;
 }
 

@@ -28,7 +28,7 @@ api.use(express.json());
 
 const router = Router();
 
-router.post(`/${REST_PATH.login}`, (req, res) => {
+router.post(`/${REST_PATH.login}`, async (req, res) => {
   const { body } = req;
   const { USERNAME = 'admin', PASSWORD = '1234' } = process.env;
   if (body.username === USERNAME && body.password === PASSWORD) {

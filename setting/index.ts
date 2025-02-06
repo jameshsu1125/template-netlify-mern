@@ -8,12 +8,9 @@ export const SETTING = {
       collection: 'user',
       description: 'user profile schema demonstration',
       schema: {
-        userID: { type: IType.String, required: true },
-        firstName: { type: IType.String, required: true },
-        lastName: { type: IType.String, required: true },
+        userName: { type: IType.String, required: true },
         email: { type: IType.String, required: true },
-        photo: { type: IType.String, required: true },
-        age: { type: IType.Number, required: true },
+        type: { type: IType.String, required: true },
         timestamp: { type: IType.Date, default: 'Date.now()' },
       },
     },
@@ -40,12 +37,9 @@ export const SETTING = {
 // set type for mongodb
 export type TType =
   | {
-      userID: string;
-      firstName: string;
-      lastName: string;
+      userName: string;
       email: string;
-      photo: string;
-      age: number;
+      type: string;
       timestamp: string;
     }
   | {

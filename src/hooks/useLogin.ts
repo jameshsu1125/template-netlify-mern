@@ -4,18 +4,18 @@ import { useContext, useState } from 'react';
 import { IRespond } from '../../setting';
 import { REST_PATH } from '../settings/config';
 import { Context } from '../settings/constant';
-
-export type TArgument = { username: string; password: string };
+import { User } from '@auth0/auth0-react';
 
 const useLogin = () => {
   const [, setContext] = useContext(Context);
   const [state, setState] = useState<IRespond | undefined>();
-  const fetch = async (argument: TArgument) => {
+  const fetch = async (user: User) => {
     setContext({ type: ActionType.LoadingProcess, state: { enabled: true } });
-    const respond = (await Fetcher.post(REST_PATH.login, argument)) as IRespond;
+    const respond = (await Fetcher.post(REST_PATH.login, user)) as IRespond;
     setState(respond);
     setContext({ type: ActionType.LoadingProcess, state: { enabled: false } });
   };
+
   return [state, fetch] as const;
 };
 export default useLogin;
