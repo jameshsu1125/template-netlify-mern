@@ -17,7 +17,7 @@ const Drawer = memo(({ children }: IReactProps) => {
       </div>
       <div className='drawer-side'>
         <label htmlFor='my-drawer-2' aria-label='close sidebar' className='drawer-overlay'></label>
-        <ul className='menu relative min-h-full w-80 bg-base-200 p-4 text-base-content'>
+        <ul className='menu relative min-h-full w-52 bg-base-200 p-4 text-base-content'>
           <div className='flex w-full flex-row items-center justify-start py-5'>
             <BsTools className='mr-1' />
             TOOLS
@@ -37,29 +37,17 @@ const Drawer = memo(({ children }: IReactProps) => {
             COLLECTION LIST
           </div>
           <li>
-            {SETTING.mongodb.map((collection) => {
-              return (
-                <Link key={collection.collection} to={`/${collection.collection}`}>
-                  <RiDatabaseLine />
-                  {collection.collection}
-                </Link>
-              );
-            })}
+            {SETTING.mongodb
+              .filter((_, index) => index !== 0)
+              .map((collection) => {
+                return (
+                  <Link key={collection.collection} to={`/${collection.collection}`}>
+                    <RiDatabaseLine />
+                    {collection.collection}
+                  </Link>
+                );
+              })}
           </li>
-          <div className='absolute bottom-0 left-0 flex w-full flex-row items-center justify-start py-5'>
-            <ul className='menu relative min-h-full w-80 bg-base-200 p-4 text-base-content'>
-              <li>
-                {/* <a
-                  onClick={() => {
-                    logout();
-                  }}
-                >
-                  <FaPowerOff />
-                  Logout
-                </a> */}
-              </li>
-            </ul>
-          </div>
         </ul>
       </div>
     </div>

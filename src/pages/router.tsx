@@ -13,7 +13,8 @@ import Home from './home/index.tsx';
 import Login from './login/index.tsx';
 import { Context } from '@/settings/constant.ts';
 import { ActionType, UserType } from '@/settings/type.ts';
-import User from '@/components/user/index.tsx';
+import UserInfo from '@/components/userInfo/index.tsx';
+import User from './user/index.tsx';
 
 const DrawerPage = memo(() => {
   const ComponentLoader = useCallback(() => {
@@ -34,6 +35,7 @@ const DrawerPage = memo(() => {
         <Route path='/home' element={<Home />} />
         <Route path='/album' element={<Album />} />
         <Route path='/editor' element={<EditorPage />} />
+        <Route path='/user' element={<User />} />
         <Route path='*' element={ComponentLoader()} />
       </Routes>
     </Drawer>
@@ -70,9 +72,9 @@ const UserPage = memo(() => {
   }, [state]);
 
   return (
-    <User>
+    <UserInfo>
       <DrawerPage />
-    </User>
+    </UserInfo>
   );
 });
 
