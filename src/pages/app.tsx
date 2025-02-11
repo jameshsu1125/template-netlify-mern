@@ -2,15 +2,14 @@ import Alert from '@/components/alert';
 import LoadingProcess from '@/components/loadingProcess';
 import Modal from '@/components/modal';
 import { Context, InitialState, Reducer } from '@/settings/constant';
-import { ActionType, TContext } from '@/settings/type';
+import { ActionType } from '@/settings/type';
 import { Auth0Provider } from '@auth0/auth0-react';
-import { useMemo, useReducer } from 'react';
+import { useReducer } from 'react';
 import { BrowserRouter } from 'react-router-dom';
 import RoutePages from './router';
 
 const App = () => {
-  const [state, setState] = useReducer(Reducer, InitialState);
-  const value: TContext = useMemo(() => [state, setState], [state]);
+  const value = useReducer(Reducer, InitialState);
 
   return (
     <Auth0Provider
@@ -26,9 +25,9 @@ const App = () => {
             <RoutePages />
           </BrowserRouter>
         </div>
-        {state[ActionType.LoadingProcess]?.enabled && <LoadingProcess />}
-        {state[ActionType.Alert]?.enabled && <Alert />}
-        {state[ActionType.modal]?.enabled && <Modal />}
+        {value[0][ActionType.LoadingProcess]?.enabled && <LoadingProcess />}
+        {value[0][ActionType.Alert]?.enabled && <Alert />}
+        {value[0][ActionType.modal]?.enabled && <Modal />}
       </Context.Provider>
     </Auth0Provider>
   );

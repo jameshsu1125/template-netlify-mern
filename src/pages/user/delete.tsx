@@ -1,5 +1,6 @@
 import useDelete from '@/hooks/useDelete';
 import { memo, useEffect } from 'react';
+import { RiDeleteBin6Line } from 'react-icons/ri';
 import { SETTING, TType } from '../../../setting';
 
 type TProps = {
@@ -14,11 +15,12 @@ const Delete = memo(({ data, update }: TProps) => {
   }, [respond]);
   return (
     <button
-      className='btn btn-ghost btn-xs'
+      className='btn btn-ghost btn-sm'
       onClick={() => {
         deleteUser({ collection: SETTING.mongodb[0].collection, data: { _id: data._id } });
       }}
     >
+      <RiDeleteBin6Line />
       delete
     </button>
   );

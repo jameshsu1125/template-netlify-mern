@@ -25,46 +25,48 @@ const User = memo(() => {
 
   return (
     <div className='User'>
-      <div className='overflow-x-auto overflow-y-scroll'>
-        <table className='table'>
-          <thead>
-            <tr>
-              <th>User</th>
-              <th>Type</th>
-              <th></th>
-            </tr>
-          </thead>
-          <tbody>
-            {currentUsers
-              ?.filter((_, i) => i !== 0)
-              .map((data, i) => (
-                <tr key={i}>
-                  <td>
-                    <div className='flex items-center gap-3'>
-                      <div>
-                        <div className='font-bold'>{data.userName}</div>
-                        <div className='text-sm opacity-50'>{data.email}</div>
+      <div className='h-full w-full max-w-[625px]'>
+        <div className='overflow-x-auto overflow-y-scroll rounded-xl'>
+          <table className='table'>
+            <thead>
+              <tr>
+                <th>User</th>
+                <th>Type</th>
+                <th></th>
+              </tr>
+            </thead>
+            <tbody>
+              {currentUsers
+                ?.filter((_, i) => i !== 0)
+                .map((data, i) => (
+                  <tr key={i}>
+                    <td>
+                      <div className='flex items-center gap-3'>
+                        <div>
+                          <div className='font-bold'>{data.userName}</div>
+                          <div className='text-sm opacity-50'>{data.email}</div>
+                        </div>
                       </div>
-                    </div>
-                  </td>
-                  <td>{data.type}</td>
-                  <th>
-                    <Delete
-                      data={data as Extract<TType, { type: string }> & { _id: string }}
-                      update={update}
-                    />
-                  </th>
-                </tr>
-              ))}
-          </tbody>
-          <tfoot>
-            <tr>
-              <th>User</th>
-              <th>Type</th>
-              <th></th>
-            </tr>
-          </tfoot>
-        </table>
+                    </td>
+                    <td>{data.type}</td>
+                    <th>
+                      <Delete
+                        data={data as Extract<TType, { type: string }> & { _id: string }}
+                        update={update}
+                      />
+                    </th>
+                  </tr>
+                ))}
+            </tbody>
+            <tfoot>
+              <tr>
+                <th>User</th>
+                <th>Type</th>
+                <th></th>
+              </tr>
+            </tfoot>
+          </table>
+        </div>
       </div>
       <Add update={update} />
     </div>

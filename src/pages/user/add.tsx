@@ -1,18 +1,44 @@
-import { memo, useEffect } from 'react';
 import useInsert from '@/hooks/useInsert';
+import useSelect from '@/hooks/useSelect';
+import { memo, useContext, useEffect, useRef } from 'react';
 import { SETTING, TType } from '../../../setting';
+import { Context } from '@/settings/constant';
+import { ActionType, AlertType } from '@/settings/type';
 
 const Add = memo(({ update }: { update: React.Dispatch<React.SetStateAction<number>> }) => {
+  const [, setContext] = useContext(Context);
   const [respond, addUser] = useInsert();
+  const [users, getUsers] = useSelect();
+  const dataRef = useRef<Extract<TType, { type: string }> | null>(null);
 
   const onSubmit = (event: any) => {
     event.preventDefault();
     const formData = [...new FormData(event.target)];
 
-    const data = Object.fromEntries(formData) as TType;
+    const data = Object.fromEntries(formData) as Extract<TType, { type: string }>;
     if (formData.length < 3) return;
-    addUser({ collection: SETTING.mongodb[0].collection, data });
+    dataRef.current = data;
+    getUsers({ collection: SETTING.mongodb[0].collection });
   };
+
+  useEffect(() => {
+    if (users) {
+      if (dataRef.current) {
+        const currentUser = users.data as Extract<TType, { email: string }>[];
+        const hasDataAlready =
+          currentUser.filter((user) => user.email === dataRef.current?.email).length !== 0;
+        if (hasDataAlready) {
+          setContext({
+            type: ActionType.Alert,
+            state: { enabled: true, body: 'email already exist', type: AlertType.Error },
+          });
+        } else {
+          addUser({ collection: SETTING.mongodb[0].collection, data: dataRef.current });
+          dataRef.current = null;
+        }
+      }
+    }
+  }, [respond, users]);
 
   useEffect(() => {
     if (respond?.res) {
