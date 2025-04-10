@@ -1,9 +1,8 @@
 import Editor from '@/components/richEditor';
 import { memo } from 'react';
-import './index.less';
 
 const EditorPage = memo(() => (
-  <div className='EditorPage'>
+  <div className='w-full'>
     <Editor
       defaultHTML=''
       onSubmit={(html) => {

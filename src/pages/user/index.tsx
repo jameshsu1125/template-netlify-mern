@@ -24,8 +24,8 @@ const User = memo(() => {
   }, [user.type, forceUpdate]);
 
   return (
-    <div className='User'>
-      <div className='h-full w-full max-w-[625px]'>
+    <div className='User flex w-full flex-col items-center justify-between p-5'>
+      <div className='h-full w-full max-w-[625px] flex-1'>
         <div className='overflow-x-auto overflow-y-scroll rounded-xl'>
           <table className='table'>
             <thead>

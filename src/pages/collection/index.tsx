@@ -32,7 +32,7 @@ const Collection = memo(() => {
 
   return (
     <CollectionContext.Provider value={value}>
-      <div className='Collection p-5'>
+      <div className='Collection mt-5 flex w-full flex-col items-center justify-center p-5'>
         <div className='mockup-code w-full'>
           <pre className='p-5'>
             <code>

@@ -8,7 +8,7 @@ const Home = memo(() => {
   const [state, setState] = useState<THomeState>(HomeState);
 
   return (
-    <div className='Home'>
+    <div className='Home w-full space-y-5 p-5 pt-20'>
       <HomeContext.Provider value={[state, setState]}>
         {SETTING.mongodb.map((data) => (
           <Table key={data.collection} data={[data]} />

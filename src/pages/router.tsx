@@ -54,7 +54,7 @@ const UserPage = memo(() => {
   useEffect(() => {
     if (state) {
       const data = state.data as Extract<TType, { type: string }>[];
-      data.forEach((item) => {
+      data?.forEach((item) => {
         if (item.email === user?.email) {
           if (item.type) {
             setContext({

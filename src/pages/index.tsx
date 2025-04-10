@@ -1,4 +1,4 @@
-import '@/settings/global.less';
+import '@/settings/global.css';
 import Fetcher, { contentType, formatType } from 'lesca-fetcher';
 import ReactDOM from 'react-dom/client';
 import App from './app';
