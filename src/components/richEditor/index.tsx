@@ -22,11 +22,11 @@ const Editor = memo(({ onSubmit, defaultHTML }: T) => {
   }, [debouncedValue]);
 
   return (
-    <div className='Editor prose flex max-w-full flex-row p-5'>
+    <div className='Editor prose flex w-full max-w-full flex-row p-5'>
       <div className='flex-1'>
         <Tab>
           <Tab.Panel label='Rich Editor'>
-            <div className='w-full bg-base-300 py-2 text-center text-primary'>Rich Editor</div>
+            <div className='bg-base-300 text-primary w-full py-2 text-center'>Rich Editor</div>
             <div className='bg-white text-black'>
               <RichEditor
                 defaultHTML={defaultHTML}
@@ -38,7 +38,7 @@ const Editor = memo(({ onSubmit, defaultHTML }: T) => {
             </div>
           </Tab.Panel>
           <Tab.Panel label='HTML Editor'>
-            <div className='w-full bg-base-300 py-2 text-center text-primary'>HTML Editor</div>
+            <div className='bg-base-300 text-primary w-full py-2 text-center'>HTML Editor</div>
             <textarea
               className='h-52 w-full'
               value={html}

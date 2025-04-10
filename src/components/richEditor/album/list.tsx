@@ -36,7 +36,7 @@ const List = memo(() => {
   }, []);
 
   return (
-    <div className='List'>
+    <div className='List flex flex-col items-center justify-start space-y-5 p-2'>
       <Filter data={currentData} setFilter={setFilter} />
       <Photos data={filterData} />
       <Uploader reload={reload} folder={filter} />
