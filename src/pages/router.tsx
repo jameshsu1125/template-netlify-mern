@@ -7,9 +7,11 @@ import { ActionType } from '@/settings/type.ts';
 import { useAuth0 } from '@auth0/auth0-react';
 import { lazy, memo, Suspense, useCallback, useContext, useEffect } from 'react';
 import { Route, Routes } from 'react-router-dom';
+import Album from './album';
 import Home from './home';
 import Login from './login';
 import User from './user';
+import Editor from './editor/index.tsx';
 
 const DrawerPage = memo(() => {
   const ComponentLoader = useCallback(() => {
@@ -28,6 +30,8 @@ const DrawerPage = memo(() => {
         <Route path='/' element={<Home />} />
         <Route path='/home' element={<Home />} />
         <Route path='/user' element={<User />} />
+        <Route path='/album' element={<Album />} />
+        <Route path='/editor' element={<Editor />} />
         <Route path='*' element={ComponentLoader()} />
       </Routes>
     </Drawer>

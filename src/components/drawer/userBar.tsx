@@ -22,7 +22,7 @@ const UserBar = memo(() => {
   return (
     <div className='navbar bg-base-300 flex flex-row items-center justify-between px-3 select-none'>
       <div
-        className='tooltip tooltip-bottom lg:tooltip-right text-xs'
+        className='tooltip tooltip-bottom lg:tooltip-top text-xs'
         data-tip={UserTypeName[user.type]}
       >
         <div className='flex w-full flex-row items-center gap-2'>
@@ -45,7 +45,7 @@ const UserBar = memo(() => {
       )}
 
       <div className='logout mr-2'>
-        <div className='tooltip tooltip-bottom lg:tooltip-left' data-tip='登出'>
+        <div className='tooltip tooltip-bottom lg:tooltip-top' data-tip='登出'>
           <a className='cursor-pointer' onClick={() => logout()}>
             <FaPowerOff />
           </a>
