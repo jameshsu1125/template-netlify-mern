@@ -1,4 +1,5 @@
 import { memo } from 'react';
+import { BsLayoutSidebarInset } from 'react-icons/bs';
 import { Link } from 'react-router-dom';
 
 const NavMenu = memo(() => (
@@ -67,8 +68,9 @@ export const NavBarMobile = memo(() => {
   return (
     <div className='navbar bg-base-300 shadow-sm'>
       <label htmlFor='my-drawer-2' className='btn btn-ghost drawer-button text-xl'>
-        {import.meta.env.VITE_TITLE}
+        <BsLayoutSidebarInset />
       </label>
+      {import.meta.env.VITE_TITLE}
     </div>
   );
 });
