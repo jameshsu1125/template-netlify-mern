@@ -4,7 +4,10 @@ import ReactDOM from 'react-dom/client';
 import App from './app';
 
 Fetcher.install({
-  hostUrl: import.meta.env.VITE_API_PATH || './api',
+  hostUrl:
+    location.hostname === 'localhost'
+      ? import.meta.env.VITE_API_PATH_DEV
+      : import.meta.env.VITE_API_PATH || './api',
   contentType: contentType.JSON,
   formatType: formatType.JSON,
 });

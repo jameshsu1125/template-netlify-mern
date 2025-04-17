@@ -14,7 +14,11 @@ const App = () => {
   return (
     <Auth0Provider
       domain={import.meta.env.VITE_AUTH0_DOMAIN}
-      clientId={import.meta.env.VITE_AUTH0_CLIENT_ID}
+      clientId={
+        location.hostname === 'localhost'
+          ? import.meta.env.VITE_AUTH0_CLIENT_ID_DEV
+          : import.meta.env.VITE_AUTH0_CLIENT_ID
+      }
       authorizationParams={{
         redirect_uri: window.location.origin,
       }}
@@ -27,7 +31,7 @@ const App = () => {
         </div>
         {value[0][ActionType.LoadingProcess]?.enabled && <LoadingProcess />}
         {value[0][ActionType.Alert]?.enabled && <Alert />}
-        {value[0][ActionType.modal]?.enabled && <Modal />}
+        {value[0][ActionType.Modal]?.enabled && <Modal />}
       </Context.Provider>
     </Auth0Provider>
   );

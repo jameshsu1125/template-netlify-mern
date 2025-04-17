@@ -26,7 +26,7 @@ export const StatusState: TStatusState = {
 
 export const AlertState: TAlertState = {
   enabled: false,
-  type: AlertType.normal,
+  type: AlertType.Normal,
   body: 'message',
   time: 5000,
 };
@@ -41,18 +41,19 @@ export const ModalState: TModalState = {
 };
 
 export const UserState: TUserState = {
-  type: UserType.guest,
+  type: UserType.Guest,
   name: 'guest',
   email: 'demo@host.com',
   picture: 'https://www.gravatar.com/avatar/',
+  token: '',
 };
 
 export const InitialState: IState = {
   [ActionType.LoadingProcess]: LoadingProcessState,
   [ActionType.Status]: StatusState,
   [ActionType.Alert]: AlertState,
-  [ActionType.modal]: ModalState,
-  [ActionType.user]: UserState,
+  [ActionType.Modal]: ModalState,
+  [ActionType.User]: UserState,
 };
 
 export const Context = createContext<TContext>([InitialState, () => {}]);

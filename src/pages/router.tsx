@@ -1,24 +1,19 @@
-import Album from '@/components/album/index.tsx';
 import Drawer from '@/components/drawer/index.tsx';
 import LoadingProcess from '@/components/loadingProcess/index.tsx';
-import Navbar from '@/components/navbar/index.tsx';
 import useConnect from '@/hooks/useConnect.ts';
-import useSelect from '@/hooks/useSelect.ts';
+import useLogin from '@/hooks/useLogin.ts';
+import { Context } from '@/settings/constant.ts';
+import { ActionType } from '@/settings/type.ts';
 import { useAuth0 } from '@auth0/auth0-react';
 import { lazy, memo, Suspense, useCallback, useContext, useEffect } from 'react';
 import { Route, Routes } from 'react-router-dom';
-import { SETTING, TType } from '../../setting/index.ts';
-import EditorPage from './editor/index.tsx';
-import Home from './home/index.tsx';
-import Login from './login/index.tsx';
-import { Context } from '@/settings/constant.ts';
-import { ActionType, UserType } from '@/settings/type.ts';
-import UserInfo from '@/components/userInfo/index.tsx';
-import User from './user/index.tsx';
+import Home from './home';
+import Login from './login';
+import User from './user';
 
 const DrawerPage = memo(() => {
   const ComponentLoader = useCallback(() => {
-    const Element = lazy(() => import('./collection/index.tsx'));
+    const Element = lazy(() => import('./error/index.tsx'));
     if (!Element) return null;
     return (
       <Suspense fallback=''>
@@ -29,12 +24,9 @@ const DrawerPage = memo(() => {
 
   return (
     <Drawer>
-      <Navbar />
       <Routes>
         <Route path='/' element={<Home />} />
         <Route path='/home' element={<Home />} />
-        <Route path='/album' element={<Album />} />
-        <Route path='/editor' element={<EditorPage />} />
         <Route path='/user' element={<User />} />
         <Route path='*' element={ComponentLoader()} />
       </Routes>
@@ -43,40 +35,30 @@ const DrawerPage = memo(() => {
 });
 
 const UserPage = memo(() => {
-  const [, setContext] = useContext(Context);
-  const [state, checkIdentified] = useSelect();
+  const [context, setContext] = useContext(Context);
+  const [state, checkIdentified] = useLogin();
   const { user } = useAuth0();
 
   useEffect(() => {
-    if (user) checkIdentified({ collection: SETTING.mongodb[0].collection });
+    if (user) checkIdentified(user);
   }, [user]);
 
   useEffect(() => {
-    if (state) {
-      const data = state.data as Extract<TType, { type: string }>[];
-      data?.forEach((item) => {
-        if (item.email === user?.email) {
-          if (item.type) {
-            setContext({
-              type: ActionType.user,
-              state: {
-                type: item.type as UserType,
-                email: item.email,
-                name: user.name,
-                picture: user.picture,
-              },
-            });
-          }
-        }
+    if (state && state.res) {
+      setContext({
+        type: ActionType.User,
+        state: {
+          token: state.token || '',
+          email: user?.email,
+          name: user?.name,
+          picture: user?.picture,
+          type: state.type,
+        },
       });
     }
   }, [state]);
 
-  return (
-    <UserInfo>
-      <DrawerPage />
-    </UserInfo>
-  );
+  return <>{context[ActionType.User].token ? <DrawerPage /> : <LoadingProcess />}</>;
 });
 
 const RoutePages = memo(() => {

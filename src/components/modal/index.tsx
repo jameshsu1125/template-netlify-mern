@@ -4,14 +4,14 @@ import { memo, useContext } from 'react';
 
 const Modal = memo(() => {
   const [context, setContext] = useContext(Context);
-  const { title, body, label, onClose } = context[ActionType.modal];
+  const { title, body, label, onClose } = context[ActionType.Modal];
 
   return (
     <dialog id='my_modal_4' className='modal modal-open fixed'>
       <div
         className='modal-box w-11/12 max-w-7xl'
         onClick={() => {
-          setContext({ type: ActionType.modal, state: { enabled: false } });
+          setContext({ type: ActionType.Modal, state: { enabled: false } });
         }}
       >
         <h3 className='text-lg font-bold'>{title}</h3>
@@ -20,9 +20,9 @@ const Modal = memo(() => {
           <form method='dialog'>
             <button
               onClick={() => {
-                setContext({ type: ActionType.modal, state: { enabled: false } });
+                setContext({ type: ActionType.Modal, state: { enabled: false } });
               }}
-              className='btn btn-circle btn-ghost btn-sm absolute right-2 top-2'
+              className='btn btn-circle btn-ghost btn-sm absolute top-2 right-2'
             >
               ✕
             </button>
@@ -30,7 +30,7 @@ const Modal = memo(() => {
               <button
                 onClick={() => {
                   onClose(label);
-                  setContext({ type: ActionType.modal, state: { enabled: false } });
+                  setContext({ type: ActionType.Modal, state: { enabled: false } });
                 }}
                 className='btn'
               >
@@ -43,7 +43,7 @@ const Modal = memo(() => {
                     key={l}
                     onClick={() => {
                       onClose(l);
-                      setContext({ type: ActionType.modal, state: { enabled: false } });
+                      setContext({ type: ActionType.Modal, state: { enabled: false } });
                     }}
                     className='btn mx-1'
                   >

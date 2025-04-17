@@ -3,8 +3,11 @@ import cloudinary from 'cloudinary';
 import cors from 'cors';
 import dotenv from 'dotenv';
 import express, { Router } from 'express';
+import Atobtoa from 'lesca-atobtoa';
 import serverless from 'serverless-http';
+import { SETTING, TType } from '../../../setting';
 import { REST_PATH } from '../../../src/settings/config';
+import { UserType } from '../../../src/settings/type';
 import { messages } from '../config';
 import connect from './connect';
 import deleteOne from './delete';
@@ -30,10 +33,33 @@ const router = Router();
 
 router.post(`/${REST_PATH.login}`, async (req, res) => {
   const { body } = req;
-  const { USERNAME = 'admin', PASSWORD = '1234' } = process.env;
-  if (body.username === USERNAME && body.password === PASSWORD) {
-    res.status(200).json({ res: true, msg: 'login success', data: body });
-  } else res.status(200).json({ res: false, msg: 'username or password incorrect.' });
+  const connection = await connect();
+  if (!connection.res) {
+    res.status(200).json({ res: false, msg: messages.connectError });
+  } else {
+    if (body.email === process.env.AMIN_EMAIL) {
+      const type = UserType.Admin;
+      const name = body.name || 'super user';
+      const timestamp = new Date().toISOString();
+      const data = { type, name, timestamp, email: body.email };
+      const token = Atobtoa.toBase64(data);
+      res.status(200).json({ res: true, token, type });
+    } else {
+      const respond = await select({ collection: SETTING.mongodb[0].collection });
+      const data = respond.data as Extract<TType, { type: string }>[];
+      const matched = data.filter((item) => item.email === body.email);
+      if (matched.length === 0) res.status(200).json({ res: false, type: UserType.Guest });
+      else {
+        const type = matched[0].type as UserType;
+        const name = body.name || '';
+        const timestamp = body.updated_at || new Date().toISOString();
+        const email = matched[0].email;
+        const data = { type, name, email, timestamp };
+        const token = Atobtoa.toBase64(data);
+        res.status(200).json({ res: true, token, type });
+      }
+    }
+  }
 });
 
 router.get(`/${REST_PATH.connect}`, async (_, res) => {

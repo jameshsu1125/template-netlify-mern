@@ -18,12 +18,12 @@ const UserInfo = memo(({ children }: IReactProps) => {
     switch (user.type) {
       case UserType.Admin:
         return <FaUserGear />;
-      case UserType.inHouse:
+      case UserType.InHouse:
         return <FaUserEdit />;
-      case UserType.user:
+      case UserType.User:
         return <FaUserCheck />;
       default:
-      case UserType.guest:
+      case UserType.Guest:
         return <PiUserFocusBold />;
     }
   }, [user.type]);
@@ -51,6 +51,8 @@ const UserInfo = memo(({ children }: IReactProps) => {
             </div>
           )}
         </div>
+        <div className='llll'></div>
+        <span className='loading loading-spinner loading-md'></span>
         <div className='logout'>
           <div className='tooltip tooltip-bottom lg:tooltip-right' data-tip='登出'>
             <a className='cursor-pointer' onClick={() => logout()}>
