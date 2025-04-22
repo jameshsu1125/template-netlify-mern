@@ -1,18 +1,32 @@
-import { memo } from 'react';
+import { memo, useContext } from 'react';
 import { BsLayoutSidebarInset } from 'react-icons/bs';
 import { Link } from 'react-router-dom';
 import Storage from 'lesca-local-storage';
+import { Context } from '@/settings/constant';
+import { SETTING } from '../../../setting';
+import { PiUserListFill } from 'react-icons/pi';
+import { UserType } from '@/settings/type';
 
-const NavMenu = memo(() => (
-  <ul className='menu dropdown-content bg-base-100 rounded-box z-1 w-52 p-2 shadow-sm'>
-    <li>
-      <a>Item 1</a>
-    </li>
-    <li>
-      <a>Item 2</a>
-    </li>
-  </ul>
-));
+const NavMenu = memo(() => {
+  const [context] = useContext(Context);
+  const { user } = context;
+
+  return (
+    <ul className='menu dropdown-content bg-base-100 rounded-box z-1 w-52 p-2 shadow-sm'>
+      {user.type === UserType.Admin && (
+        <li>
+          <Link to={`/${SETTING.mongodb[0].collection}`}>
+            <PiUserListFill />
+            使用者列表
+          </Link>
+        </li>
+      )}
+      {/* <li>
+        <a>Item 2</a>
+      </li> */}
+    </ul>
+  );
+});
 
 const NavBar = memo(() => {
   const onChange = (e: React.ChangeEvent<HTMLInputElement>) => {

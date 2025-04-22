@@ -30,38 +30,36 @@ const User = memo(() => {
           <table className='table'>
             <thead>
               <tr>
-                <th>User</th>
-                <th>Type</th>
+                <th>使用者</th>
+                <th>權限</th>
                 <th></th>
               </tr>
             </thead>
             <tbody>
-              {currentUsers
-                ?.filter((_, i) => i !== 0)
-                .map((data, i) => (
-                  <tr key={i}>
-                    <td>
-                      <div className='flex items-center gap-3'>
-                        <div>
-                          <div className='font-bold'>{data.userName}</div>
-                          <div className='text-sm opacity-50'>{data.email}</div>
-                        </div>
+              {currentUsers?.map((data, i) => (
+                <tr key={i}>
+                  <td>
+                    <div className='flex items-center gap-3'>
+                      <div>
+                        <div className='font-bold'>{data.userName}</div>
+                        <div className='text-sm opacity-50'>{data.email}</div>
                       </div>
-                    </td>
-                    <td>{data.type}</td>
-                    <th>
-                      <Delete
-                        data={data as Extract<TType, { type: string }> & { _id: string }}
-                        update={update}
-                      />
-                    </th>
-                  </tr>
-                ))}
+                    </div>
+                  </td>
+                  <td>{data.type}</td>
+                  <th>
+                    <Delete
+                      data={data as Extract<TType, { type: string }> & { _id: string }}
+                      update={update}
+                    />
+                  </th>
+                </tr>
+              ))}
             </tbody>
             <tfoot>
               <tr>
-                <th>User</th>
-                <th>Type</th>
+                <th>使用者</th>
+                <th>權限</th>
                 <th></th>
               </tr>
             </tfoot>

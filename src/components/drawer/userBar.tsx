@@ -3,9 +3,6 @@ import { UserType } from '@/settings/type';
 import { useAuth0 } from '@auth0/auth0-react';
 import { memo, useContext } from 'react';
 import { FaPowerOff } from 'react-icons/fa';
-import { Link } from 'react-router-dom';
-import { SETTING } from '../../../setting';
-import { PiUserListFill } from 'react-icons/pi';
 
 const UserTypeName = {
   [UserType.Admin]: '管理員',
@@ -35,15 +32,6 @@ const UserBar = memo(() => {
           <div className='text-sm font-bold'>{user.name}</div>
         </div>
       </div>
-
-      {user.type === UserType.Admin && (
-        <div className='tooltip tooltip-bottom lg:tooltip-top text-2xl' data-tip='用戶列表'>
-          <Link to={`/${SETTING.mongodb[0].collection}`}>
-            <PiUserListFill />
-          </Link>
-        </div>
-      )}
-
       <div className='logout mr-2'>
         <div className='tooltip tooltip-bottom lg:tooltip-top' data-tip='登出'>
           <a className='cursor-pointer' onClick={() => logout()}>
