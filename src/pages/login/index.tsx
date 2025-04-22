@@ -19,7 +19,7 @@ const Login = memo(() => {
               className='btn bg-base-content text-base-100'
               onClick={() => loginWithRedirect()}
             >
-              Login
+              登入
             </button>
           </div>
         </div>
