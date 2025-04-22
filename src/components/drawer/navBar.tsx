@@ -1,4 +1,4 @@
-import { memo, useContext } from 'react';
+import { memo, useContext, useRef } from 'react';
 import { BsLayoutSidebarInset } from 'react-icons/bs';
 import { Link } from 'react-router-dom';
 import Storage from 'lesca-local-storage';
@@ -7,35 +7,45 @@ import { SETTING } from '../../../setting';
 import { PiUserListFill } from 'react-icons/pi';
 import { UserType } from '@/settings/type';
 
+// TODO: add type for collection
 const NavMenu = memo(() => {
   const [context] = useContext(Context);
   const { user } = context;
 
   return (
-    <ul className='menu dropdown-content bg-base-100 rounded-box z-1 w-52 p-2 shadow-sm'>
-      {user.type === UserType.Admin && (
-        <li>
-          <Link to={`/${SETTING.mongodb[0].collection}`}>
-            <PiUserListFill />
-            使用者列表
-          </Link>
-        </li>
-      )}
-      {/* <li>
+    <>
+      <ul className='menu dropdown-content bg-base-100 rounded-box z-1 w-52 p-2 shadow-sm'>
+        {user.type === UserType.Admin && (
+          <li>
+            <Link to={`/${SETTING.mongodb[0].collection}`}>
+              <PiUserListFill />
+              使用者列表
+            </Link>
+          </li>
+        )}
+        {/* <li>
         <a>Item 2</a>
       </li> */}
-    </ul>
+      </ul>
+    </>
   );
 });
 
 const NavBar = memo(() => {
+  const ref = useRef<HTMLDetailsElement>(null);
   const onChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     Storage.set('theme', { checked: e.target.checked });
   };
   return (
-    <div className='navbar bg-base-300 shadow-sm'>
+    <div className='navbar bg-base-300 z-10 shadow-sm'>
       <div className='flex-none'>
-        <details className='dropdown'>
+        <details ref={ref} className='dropdown'>
+          <div
+            className='fixed top-0 left-0 h-full w-full bg-transparent'
+            onClick={() => {
+              if (ref.current) ref.current.removeAttribute('open');
+            }}
+          />
           <summary className='btn m-1'>
             <svg
               xmlns='http://www.w3.org/2000/svg'
@@ -51,6 +61,7 @@ const NavBar = memo(() => {
               />
             </svg>
           </summary>
+
           <NavMenu />
         </details>
       </div>
