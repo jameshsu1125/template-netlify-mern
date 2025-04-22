@@ -7,7 +7,7 @@ const Login = memo(() => {
 
   return (
     <div className='flex h-full w-full items-center justify-center'>
-      <div className='card w-96 bg-base-300 shadow-xl'>
+      <div className='card bg-base-300 w-96 shadow-xl'>
         <figure>
           <img src={coverImage} alt='logo' />
         </figure>
@@ -18,7 +18,10 @@ const Login = memo(() => {
             your technology, and your customer base.
           </p>
           <div className='card-actions justify-end'>
-            <button className='btn btn-primary' onClick={() => loginWithRedirect()}>
+            <button
+              className='btn bg-base-content text-base-100'
+              onClick={() => loginWithRedirect()}
+            >
               Login
             </button>
           </div>

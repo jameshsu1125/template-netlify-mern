@@ -16,7 +16,10 @@ const Error = memo(() => {
           <Link to='/' className='bg-secondary-content text-base-300 btn'>
             Go back home
           </Link>
-          <a href='#' className='text-base-content text-sm font-semibold'>
+          <a
+            href={`mailto:${import.meta.env.VITE_404_CONTACT_ADDRESS}`}
+            className='text-base-content text-sm font-semibold'
+          >
             Contact support <span aria-hidden='true'>&rarr;</span>
           </a>
         </div>
