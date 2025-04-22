@@ -42,6 +42,7 @@ export default defineConfig(async ({ mode }) => {
             description: env.VITE_SUBSCRIPTION,
             url: env.VITE_URL,
             facebookID: env.VITE_FACEBOOK_ID,
+            theme: env.VITE_DEFAULT_THEME,
           },
         },
       }),

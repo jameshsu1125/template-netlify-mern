@@ -61,7 +61,6 @@ const NavBar = memo(() => {
               />
             </svg>
           </summary>
-
           <NavMenu />
         </details>
       </div>
@@ -72,6 +71,9 @@ const NavBar = memo(() => {
       </div>
       <div className='mr-2 flex-none'>
         <label className='swap swap-rotate'>
+          {/**
+            # dark synthwave halloween cyberpunk forest aqua black luxury dracula business night coffee dim sunset abyss
+          */}
           <input
             type='checkbox'
             className='theme-controller'
