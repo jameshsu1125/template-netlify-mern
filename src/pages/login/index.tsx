@@ -12,11 +12,8 @@ const Login = memo(() => {
           <img src={coverImage} alt='logo' />
         </figure>
         <div className='card-body'>
-          <h2 className='card-title'>Login Auth0 to continue</h2>
-          <p>
-            The Auth0 identity platform allows you to customize login services to fit your business,
-            your technology, and your customer base.
-          </p>
+          <h2 className='card-title'>登入 Auth0 以繼續</h2>
+          <p>Auth0 身分識別平台允許您自訂登入服務，以符合您的業務需求、技術需求以及客戶群。</p>
           <div className='card-actions justify-end'>
             <button
               className='btn bg-base-content text-base-100'
