@@ -26,7 +26,7 @@ const Editor = memo(({ onSubmit, defaultHTML }: T) => {
       <div className='flex-1'>
         <Tab>
           <Tab.Panel label='Rich Editor' defaultChecked>
-            <div className='bg-base-300 text-primary w-full py-2 text-center'>Rich Editor</div>
+            <div className='bg-base-300 text-base-content w-full py-2 text-center'>Rich Editor</div>
             <div className='bg-white text-black'>
               <RichEditor
                 defaultHTML={defaultHTML}
@@ -38,9 +38,9 @@ const Editor = memo(({ onSubmit, defaultHTML }: T) => {
             </div>
           </Tab.Panel>
           <Tab.Panel label='HTML Editor'>
-            <div className='bg-base-300 text-primary w-full py-2 text-center'>HTML Editor</div>
+            <div className='bg-base-300 text-base-content w-full py-2 text-center'>HTML Editor</div>
             <textarea
-              className='h-52 w-full'
+              className='h-52 w-full bg-white'
               value={html}
               onChange={(e) => {
                 setHTML(e.target.value);
