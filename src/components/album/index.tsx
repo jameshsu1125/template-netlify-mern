@@ -9,7 +9,7 @@ const Album = memo(() => {
   const value = useState(AlbumState);
   const [state, setState] = value;
   const [key, setKey] = useState(0);
-  const height = window.innerHeight - (state.enabled ? 66 + 64 : 64) + 'px';
+
   return (
     <AlbumContext.Provider value={value}>
       {state.enabled && (
@@ -23,7 +23,7 @@ const Album = memo(() => {
           }}
         />
       )}
-      <div className='w-full overflow-scroll' style={{ height }}>
+      <div className='w-full overflow-scroll'>
         <div className='relative flex w-full flex-col'>
           <div className='w-full p-5'>
             <Tab>
