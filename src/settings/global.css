@@ -1,8 +1,4 @@
-@import 'tailwindcss';
-@plugin "daisyui" {
-  themes: all;
-}
-
+@import url('../../tailwind.config.css');
 body {
   margin: 0;
 
