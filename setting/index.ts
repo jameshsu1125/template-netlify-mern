@@ -6,7 +6,6 @@ export const SETTING = {
   mongodb: [
     {
       collection: 'user',
-      description: 'user profile schema demonstration',
       schema: {
         userName: { type: IType.String, required: true },
         email: { type: IType.String, required: true },
@@ -16,7 +15,6 @@ export const SETTING = {
     },
     {
       collection: 'todo',
-      description: 'todo list schema demonstration',
       schema: {
         task: { type: IType.String, required: true },
         description: { type: IType.String, required: true },
