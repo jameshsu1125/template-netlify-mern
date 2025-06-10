@@ -26,12 +26,6 @@ export const SETTING = {
       },
     },
   ],
-  dashboard: {
-    session: {
-      name: 'status',
-      time: 1000 * 60 * 60 * 24 * 7, // 7 days
-    },
-  },
 };
 
 // set type for mongodb
