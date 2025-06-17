@@ -8,7 +8,7 @@ import { PiUserListFill } from 'react-icons/pi';
 import { UserType } from '@/settings/type';
 
 // TODO: add type for collection
-const NavMenu = memo(() => {
+const NavMenu = memo(({ onClick }: { onClick: () => void }) => {
   const [context] = useContext(Context);
   const { user } = context;
 
@@ -17,7 +17,7 @@ const NavMenu = memo(() => {
       <ul className='menu dropdown-content bg-base-100 rounded-box z-1 w-52 p-2 shadow-sm'>
         {user.type === UserType.Admin && (
           <li>
-            <Link to={`/${SETTING.mongodb[0].collection}`}>
+            <Link onClick={onClick} to={`/${SETTING.mongodb[0].collection}`}>
               <PiUserListFill />
               使用者列表
             </Link>
@@ -61,7 +61,11 @@ const NavBar = memo(() => {
               />
             </svg>
           </summary>
-          <NavMenu />
+          <NavMenu
+            onClick={() => {
+              if (ref.current) ref.current.removeAttribute('open');
+            }}
+          />
         </details>
       </div>
       <div className='flex-1'>
