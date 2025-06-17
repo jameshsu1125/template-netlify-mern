@@ -16,8 +16,11 @@ import select from './select';
 import update from './update';
 
 dotenv.config({ path: `.env.${process.env.NODE_ENV}` });
-const api = express();
-api.use(bodyParser.json({ limit: '5mb' }));
+const app = express();
+
+app.use(bodyParser.json({ limit: '1024mb' }));
+app.use(bodyParser.urlencoded({ extended: true, limit: '1024mb' }));
+app.use(express.json({ limit: '1024mb' }));
 
 cloudinary.v2.config({
   cloud_name: process.env.CLOUDINARY_NAME,
@@ -26,8 +29,8 @@ cloudinary.v2.config({
   secure: true,
 });
 
-api.use(cors({ origin: '*' }));
-api.use(express.json());
+app.use(cors({ origin: '*' }));
+app.use(express.json());
 
 const router = Router();
 
@@ -169,6 +172,6 @@ router.post(`/${REST_PATH.removeMany}`, async (req, res) => {
   }
 });
 
-api.use('/api/', router);
+app.use('/api/', router);
 
-export const handler = serverless(api);
+export const handler = serverless(app);

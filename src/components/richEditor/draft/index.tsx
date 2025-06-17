@@ -61,13 +61,17 @@ const RichEditor = forwardRef(({ defaultHTML, onChange }: T, ref: Ref<RefObject>
           maxWidth: CAPTURE_PROPERTY.maxWidth,
           compress: CAPTURE_PROPERTY.compress,
         }).then((e) => {
-          Fetcher.post(REST_PATH.upload, { image: e.image, folder: 'editor' }).then((respond) => {
-            const res = respond as { res: boolean; data: TUploadRespond };
-            if (res.res) {
-              const data = res.data as TUploadRespond;
-              resolve({ data: { link: data.secure_url } });
-            } else reject('上傳失敗');
-          });
+          try {
+            Fetcher.post(REST_PATH.upload, { image: e.image, folder: 'editor' }).then((respond) => {
+              const res = respond as { res: boolean; data: TUploadRespond };
+              if (res.res) {
+                const data = res.data as TUploadRespond;
+                resolve({ data: { link: data.secure_url } });
+              } else reject('上傳失敗');
+            });
+          } catch (error) {
+            reject('上傳失敗');
+          }
         });
       }
     });
