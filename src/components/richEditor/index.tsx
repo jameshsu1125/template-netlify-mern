@@ -40,7 +40,7 @@ const Editor = memo(({ onSubmit, defaultHTML }: T) => {
           <Tab.Panel label='HTML Editor'>
             <div className='bg-base-300 text-base-content w-full py-2 text-center'>HTML Editor</div>
             <textarea
-              className='h-52 w-full bg-white'
+              className='h-52 min-h-[72vh] w-full bg-white'
               value={html}
               onChange={(e) => {
                 setHTML(e.target.value);
