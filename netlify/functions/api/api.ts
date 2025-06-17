@@ -8,7 +8,7 @@ import serverless from 'serverless-http';
 import { SETTING, TType } from '../../../setting';
 import { REST_PATH } from '../../../src/settings/config';
 import { UserType } from '../../../src/settings/type';
-import { messages } from '../config';
+import { limit, messages } from '../config';
 import connect from './connect';
 import deleteOne from './delete';
 import insert, { insertMany } from './insert';
@@ -18,7 +18,6 @@ import update from './update';
 dotenv.config({ path: `.env.${process.env.NODE_ENV}` });
 const app = express();
 
-const limit = '10mb';
 app.use(bodyParser.json({ limit }));
 app.use(bodyParser.urlencoded({ extended: true, limit }));
 app.use(express.json({ limit }));

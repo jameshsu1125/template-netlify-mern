@@ -19,3 +19,5 @@ export const messages = {
   removeError: 'Remove image failed',
   removeSuccess: 'Remove image successful',
 };
+
+export const limit = '10mb';
