@@ -14,12 +14,9 @@ export const SETTING = {
       },
     },
     {
-      collection: 'todo',
+      collection: 'editor',
       schema: {
-        task: { type: IType.String, required: true },
-        description: { type: IType.String, required: true },
-        who: { type: IType.String, required: true },
-        done: { type: IType.Boolean, default: false },
+        html: { type: IType.String, required: true },
         timestamp: { type: IType.Date, default: 'Date.now()' },
       },
     },
@@ -35,10 +32,7 @@ export type TType =
       timestamp: string;
     }
   | {
-      task: string;
-      description: string;
-      who: string;
-      done: boolean;
+      html: string;
       timestamp: Date;
     };
 

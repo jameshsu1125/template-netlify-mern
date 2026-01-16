@@ -1,24 +1,31 @@
-import { EditorContent, EditorContext, useEditor } from '@tiptap/react';
-import { BubbleMenu, FloatingMenu } from '@tiptap/react/menus';
+import { TextStyle } from '@tiptap/extension-text-style';
+import { EditorContent, useEditor } from '@tiptap/react';
 import StarterKit from '@tiptap/starter-kit';
-import { useMemo } from 'react';
+import './index.less';
+import MenuBar from './menu';
+import { FaRegSave } from 'react-icons/fa';
 
-const Tiptap = () => {
+const extensions = [TextStyle, StarterKit];
+
+export default ({ onSave }: { onSave: (html: string) => void }) => {
   const editor = useEditor({
-    extensions: [StarterKit], // define your extension array
-    content: '<p>Hello World!</p>', // initial content
+    extensions,
+    content: ``,
   });
 
-  // Memoize the provider value to avoid unnecessary re-renders
-  const providerValue = useMemo(() => ({ editor }), [editor]);
-
   return (
-    <EditorContext.Provider value={providerValue}>
-      <EditorContent editor={editor} size={100} />
-      <FloatingMenu editor={editor}>This is the floating menu</FloatingMenu>
-      <BubbleMenu editor={editor}>This is the bubble menu</BubbleMenu>
-    </EditorContext.Provider>
+    <div className='flex w-full flex-col gap-2'>
+      <div className='flex flex-col'>
+        <MenuBar editor={editor} />
+      </div>
+      <div className='bg-base-200 p-5'>
+        <EditorContent editor={editor} className='bg-base-100 rounded-lg [&_div]:min-h-44' />
+      </div>
+      <div className='flex w-full justify-end'>
+        <button className='btn' onClick={() => onSave(editor?.getHTML() || '')}>
+          <FaRegSave /> 儲存
+        </button>
+      </div>
+    </div>
   );
 };
-
-export default Tiptap;

@@ -5,7 +5,7 @@ import { IRespond, TType } from '../../setting';
 import { REST_PATH } from '../settings/config';
 import { Context } from '../settings/constant';
 
-type TArgument = { collection: string; data: TType };
+type TArgument = { collection: string; data: Omit<TType, 'timestamp'> };
 
 const useInsert = () => {
   const [, setContext] = useContext(Context);
