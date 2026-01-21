@@ -127,8 +127,8 @@ router.post(`/${REST_PATH.upload}`, async (req, res) => {
       if (error) res.status(200).json({ res: false, msg: error });
       else res.status(200).json({ res: true, msg: messages.updateSuccess, data: result });
     });
-  } catch (e) {
-    res.status(200).json({ res: false, msg: messages.uploadError });
+  } catch (error) {
+    res.status(200).json({ res: false, msg: messages.uploadError, error });
   }
 });
 
@@ -145,8 +145,8 @@ router.post(`/${REST_PATH.search}`, async (req, res) => {
       .catch(() => {
         res.status(200).json({ res: false, msg: messages.searchError });
       });
-  } catch (e) {
-    res.status(200).json({ res: false, msg: messages.searchError });
+  } catch (error) {
+    res.status(200).json({ res: false, msg: messages.searchError, error });
   }
 });
 
@@ -156,8 +156,8 @@ router.post(`/${REST_PATH.remove}`, async (req, res) => {
       if (error) res.status(200).json({ res: false, msg: messages.removeError });
       else res.status(200).json({ res: true, msg: messages.removeSuccess, data: result });
     });
-  } catch (e) {
-    res.status(200).json({ res: false, msg: messages.uploadError });
+  } catch (error) {
+    res.status(200).json({ res: false, msg: messages.uploadError, error });
   }
 });
 
@@ -167,8 +167,8 @@ router.post(`/${REST_PATH.removeMany}`, async (req, res) => {
       if (error) res.status(200).json({ res: false, msg: messages.removeError });
       else res.status(200).json({ res: true, msg: messages.removeSuccess, data: result });
     });
-  } catch (e) {
-    res.status(200).json({ res: false, msg: messages.uploadError });
+  } catch (error) {
+    res.status(200).json({ res: false, msg: messages.uploadError, error });
   }
 });
 

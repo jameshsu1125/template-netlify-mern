@@ -5,10 +5,9 @@ import useSearch from '@/hooks/useSearch';
 import { Context } from '@/settings/constant';
 import { ActionType, AlertType } from '@/settings/type';
 import { memo, useCallback, useContext, useEffect, useState } from 'react';
-import { TUploadRespond } from '../../../setting/type';
+import { MdAutoDelete } from 'react-icons/md';
 import { AlbumContext } from './config';
 import Table from './table';
-import { MdAutoDelete } from 'react-icons/md';
 
 type T = {
   reload: React.Dispatch<React.SetStateAction<number>>;
@@ -18,7 +17,6 @@ const List = memo(({ reload }: T) => {
   const [, setContext] = useContext(Context);
   const [state, setState] = useContext(AlbumContext);
   const [respond] = useSearch();
-  const [list, setList] = useState<TUploadRespond[]>();
   const [removeRespond, removeResource] = useRemove();
   const [checkRespond, checkResource] = useRemoveMany();
   const [checkList, setCheckList] = useState<string[]>([]);
@@ -62,18 +60,11 @@ const List = memo(({ reload }: T) => {
       body: 'Are you sure to remove selected?',
       public_id: checkList,
     }));
-  }, [checkList]);
-
-  useEffect(() => {
-    if (respond) {
-      const { data } = respond;
-      setList(data);
-    }
-  }, [respond]);
+  }, [setState, checkList]);
 
   return (
     <div className='List'>
-      {list && <Table data={list} check={check} />}
+      {respond?.data && <Table data={respond.data} check={check} />}
       {checkList.length !== 0 && (
         <Button onClick={removeSelect} className='btn-block uppercase'>
           <MdAutoDelete />
