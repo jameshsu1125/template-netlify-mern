@@ -14,6 +14,7 @@ import deleteOne from './delete';
 import insert, { insertMany } from './insert';
 import select from './select';
 import update from './update';
+import BunnyCDN from 'lesca-node-bunnycdn';
 
 dotenv.config({ path: `.env.${process.env.NODE_ENV}` });
 const app = express();
@@ -22,12 +23,21 @@ app.use(bodyParser.json({ limit }));
 app.use(bodyParser.urlencoded({ extended: true, limit }));
 app.use(express.json({ limit }));
 
-cloudinary.v2.config({
-  cloud_name: process.env.CLOUDINARY_NAME,
-  api_key: process.env.CLOUDINARY_API_KEY,
-  api_secret: process.env.CLOUDINARY_API_SECRET,
-  secure: true,
-});
+if (process.env.CLOUD_STORAGE_TYPE !== 'cloudinary') {
+  cloudinary.v2.config({
+    cloud_name: process.env.CLOUDINARY_NAME,
+    api_key: process.env.CLOUDINARY_API_KEY,
+    api_secret: process.env.CLOUDINARY_API_SECRET,
+    secure: true,
+  });
+} else {
+  BunnyCDN.install({
+    password: process.env.BUNNYCDN_API_KEY || '',
+    storageZone: process.env.BUNNYCDN_STORAGE_ZONE || 'npm-demo',
+    folderName: process.env.BUNNYCDN_BASE_FOLDER || '',
+    region: process.env.BUNNYCDN_REGION || 'SG',
+  });
+}
 
 app.use(cors({ origin: '*' }));
 app.use(express.json());
@@ -134,17 +144,22 @@ router.post(`/${REST_PATH.upload}`, async (req, res) => {
 
 router.post(`/${REST_PATH.search}`, async (req, res) => {
   try {
-    cloudinary.v2.search
-      .expression(
-        `folder=${process.env.CLOUDINARY_BASE_FOLDER}${req.body.folder ? `/${req.body.folder}` : ''}`,
-      )
-      .execute()
-      .then((result) => {
-        res.status(200).json({ res: true, msg: messages.searchSuccess, data: result.resources });
-      })
-      .catch(() => {
-        res.status(200).json({ res: false, msg: messages.searchError });
-      });
+    if (process.env.CLOUD_STORAGE_TYPE == 'cloudinary') {
+      cloudinary.v2.search
+        .expression(
+          `folder=${process.env.CLOUDINARY_BASE_FOLDER}${req.body.folder ? `/${req.body.folder}` : ''}`,
+        )
+        .execute()
+        .then((result) => {
+          res.status(200).json({ res: true, msg: messages.searchSuccess, data: result.resources });
+        })
+        .catch(() => {
+          res.status(200).json({ res: false, msg: messages.searchError });
+        });
+    } else {
+      const result = await BunnyCDN.list();
+      res.status(200).json({ res: true, msg: messages.searchSuccess, data: result.files });
+    }
   } catch (error) {
     res.status(200).json({ res: false, msg: messages.searchError, error });
   }
@@ -152,23 +167,42 @@ router.post(`/${REST_PATH.search}`, async (req, res) => {
 
 router.post(`/${REST_PATH.remove}`, async (req, res) => {
   try {
-    cloudinary.v2.uploader.destroy(req.body.public_id, (error, result) => {
-      if (error) res.status(200).json({ res: false, msg: messages.removeError });
-      else res.status(200).json({ res: true, msg: messages.removeSuccess, data: result });
-    });
+    if (process.env.CLOUD_STORAGE_TYPE == 'cloudinary') {
+      cloudinary.v2.uploader.destroy(req.body.public_id, (error: any, result: any) => {
+        if (error) res.status(200).json({ res: false, msg: messages.removeError });
+        else res.status(200).json({ res: true, msg: messages.removeSuccess, data: result });
+      });
+    } else {
+      const result = await BunnyCDN.deleteFile(
+        req.body.ObjectName ? { ObjectName: req.body.ObjectName } : { href: req.body.href },
+      );
+      res.status(200).json({ res: true, msg: messages.removeSuccess, data: result });
+    }
   } catch (error) {
-    res.status(200).json({ res: false, msg: messages.uploadError, error });
+    res.status(200).json({ res: false, msg: messages.removeError, error });
   }
 });
 
 router.post(`/${REST_PATH.removeMany}`, async (req, res) => {
   try {
-    cloudinary.v2.api.delete_resources(req.body.public_ids, (error, result) => {
-      if (error) res.status(200).json({ res: false, msg: messages.removeError });
-      else res.status(200).json({ res: true, msg: messages.removeSuccess, data: result });
-    });
+    if (process.env.CLOUD_STORAGE_TYPE == 'cloudinary') {
+      cloudinary.v2.api.delete_resources(req.body.public_ids, (error, result) => {
+        console.log(error, result);
+
+        if (error) res.status(200).json({ res: false, msg: messages.removeError });
+        else res.status(200).json({ res: true, msg: messages.removeSuccess, data: result });
+      });
+    } else {
+      const promises = req.body.map((item: { ObjectName?: string; href?: string }) =>
+        BunnyCDN.deleteFile(
+          item.ObjectName ? { ObjectName: item.ObjectName } : { href: item.href },
+        ),
+      );
+      const results = await Promise.all(promises);
+      res.status(200).json({ res: true, msg: messages.removeSuccess, data: results });
+    }
   } catch (error) {
-    res.status(200).json({ res: false, msg: messages.uploadError, error });
+    res.status(200).json({ res: false, msg: messages.removeError, error });
   }
 });
 
