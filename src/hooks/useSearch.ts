@@ -25,7 +25,10 @@ const useSearch = () => {
   };
 
   useEffect(() => {
-    fetch({ folder: '*' });
+    const initialFetch = async () => {
+      await fetch({ folder: '*' });
+    };
+    initialFetch();
   }, []);
 
   return [state, fetch] as const;
