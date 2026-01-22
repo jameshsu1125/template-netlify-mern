@@ -29,7 +29,6 @@
     "lesca-atobtoa": "^2.0.0",
     "lesca-fetcher": "^2.0.2",
     "lesca-local-storage": "^2.0.0",
-    "lesca-node-bunnycdn": "^0.0.4",
     "lesca-react-capture-button": "^3.0.0",
     "lesca-react-onload": "^2.0.10",
     "lesca-use-tween": "^4.0.2",
@@ -40,7 +39,6 @@
     "react-loading": "^2.0.3",
     "react-router-dom": "^7.12.0",
     "serverless-http": "^4.0.0",
-    "sharp": "^0.34.5",
     "ts-toolbelt": "^9.6.0"
   },
   "devDependencies": {
