@@ -17,8 +17,8 @@ const insert = ({ collection, data }: { collection: string; data: TType }) => {
           .catch((e: unknown) => {
             resolve({ res: false, msg: JSON.stringify(e) });
           });
-      } catch (e: unknown) {
-        resolve({ res: false, msg: messages.insertError });
+      } catch (error: unknown) {
+        resolve({ res: false, msg: messages.insertError, error });
       }
     } else resolve({ res: false, msg: messages.insertError });
   });
@@ -39,8 +39,8 @@ const insertMany = ({ collection, data }: { collection: string; data: TType[] })
           .catch((e: unknown) => {
             resolve({ res: false, msg: JSON.stringify(e), collection });
           });
-      } catch (e: unknown) {
-        resolve({ res: false, msg: messages.insertError, collection });
+      } catch (error: unknown) {
+        resolve({ res: false, msg: messages.insertError, collection, error });
       }
     } else resolve({ res: false, msg: messages.insertError, collection });
   });

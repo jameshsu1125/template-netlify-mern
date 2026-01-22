@@ -17,7 +17,7 @@ const update = ({ collection, data }: { collection: string; data: UpdateData }) 
           resolve({ res: true, msg: messages.updateSuccess, collection });
         });
       } catch (error: unknown) {
-        resolve({ res: false, msg: messages.updateError, collection });
+        resolve({ res: false, msg: messages.updateError, collection, error });
       }
     } else resolve({ res: false, msg: messages.updateError, collection });
   });

@@ -12,7 +12,7 @@ const select = ({ collection }: { collection: string }) => {
           resolve({ res: true, msg: messages.selectSuccess, collection, data });
         });
       } catch (error: unknown) {
-        resolve({ res: false, msg: messages.selectError, collection });
+        resolve({ res: false, msg: messages.selectError, collection, error });
       }
     } else resolve({ res: false, msg: messages.selectError, collection });
   });

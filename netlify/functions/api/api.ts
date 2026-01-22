@@ -152,7 +152,7 @@ router.post(`/${REST_PATH.search}`, async (req, res) => {
 
 router.post(`/${REST_PATH.remove}`, async (req, res) => {
   try {
-    cloudinary.v2.uploader.destroy(req.body.public_id, (error, result) => {
+    cloudinary.v2.uploader.destroy(req.body.public_id, (error: any, result: any) => {
       if (error) res.status(200).json({ res: false, msg: messages.removeError });
       else res.status(200).json({ res: true, msg: messages.removeSuccess, data: result });
     });

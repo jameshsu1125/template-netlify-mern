@@ -1,7 +1,7 @@
 import mongoose from 'mongoose';
+import { IRespond } from '../../../setting';
 import { messages } from '../config';
 import models from '../models';
-import { IRespond } from '../../../setting';
 
 type Delete = { _id: string };
 
@@ -15,8 +15,8 @@ const deleteOne = ({ collection, data }: { collection: string; data: Delete }) =
             resolve({ res: true, msg: messages.deleteSuccess, collection });
           } else resolve({ res: false, msg: messages.deleteError });
         });
-      } catch (e: unknown) {
-        resolve({ res: false, msg: messages.deleteError });
+      } catch (error: unknown) {
+        resolve({ res: false, msg: messages.deleteError, error });
       }
     } else resolve({ res: false, msg: messages.deleteError });
   });
