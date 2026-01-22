@@ -32,3 +32,22 @@ export type TUploadRespond = {
   version: number;
   width: number;
 };
+
+export type UploadBunnyCDNRespond = {
+  Guid: string;
+  StorageZoneName: string;
+  Path: string;
+  ObjectName: string;
+  Length: number;
+  Checksum: string;
+  ReplicatedZones: string;
+  LastChanged: string;
+  ServerId: number;
+  ArrayNumber: number;
+  IsDirectory: boolean;
+  UserId: string;
+  ContentType: string;
+  DateCreated: string;
+  StorageZoneId: number;
+  Url: string;
+};

@@ -29,6 +29,7 @@
     "lesca-atobtoa": "^2.0.0",
     "lesca-fetcher": "^2.0.2",
     "lesca-local-storage": "^2.0.0",
+    "lesca-node-bunnycdn": "^0.0.13",
     "lesca-react-capture-button": "^3.0.0",
     "lesca-react-onload": "^2.0.10",
     "lesca-use-tween": "^4.0.2",

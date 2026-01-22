@@ -14,6 +14,8 @@ import deleteOne from './delete';
 import insert, { insertMany } from './insert';
 import select from './select';
 import update from './update';
+import BunnyCDN from 'lesca-node-bunnycdn';
+import { TUploadRespond } from '../../../setting/type';
 
 dotenv.config({ path: `.env.${process.env.NODE_ENV}` });
 const app = express();
@@ -28,6 +30,16 @@ cloudinary.v2.config({
   api_secret: process.env.CLOUDINARY_API_SECRET,
   secure: true,
 });
+
+const bunnyCdnConfig = {
+  password: process.env.BUNNY_PASSWORD || 'unset',
+  storageZone: process.env.BUNNY_STORAGE_ZONE || 'demo',
+  folderName: process.env.BUNNY_FOLDER_NAME || '',
+  region: process.env.BUNNY_REGION || 'SG',
+};
+
+const storageType: 'cloudinary' | 'bunnycdn' =
+  process.env.CLOUD_STORAGE_TYPE === 'cloudinary' ? 'cloudinary' : 'bunnycdn';
 
 app.use(cors({ origin: '*' }));
 app.use(express.json());
@@ -134,17 +146,53 @@ router.post(`/${REST_PATH.upload}`, async (req, res) => {
 
 router.post(`/${REST_PATH.search}`, async (req, res) => {
   try {
-    cloudinary.v2.search
-      .expression(
-        `folder=${process.env.CLOUDINARY_BASE_FOLDER}${req.body.folder ? `/${req.body.folder}` : ''}`,
-      )
-      .execute()
-      .then((result) => {
-        res.status(200).json({ res: true, msg: messages.searchSuccess, data: result.resources });
-      })
-      .catch(() => {
-        res.status(200).json({ res: false, msg: messages.searchError });
+    if (storageType === 'cloudinary') {
+      cloudinary.v2.search
+        .expression(
+          `folder=${process.env.CLOUDINARY_BASE_FOLDER}${req.body.folder ? `/${req.body.folder}` : ''}`,
+        )
+        .execute()
+        .then((result) => {
+          res.status(200).json({ res: true, msg: messages.searchSuccess, data: result.resources });
+        })
+        .catch(() => {
+          res.status(200).json({ res: false, msg: messages.searchError });
+        });
+    } else {
+      const result = await BunnyCDN.list({
+        ...bunnyCdnConfig,
       });
+      const files = result.files?.map((item) => {
+        const resources: TUploadRespond = {
+          access_control: null,
+          access_mode: '',
+          aspect_ratio: 0,
+          asset_id: '',
+          backup_bytes: 0,
+          bytes: item.Length,
+          created_at: item.DateCreated,
+          created_by: { access_key: '' },
+          etag: item.Checksum,
+          filename: item.ObjectName,
+          folder: item.Path,
+          format: item.ContentType.split('/')[1],
+          height: 0,
+          pixels: 0,
+          public_id: item.ObjectName,
+          resource_type: item.IsDirectory ? 'folder' : 'file',
+          secure_url: item.Url,
+          status: 'available',
+          type: item.IsDirectory ? 'folder' : 'file',
+          uploaded_at: item.DateCreated,
+          uploaded_by: { access_key: '' },
+          url: item.Url,
+          version: 0,
+          width: 0,
+        };
+        return resources;
+      });
+      res.status(200).json({ res: true, msg: messages.searchSuccess, data: files });
+    }
   } catch (error) {
     res.status(200).json({ res: false, msg: messages.searchError, error });
   }
