@@ -5,6 +5,7 @@ import {
   IAction,
   IState,
   LoadingProcessType,
+  TAlbumState,
   TAlertState,
   TContext,
   TLoadingProcessState,
@@ -48,12 +49,17 @@ export const UserState: TUserState = {
   token: '',
 };
 
+export const AlbumState: TAlbumState = {
+  folder: '*',
+};
+
 export const InitialState: IState = {
   [ActionType.LoadingProcess]: LoadingProcessState,
   [ActionType.Status]: StatusState,
   [ActionType.Alert]: AlertState,
   [ActionType.Modal]: ModalState,
   [ActionType.User]: UserState,
+  [ActionType.Album]: AlbumState,
 };
 
 export const Context = createContext<TContext>([InitialState, () => {}]);

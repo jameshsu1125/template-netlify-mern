@@ -64,7 +64,7 @@ const List = memo(({ reload }: T) => {
 
   return (
     <div className='List'>
-      {respond?.data && <Table data={respond.data} check={check} />}
+      {respond?.data && <Table data={respond.data} check={check} reload={reload} />}
       {checkList.length !== 0 && (
         <Button onClick={removeSelect} className='btn-block uppercase'>
           <MdAutoDelete />

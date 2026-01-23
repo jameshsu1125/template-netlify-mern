@@ -7,6 +7,7 @@ export enum ActionType {
   Alert = 'alert',
   Modal = 'modal',
   User = 'user',
+  Album = 'album',
 }
 
 export enum LoadingProcessType {
@@ -84,12 +85,17 @@ export type TUserState = {
   type: UserType;
 };
 
+export type TAlbumState = {
+  folder: string;
+};
+
 export interface IState {
-  loadingProcess: TLoadingProcessState;
-  status: TStatusState;
-  alert: TAlertState;
-  modal: TModalState;
-  user: TUserState;
+  [ActionType.LoadingProcess]: TLoadingProcessState;
+  [ActionType.Status]: TStatusState;
+  [ActionType.Alert]: TAlertState;
+  [ActionType.Modal]: TModalState;
+  [ActionType.User]: TUserState;
+  [ActionType.Album]: TAlbumState;
 }
 
 export interface IAction {
@@ -99,7 +105,8 @@ export interface IAction {
     | Partial<TStatusState>
     | Partial<TAlertState>
     | Partial<TModalState>
-    | Partial<TUserState>;
+    | Partial<TUserState>
+    | Partial<TAlbumState>;
   type: ActionType;
 }
 

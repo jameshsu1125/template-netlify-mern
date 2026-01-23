@@ -15,7 +15,8 @@ import insert, { insertMany } from './insert';
 import select from './select';
 import update from './update';
 import BunnyCDN from 'lesca-node-bunnycdn';
-import { TUploadRespond } from '../../../setting/type';
+import { CloudinaryUploadedResult, TUploadRespond } from '../../../setting/type';
+import sharp from 'sharp';
 
 dotenv.config({ path: `.env.${process.env.NODE_ENV}` });
 const app = express();
@@ -134,11 +135,65 @@ router.post(`/${REST_PATH.update}`, async (req, res) => {
 
 router.post(`/${REST_PATH.upload}`, async (req, res) => {
   try {
-    const folder = `${process.env.CLOUDINARY_BASE_FOLDER}${req.body.folder ? `/${req.body.folder}` : ''}`;
-    cloudinary.v2.uploader.upload(req.body.image, { folder }, (error, result) => {
-      if (error) res.status(200).json({ res: false, msg: error });
-      else res.status(200).json({ res: true, msg: messages.updateSuccess, data: result });
-    });
+    const base64Image = req.body.image;
+    if (!base64Image) {
+      res.status(200).json({ res: false, msg: 'No image provided' });
+      return;
+    }
+
+    const sharpConfig: { format?: 'jpeg' | 'png' | 'webp'; quality?: number } = {
+      format: 'webp',
+      quality: 80,
+    };
+
+    const buffer = await sharp(Buffer.from(base64Image.split(',')[1], 'base64'))
+      .toFormat(sharpConfig.format || 'webp', { quality: sharpConfig.quality || 80 })
+      .toBuffer();
+
+    if (storageType === 'cloudinary') {
+      const folder = `${process.env.CLOUDINARY_BASE_FOLDER}${req.body.folder ? `/${req.body.folder}` : ''}`;
+      const base64String = `data:image/webp;base64,${buffer.toString('base64')}`;
+      cloudinary.v2.uploader.upload(base64String, { folder }, (error, result) => {
+        if (error) res.status(200).json({ res: false, msg: error });
+        else res.status(200).json({ res: true, msg: messages.updateSuccess, data: result });
+      });
+    } else {
+      const folder = req.body.folder || '';
+      console.log(folder);
+      const result = await BunnyCDN.upload({
+        buffer,
+        folder,
+        ...bunnyCdnConfig,
+      });
+
+      const public_id = result.url?.split('/').pop() || '';
+      const data: CloudinaryUploadedResult = {
+        public_id,
+        version: 0,
+        signature: '',
+        width: 0,
+        height: 0,
+        format: public_id.split('.').pop() || 'webp',
+        resource_type: 'image',
+        created_at: '',
+        tags: [],
+        pages: 0,
+        bytes: 0,
+        type: 'image',
+        etag: '',
+        placeholder: false,
+        url: result.url || '',
+        secure_url: result.url || '',
+        access_control: [],
+        original_filename: public_id,
+        moderation: [],
+        access_mode: '',
+        context: {},
+        metadata: {},
+        colors: [],
+      };
+      res.status(200).json({ res: true, msg: messages.uploadSuccess, data });
+    }
   } catch (error) {
     res.status(200).json({ res: false, msg: messages.uploadError, error });
   }
@@ -159,38 +214,44 @@ router.post(`/${REST_PATH.search}`, async (req, res) => {
           res.status(200).json({ res: false, msg: messages.searchError });
         });
     } else {
+      const currentFolder = req.body.folder === '*' ? '' : req.body.folder;
       const result = await BunnyCDN.list({
-        ...bunnyCdnConfig,
+        folder: currentFolder,
+        configOverrides: bunnyCdnConfig,
       });
-      const files = result.files?.map((item) => {
-        const resources: TUploadRespond = {
-          access_control: null,
-          access_mode: '',
-          aspect_ratio: 0,
-          asset_id: '',
-          backup_bytes: 0,
-          bytes: item.Length,
-          created_at: item.DateCreated,
-          created_by: { access_key: '' },
-          etag: item.Checksum,
-          filename: item.ObjectName,
-          folder: item.Path,
-          format: item.ContentType.split('/')[1],
-          height: 0,
-          pixels: 0,
-          public_id: item.ObjectName,
-          resource_type: item.IsDirectory ? 'folder' : 'file',
-          secure_url: item.Url,
-          status: 'available',
-          type: item.IsDirectory ? 'folder' : 'file',
-          uploaded_at: item.DateCreated,
-          uploaded_by: { access_key: '' },
-          url: item.Url,
-          version: 0,
-          width: 0,
-        };
-        return resources;
-      });
+      const files = result.files
+        ?.map((item) => {
+          const resources: TUploadRespond = {
+            access_control: null,
+            access_mode: '',
+            aspect_ratio: 0,
+            asset_id: '',
+            backup_bytes: 0,
+            bytes: item.Length,
+            created_at: item.DateCreated,
+            created_by: { access_key: item.Guid },
+            etag: item.Checksum,
+            filename: item.ObjectName,
+            folder: item.Path.replace(/\//g, ''),
+            format: item.ContentType.split('/')[1] || '',
+            height: 0,
+            pixels: 0,
+            public_id: item.ObjectName,
+            resource_type: item.IsDirectory ? 'folder' : 'file',
+            secure_url: item.Url,
+            status: 'available',
+            type: item.IsDirectory ? 'folder' : 'file',
+            uploaded_at: item.DateCreated,
+            uploaded_by: { access_key: '' },
+            url: item.Url,
+            version: 0,
+            width: 0,
+          };
+          return resources;
+        })
+        .sort((a) => {
+          return a.resource_type === 'folder' ? -1 : 1;
+        });
       res.status(200).json({ res: true, msg: messages.searchSuccess, data: files });
     }
   } catch (error) {
@@ -200,10 +261,19 @@ router.post(`/${REST_PATH.search}`, async (req, res) => {
 
 router.post(`/${REST_PATH.remove}`, async (req, res) => {
   try {
-    cloudinary.v2.uploader.destroy(req.body.public_id, (error: any, result: any) => {
-      if (error) res.status(200).json({ res: false, msg: messages.removeError });
-      else res.status(200).json({ res: true, msg: messages.removeSuccess, data: result });
-    });
+    if (storageType === 'cloudinary') {
+      cloudinary.v2.uploader.destroy(req.body.public_id, (error: any, result: any) => {
+        if (error) res.status(200).json({ res: false, msg: messages.removeError });
+        else res.status(200).json({ res: true, msg: messages.removeSuccess, data: result });
+      });
+    } else {
+      const result = await BunnyCDN.deleteFile({
+        ...bunnyCdnConfig,
+        href: req.body.public_id,
+      });
+      if (result) res.status(200).json({ res: true, msg: messages.removeSuccess, data: result });
+      else res.status(200).json({ res: false, msg: messages.removeError });
+    }
   } catch (error) {
     res.status(200).json({ res: false, msg: messages.uploadError, error });
   }
@@ -211,10 +281,22 @@ router.post(`/${REST_PATH.remove}`, async (req, res) => {
 
 router.post(`/${REST_PATH.removeMany}`, async (req, res) => {
   try {
-    cloudinary.v2.api.delete_resources(req.body.public_ids, (error, result) => {
-      if (error) res.status(200).json({ res: false, msg: messages.removeError });
-      else res.status(200).json({ res: true, msg: messages.removeSuccess, data: result });
-    });
+    if (storageType === 'cloudinary') {
+      cloudinary.v2.api.delete_resources(req.body.public_ids, (error, result) => {
+        if (error) res.status(200).json({ res: false, msg: messages.removeError });
+        else res.status(200).json({ res: true, msg: messages.removeSuccess, data: result });
+      });
+    } else {
+      const results = await Promise.all(
+        req.body.public_ids.map(async (public_id: string) => {
+          return await BunnyCDN.deleteFile({
+            ...bunnyCdnConfig,
+            href: public_id,
+          });
+        }),
+      );
+      res.status(200).json({ res: true, msg: messages.removeSuccess, data: results });
+    }
   } catch (error) {
     res.status(200).json({ res: false, msg: messages.uploadError, error });
   }

@@ -29,7 +29,7 @@
     "lesca-atobtoa": "^2.0.0",
     "lesca-fetcher": "^2.0.2",
     "lesca-local-storage": "^2.0.0",
-    "lesca-node-bunnycdn": "^0.0.13",
+    "lesca-node-bunnycdn": "^0.0.22",
     "lesca-react-capture-button": "^3.0.0",
     "lesca-react-onload": "^2.0.10",
     "lesca-use-tween": "^4.0.2",
@@ -40,6 +40,7 @@
     "react-loading": "^2.0.3",
     "react-router-dom": "^7.12.0",
     "serverless-http": "^4.0.0",
+    "sharp": "^0.34.5",
     "ts-toolbelt": "^9.6.0"
   },
   "devDependencies": {
@@ -55,7 +56,7 @@
     "@vitejs/plugin-react": "^5.1.2",
     "autoprefixer": "^10.4.23",
     "concurrently": "^9.2.1",
-    "cors": "^2.8.5",
+    "cors": "^2.8.6",
     "daisyui": "^5.5.14",
     "dotenv": "^17.2.3",
     "eslint": "^9.39.2",

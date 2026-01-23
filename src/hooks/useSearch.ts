@@ -10,7 +10,8 @@ type T = {
 };
 
 const useSearch = () => {
-  const [, setContext] = useContext(Context);
+  const [content, setContext] = useContext(Context);
+  const folder = content[ActionType.Album].folder;
   const [state, setState] = useState<TUploadResult | undefined>();
 
   const fetch = async (parm: T) => {
@@ -26,10 +27,10 @@ const useSearch = () => {
 
   useEffect(() => {
     const initialFetch = async () => {
-      await fetch({ folder: '*' });
+      await fetch({ folder });
     };
     initialFetch();
-  }, []);
+  }, [folder]);
 
   return [state, fetch] as const;
 };
