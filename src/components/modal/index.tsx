@@ -14,7 +14,8 @@ const Modal = memo(() => {
           setContext({ type: ActionType.Modal, state: { enabled: false } });
         }}
       />
-      <div className='modal-box w-11/12 max-w-7xl'>
+
+      <div className='modal-box max-h-10/12 w-11/12 max-w-7xl'>
         <h3 className='text-lg font-bold'>{title}</h3>
         <div className='py-4'>{body}</div>
         <div className='modal-action'>
