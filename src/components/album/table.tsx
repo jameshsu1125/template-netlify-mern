@@ -7,11 +7,10 @@ import TR from './tr';
 
 type T = {
   data: TUploadRespond[];
-  reload: React.Dispatch<React.SetStateAction<number>>;
   check: (check: boolean, public_id: string) => void;
 };
 
-const Table = memo(({ data, check, reload }: T) => {
+const Table = memo(({ data, check }: T) => {
   const [context, setContext] = useContext(Context);
   const folder = context[ActionType.Album].folder;
 
@@ -51,7 +50,7 @@ const Table = memo(({ data, check, reload }: T) => {
         <tbody>
           {folder !== '*' && <TR check={check} />}
           {data.map((item) => {
-            return <TR key={JSON.stringify(item)} item={item} check={check} reload={reload} />;
+            return <TR key={JSON.stringify(item)} item={item} check={check} />;
           })}
         </tbody>
         <tfoot>

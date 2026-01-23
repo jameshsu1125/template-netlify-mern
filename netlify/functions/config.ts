@@ -16,8 +16,8 @@ export const messages = {
   uploadSuccess: 'Upload successful',
   searchError: 'Search image failed',
   searchSuccess: 'Search image successful',
-  removeError: 'Remove image failed',
-  removeSuccess: 'Remove image successful',
+  removeError: 'Remove image or folder failed',
+  removeSuccess: 'Remove image or folder successful',
 };
 
 export const limit = '10mb';

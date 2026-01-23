@@ -1,15 +1,13 @@
-import { memo, useContext, useEffect, useState } from 'react';
-import { TUploadRespond } from '../../../setting/type';
-import { FaFolder } from 'react-icons/fa6';
-import { AlbumContext } from './config';
-import { useCopyToClipboard } from '@uidotdev/usehooks';
 import { Context } from '@/settings/constant';
-import { ActionType, AlertType } from '@/settings/type';
-import useRemove from '@/hooks/useRemove';
+import { ActionType } from '@/settings/type';
+import { useCopyToClipboard } from '@uidotdev/usehooks';
+import { memo, useContext, useEffect, useState } from 'react';
+import { FaFolder } from 'react-icons/fa6';
+import { TUploadRespond } from '../../../setting/type';
+import { AlbumContext } from './config';
 
 type TTR = {
   item?: TUploadRespond;
-  reload?: React.Dispatch<React.SetStateAction<number>>;
   check: (check: boolean, public_id: string) => void;
 };
 
@@ -42,26 +40,11 @@ const Size = memo(({ width, height, resource }: TSize) => {
   );
 });
 
-const TR = memo(({ item, check, reload }: TTR) => {
+const TR = memo(({ item, check }: TTR) => {
   const [, setContext] = useContext(Context);
 
   const [, setState] = useContext(AlbumContext);
   const [, copy] = useCopyToClipboard();
-  const [response, removeResource] = useRemove();
-
-  useEffect(() => {
-    if (response) {
-      setContext({
-        type: ActionType.Alert,
-        state: {
-          enabled: true,
-          body: response.msg,
-          type: response.res ? AlertType.Success : AlertType.Error,
-        },
-      });
-      reload?.((S) => S + 1);
-    }
-  }, [response]);
 
   return (
     <tr key={JSON.stringify(item)}>
@@ -70,7 +53,7 @@ const TR = memo(({ item, check, reload }: TTR) => {
           {item && item?.resource_type !== 'folder' && (
             <input
               onChange={(e) => {
-                check(e.target.checked, item.public_id);
+                check(e.target.checked, item.pixels === 0 ? item.secure_url : item.public_id);
               }}
               type='checkbox'
               className='checkbox border-2'
@@ -142,11 +125,17 @@ const TR = memo(({ item, check, reload }: TTR) => {
               </button>
               <button
                 onClick={() => {
-                  removeResource({ public_id: item.secure_url });
+                  setState((S) => ({
+                    ...S,
+                    enabled: true,
+                    body: `Delete folder "${item.secure_url}" from cloudinary?`,
+                    public_id: [item.secure_url],
+                    submit: false,
+                  }));
                 }}
                 className='btn join-item btn-xs'
               >
-                remove
+                delete
               </button>
             </>
           ) : (
