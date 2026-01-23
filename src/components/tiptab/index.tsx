@@ -5,8 +5,19 @@ import './index.less';
 import MenuBar from './menu';
 import { FaRegSave } from 'react-icons/fa';
 import { useEffect } from 'react';
+import Image from '@tiptap/extension-image';
 
-const extensions = [TextStyle, StarterKit];
+const extensions = [
+  TextStyle,
+  StarterKit,
+  Image.configure({
+    inline: true,
+    resize: {
+      enabled: true,
+      alwaysPreserveAspectRatio: true,
+    },
+  }),
+];
 
 export default ({ onSave, html }: { onSave: (html: string) => void; html: string }) => {
   const editor = useEditor({

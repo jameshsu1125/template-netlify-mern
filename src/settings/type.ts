@@ -73,7 +73,7 @@ export type TModalState = Debug<
     body: ReactNode;
     label: string[] | string;
     storage: any;
-    onClose: (label: string) => void;
+    onClose: (label?: string) => void;
   }
 >;
 
@@ -87,6 +87,7 @@ export type TUserState = {
 
 export type TAlbumState = {
   folder: string;
+  copiedText: string;
 };
 
 export interface IState {

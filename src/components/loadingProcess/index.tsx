@@ -4,9 +4,7 @@ import { memo, useContext } from 'react';
 import { twMerge } from 'tailwind-merge';
 import './index.less';
 
-const Background = () => (
-  <div className='bg-backgroundColor absolute top-0 h-full w-full opacity-90' />
-);
+const Background = () => <div className='bg-base-300 absolute top-0 h-full w-full opacity-50' />;
 
 const Text = ({ children }: IReactProps) => (
   <span className='text-textColor relative'>{children}</span>
@@ -19,7 +17,7 @@ const LoadingSvg = ({ className, type }: { className: string; type?: string }) =
         className,
         'mask-contain mask-center',
         'h-16 w-16',
-        'bg-white',
+        'bg-primary-content',
         type || LoadingProcessType.Spin,
       )}
     />

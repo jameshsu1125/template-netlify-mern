@@ -1,7 +1,7 @@
 import { Context } from '@/settings/constant';
-import { ActionType } from '@/settings/type';
+import { ActionType, AlertType } from '@/settings/type';
 import { useCopyToClipboard } from '@uidotdev/usehooks';
-import { memo, useContext, useEffect, useState } from 'react';
+import { memo, useCallback, useContext, useEffect, useState } from 'react';
 import { FaFolder } from 'react-icons/fa6';
 import { TUploadRespond } from '../../../setting/type';
 import { AlbumContext } from './config';
@@ -44,7 +44,32 @@ const TR = memo(({ item, check }: TTR) => {
   const [, setContext] = useContext(Context);
 
   const [, setState] = useContext(AlbumContext);
-  const [, copy] = useCopyToClipboard();
+  const [copiedText, copy] = useCopyToClipboard();
+
+  const alertMessage = useCallback(
+    (status: boolean) => {
+      if (status) {
+        setContext({
+          type: ActionType.Alert,
+          state: { enabled: true, body: '網址已經複製到剪貼簿', type: AlertType.Success },
+        });
+      } else {
+        setContext({
+          type: ActionType.Alert,
+          state: { enabled: true, body: '剪貼簿功能不支援', type: AlertType.Error },
+        });
+      }
+    },
+    [setContext],
+  );
+
+  useEffect(() => {
+    if (copiedText) {
+      alertMessage(true);
+      setContext({ type: ActionType.Album, state: { copiedText } });
+      setContext({ type: ActionType.Modal, state: { enabled: false } });
+    }
+  }, [copiedText, alertMessage]);
 
   return (
     <tr key={JSON.stringify(item)}>

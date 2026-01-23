@@ -51,6 +51,7 @@ export const UserState: TUserState = {
 
 export const AlbumState: TAlbumState = {
   folder: '*',
+  copiedText: '',
 };
 
 export const InitialState: IState = {

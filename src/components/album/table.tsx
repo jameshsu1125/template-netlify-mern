@@ -1,7 +1,6 @@
 import { Context } from '@/settings/constant';
-import { ActionType, AlertType } from '@/settings/type';
-import { useCopyToClipboard } from '@uidotdev/usehooks';
-import { memo, useCallback, useContext, useEffect } from 'react';
+import { ActionType } from '@/settings/type';
+import { memo, useContext } from 'react';
 import { TUploadRespond } from '../../../setting/type';
 import TR from './tr';
 
@@ -11,31 +10,8 @@ type T = {
 };
 
 const Table = memo(({ data, check }: T) => {
-  const [context, setContext] = useContext(Context);
+  const [context] = useContext(Context);
   const folder = context[ActionType.Album].folder;
-
-  const [copiedText] = useCopyToClipboard();
-
-  const alertMessage = useCallback(
-    (status: boolean) => {
-      if (status) {
-        setContext({
-          type: ActionType.Alert,
-          state: { enabled: true, body: '網址已經複製到剪貼簿', type: AlertType.Success },
-        });
-      } else {
-        setContext({
-          type: ActionType.Alert,
-          state: { enabled: true, body: '剪貼簿功能不支援', type: AlertType.Error },
-        });
-      }
-    },
-    [setContext],
-  );
-
-  useEffect(() => {
-    if (copiedText) alertMessage(true);
-  }, [copiedText]);
 
   return (
     <div className='overflow-x-auto'>

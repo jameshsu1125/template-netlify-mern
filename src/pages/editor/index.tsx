@@ -32,7 +32,7 @@ const EditorPage = memo(() => {
         });
       }
     }
-  }, [response, responseUpdate]);
+  }, [response, responseUpdate, setContext]);
 
   useEffect(() => {
     setData({ collection: 'editor' });
@@ -52,10 +52,6 @@ const EditorPage = memo(() => {
     [currentData, insert, update],
   );
 
-  return (
-    <div className=''>
-      <Tiptap html={currentData?.[0]?.html || ''} onSave={onSave} />
-    </div>
-  );
+  return <Tiptap html={currentData?.[0]?.html || ''} onSave={onSave} />;
 });
 export default EditorPage;

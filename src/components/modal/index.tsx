@@ -7,13 +7,14 @@ const Modal = memo(() => {
   const { title, body, label, onClose } = context[ActionType.Modal];
 
   return (
-    <dialog id='my_modal_4' className='modal modal-open fixed'>
+    <dialog id='my_modal_4' className='modal modal-open fixed z-40'>
       <div
-        className='modal-box w-11/12 max-w-7xl'
+        className='modal-backdrop'
         onClick={() => {
           setContext({ type: ActionType.Modal, state: { enabled: false } });
         }}
-      >
+      />
+      <div className='modal-box w-11/12 max-w-7xl'>
         <h3 className='text-lg font-bold'>{title}</h3>
         <div className='py-4'>{body}</div>
         <div className='modal-action'>

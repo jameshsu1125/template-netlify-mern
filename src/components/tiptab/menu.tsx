@@ -1,19 +1,39 @@
+import { Context } from '@/settings/constant';
+import { ActionType } from '@/settings/type';
 import { useEditorState, type Editor } from '@tiptap/react';
-import { memo } from 'react';
-import './index.less';
-import { twMerge } from 'tailwind-merge';
-import { FaBold, FaCode, FaItalic, FaParagraph, FaStrikethrough } from 'react-icons/fa6';
+import { memo, useCallback, useContext, useEffect, useRef } from 'react';
+import { AiOutlineEnter } from 'react-icons/ai';
+import { BiCodeBlock } from 'react-icons/bi';
+import { BsTypeH1, BsTypeH2, BsTypeH3, BsTypeH4, BsTypeH5, BsTypeH6 } from 'react-icons/bs';
+import { FaBold, FaCode, FaImage, FaItalic, FaParagraph, FaStrikethrough } from 'react-icons/fa6';
+import { GoHorizontalRule, GoListOrdered } from 'react-icons/go';
+import { GrBlockQuote } from 'react-icons/gr';
+import { LuRedo2, LuUndo2 } from 'react-icons/lu';
+import { MdFormatListBulleted } from 'react-icons/md';
 import { TbClearFormatting } from 'react-icons/tb';
 import { VscClearAll } from 'react-icons/vsc';
-import { BsTypeH1, BsTypeH2, BsTypeH3, BsTypeH4, BsTypeH5, BsTypeH6 } from 'react-icons/bs';
-import { MdFormatListBulleted } from 'react-icons/md';
-import { GoHorizontalRule, GoListOrdered } from 'react-icons/go';
-import { BiCodeBlock } from 'react-icons/bi';
-import { GrBlockQuote } from 'react-icons/gr';
-import { AiOutlineEnter } from 'react-icons/ai';
-import { LuRedo2, LuUndo2 } from 'react-icons/lu';
+import { twMerge } from 'tailwind-merge';
+import Album from '../album';
+import './index.less';
+
+const ModalTitle = 'Album';
 
 const MenuBar = memo(({ editor }: { editor: Editor }) => {
+  const [context, setContext] = useContext(Context);
+  const { copiedText } = context[ActionType.Album];
+  const { enabled, title, onClose } = context[ActionType.Modal];
+  const copiedTextRef = useRef(copiedText);
+
+  useEffect(() => {
+    copiedTextRef.current = copiedText;
+  }, [copiedText]);
+
+  useEffect(() => {
+    if (ModalTitle === title && !enabled) {
+      onClose?.();
+    }
+  }, [enabled, title, onClose]);
+
   const editorState = useEditorState({
     editor,
     selector: (ctx) => {
@@ -43,6 +63,22 @@ const MenuBar = memo(({ editor }: { editor: Editor }) => {
       };
     },
   });
+
+  const addImage = useCallback(() => {
+    setContext({
+      type: ActionType.Modal,
+      state: {
+        enabled: true,
+        title: ModalTitle,
+        body: <Album />,
+        onClose: () => {
+          if (!copiedTextRef.current) return;
+          editor.chain().focus().setImage({ src: copiedTextRef.current }).run();
+        },
+      },
+    });
+  }, [editor, setContext]);
+
   return (
     <div className='join btn-sm flex-wrap'>
       <div className='tooltip' data-tip='粗體'>
@@ -187,6 +223,11 @@ const MenuBar = memo(({ editor }: { editor: Editor }) => {
       <div className='tooltip' data-tip='換行'>
         <button className='btn' onClick={() => editor.chain().focus().setHardBreak().run()}>
           <AiOutlineEnter />
+        </button>
+      </div>
+      <div className='tooltip' data-tip='新增圖片'>
+        <button className='btn' onClick={addImage}>
+          <FaImage />
         </button>
       </div>
       <div className='tooltip' data-tip='復原'>

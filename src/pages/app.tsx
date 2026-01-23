@@ -10,7 +10,6 @@ import RoutePages from './router';
 
 const App = () => {
   const value = useReducer(Reducer, InitialState);
-
   return (
     <Auth0Provider
       domain={import.meta.env.VITE_AUTH0_DOMAIN}
@@ -29,9 +28,9 @@ const App = () => {
             <RoutePages />
           </BrowserRouter>
         </div>
+        {value[0][ActionType.Modal].enabled && <Modal />}
+        {value[0][ActionType.Alert].enabled && <Alert />}
         {value[0][ActionType.LoadingProcess]?.enabled && <LoadingProcess />}
-        {value[0][ActionType.Alert]?.enabled && <Alert />}
-        {value[0][ActionType.Modal]?.enabled && <Modal />}
       </Context.Provider>
     </Auth0Provider>
   );
