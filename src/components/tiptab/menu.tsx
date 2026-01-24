@@ -4,7 +4,7 @@ import { useEditorState, type Editor } from '@tiptap/react';
 import { memo, useCallback, useContext, useEffect, useRef } from 'react';
 import { AiOutlineEnter } from 'react-icons/ai';
 import { BiCodeBlock } from 'react-icons/bi';
-import { BsTypeH1, BsTypeH2, BsTypeH3, BsTypeH4, BsTypeH5, BsTypeH6 } from 'react-icons/bs';
+import { BsTypeH1, BsTypeH2, BsTypeH3, BsTypeH4 } from 'react-icons/bs';
 import { FaBold, FaCode, FaImage, FaItalic, FaParagraph, FaStrikethrough } from 'react-icons/fa6';
 import { GoHorizontalRule, GoListOrdered } from 'react-icons/go';
 import { GrBlockQuote } from 'react-icons/gr';
@@ -52,8 +52,6 @@ const MenuBar = memo(({ editor }: { editor: Editor }) => {
         isHeading2: ctx.editor.isActive('heading', { level: 2 }) ?? false,
         isHeading3: ctx.editor.isActive('heading', { level: 3 }) ?? false,
         isHeading4: ctx.editor.isActive('heading', { level: 4 }) ?? false,
-        isHeading5: ctx.editor.isActive('heading', { level: 5 }) ?? false,
-        isHeading6: ctx.editor.isActive('heading', { level: 6 }) ?? false,
         isBulletList: ctx.editor.isActive('bulletList') ?? false,
         isOrderedList: ctx.editor.isActive('orderedList') ?? false,
         isCodeBlock: ctx.editor.isActive('codeBlock') ?? false,
@@ -165,22 +163,6 @@ const MenuBar = memo(({ editor }: { editor: Editor }) => {
           className={twMerge('btn', editorState.isHeading4 ? 'is-active' : '')}
         >
           <BsTypeH4 />
-        </button>
-      </div>
-      <div className='tooltip' data-tip='標題 5'>
-        <button
-          onClick={() => editor.chain().focus().toggleHeading({ level: 5 }).run()}
-          className={twMerge('btn', editorState.isHeading5 ? 'is-active' : '')}
-        >
-          <BsTypeH5 />
-        </button>
-      </div>
-      <div className='tooltip' data-tip='標題 6'>
-        <button
-          onClick={() => editor.chain().focus().toggleHeading({ level: 6 }).run()}
-          className={twMerge('btn', editorState.isHeading6 ? 'is-active' : '')}
-        >
-          <BsTypeH6 />
         </button>
       </div>
       <div className='tooltip' data-tip='項目清單'>

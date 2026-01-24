@@ -38,7 +38,10 @@ export default ({ onSave, html }: { onSave: (html: string) => void; html: string
           <MenuBar editor={editor} />
         </div>
         <div className='bg-base-200 p-5'>
-          <EditorContent editor={editor} className='bg-base-100 rounded-lg [&_div]:min-h-44' />
+          <EditorContent
+            editor={editor}
+            className='bg-base-100 prose rounded-lg [&_div]:min-h-44'
+          />
         </div>
         <div className='flex w-full justify-end'>
           <button className='btn' onClick={() => onSave(editor?.getHTML() || '')}>

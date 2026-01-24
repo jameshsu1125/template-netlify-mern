@@ -91,9 +91,14 @@ const TR = memo(({ item, check }: TTR) => {
           <div className='avatar'>
             <div className='mask mask-squircle flex h-20 w-20 items-center justify-center'>
               {item && item.resource_type !== 'folder' ? (
-                <a href={item.secure_url} target='_blank' rel='noreferrer'>
-                  <img src={item.secure_url} alt='Avatar Tailwind CSS Component' />
-                </a>
+                <img
+                  className='cursor-pointer'
+                  onClick={() => {
+                    window.open(item.secure_url, '_blank');
+                  }}
+                  src={item.secure_url}
+                  alt={`${item.folder}/${item.filename}.${item.format}`}
+                />
               ) : (
                 <FaFolder
                   className='h-18 w-18 cursor-pointer'
