@@ -6,9 +6,9 @@ import { ActionType } from '@/settings/type';
 import { Auth0Provider } from '@auth0/auth0-react';
 import { useReducer } from 'react';
 import { BrowserRouter } from 'react-router-dom';
-import RoutePages from './router';
+import RoutePages, { UserRoutePages } from './router';
 
-const App = () => {
+const AdminApp = () => {
   const value = useReducer(Reducer, InitialState);
   return (
     <Auth0Provider
@@ -19,12 +19,12 @@ const App = () => {
           : import.meta.env.VITE_AUTH0_CLIENT_ID
       }
       authorizationParams={{
-        redirect_uri: window.location.origin,
+        redirect_uri: window.location.origin + '/admin',
       }}
     >
       <Context.Provider {...{ value }}>
         <div className='App'>
-          <BrowserRouter>
+          <BrowserRouter basename='/admin'>
             <RoutePages />
           </BrowserRouter>
         </div>
@@ -34,6 +34,26 @@ const App = () => {
       </Context.Provider>
     </Auth0Provider>
   );
+};
+
+const UserApp = () => {
+  const value = useReducer(Reducer, InitialState);
+
+  return (
+    <Context.Provider {...{ value }}>
+      <div className='App'>
+        <BrowserRouter>
+          <UserRoutePages />
+        </BrowserRouter>
+      </div>
+      {value[0][ActionType.LoadingProcess]?.enabled && <LoadingProcess />}
+    </Context.Provider>
+  );
+};
+
+const App = () => {
+  const isAdmin = location.pathname.startsWith('/admin');
+  return isAdmin ? <AdminApp /> : <UserApp />;
 };
 
 export default App;

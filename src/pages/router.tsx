@@ -1,17 +1,18 @@
-import Drawer from '@/components/drawer/index.tsx';
-import LoadingProcess from '@/components/loadingProcess/index.tsx';
-import useConnect from '@/hooks/useConnect.ts';
-import useLogin from '@/hooks/useLogin.ts';
-import { Context } from '@/settings/constant.ts';
-import { ActionType } from '@/settings/type.ts';
+import Drawer from '@/components/drawer';
+import LoadingProcess from '@/components/loadingProcess';
+import useConnect from '@/hooks/useConnect';
+import useLogin from '@/hooks/useLogin';
+import { Context } from '@/settings/constant';
+import { ActionType } from '@/settings/type';
 import { useAuth0 } from '@auth0/auth0-react';
 import { lazy, memo, Suspense, useCallback, useContext, useEffect } from 'react';
 import { Route, Routes } from 'react-router-dom';
 import Album from './album';
+import Editor from './editor';
+import Error from './error';
 import Home from './home';
 import Login from './login';
 import User from './user';
-import Editor from './editor/index.tsx';
 
 const DrawerPage = memo(() => {
   const ComponentLoader = useCallback(() => {
@@ -44,21 +45,29 @@ const UserPage = memo(() => {
   const { user } = useAuth0();
 
   useEffect(() => {
+    document.documentElement.setAttribute('data-theme', 'valentine');
+  }, []);
+
+  useEffect(() => {
     if (user) checkIdentified(user);
   }, [user]);
 
   useEffect(() => {
-    if (state && state.res) {
-      setContext({
-        type: ActionType.User,
-        state: {
-          token: state.token || '',
-          email: user?.email,
-          name: user?.name,
-          picture: user?.picture,
-          type: state.type,
-        },
-      });
+    if (state) {
+      if (state.res) {
+        setContext({
+          type: ActionType.User,
+          state: {
+            token: state.token || '',
+            email: user?.email,
+            name: user?.name,
+            picture: user?.picture,
+            type: state.type,
+          },
+        });
+      } else {
+        window.location.href = '/';
+      }
     }
   }, [state]);
 
@@ -77,3 +86,21 @@ const RoutePages = memo(() => {
 });
 
 export default RoutePages;
+
+export const UserRoutePages = memo(() => {
+  const ComponentLoader = useCallback(() => {
+    const Element = lazy(() => import('./game/index.tsx'));
+    if (!Element) return null;
+    return (
+      <Suspense fallback=''>
+        <Element />
+      </Suspense>
+    );
+  }, []);
+  return (
+    <Routes>
+      <Route path='/' element={ComponentLoader()} />
+      <Route path='*' element={<Error />} />
+    </Routes>
+  );
+});
