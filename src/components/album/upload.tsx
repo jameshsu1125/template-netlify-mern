@@ -4,7 +4,7 @@ import { CAPTURE_PROPERTY } from '@/settings/config';
 import { Context } from '@/settings/constant';
 import { ActionType } from '@/settings/type';
 import CaptureProvider from 'lesca-react-capture-button';
-import { TResult } from 'lesca-react-capture-button/lib/type';
+import { TResult } from 'lesca-react-capture-button';
 import { Dispatch, SetStateAction, memo, useContext, useEffect, useRef, useState } from 'react';
 import { FaImage } from 'react-icons/fa6';
 
@@ -24,7 +24,7 @@ const Information = memo(({ data, onComplete }: { data: TResult; onComplete?: ()
 
   return (
     <>
-      <img src={data.image} alt='' className='max-w-full' />
+      <img src={data.base64} alt='' className='max-w-full' />
       <div className='my-5 text-base'>
         size:
         <span className='px-2'>
@@ -37,7 +37,7 @@ const Information = memo(({ data, onComplete }: { data: TResult; onComplete?: ()
           className='join-item'
           onClick={() => {
             const folder = folderRef.current?.value || '';
-            upload({ image: data.image, folder });
+            upload({ image: data.base64, folder });
           }}
         >
           upload now
@@ -48,14 +48,20 @@ const Information = memo(({ data, onComplete }: { data: TResult; onComplete?: ()
 });
 
 const Upload = memo(({ reload }: { reload: Dispatch<SetStateAction<number>> }) => {
-  const [result, setResult] = useState<TResult>({ image: '', width: 0, height: 0 });
+  const [result, setResult] = useState<TResult>({
+    base64: '',
+    width: 0,
+    height: 0,
+    url: '',
+    blob: new Blob(),
+  });
   return (
     <div className='w-full'>
-      {result.image && (
+      {result.base64 && (
         <Information
           data={result}
           onComplete={() => {
-            setResult({ image: '', width: 0, height: 0 });
+            setResult({ base64: '', width: 0, height: 0, url: '', blob: new Blob() });
             setTimeout(() => {
               document.querySelector<HTMLInputElement>('#Manage')?.click();
               reload((prev) => prev + 1);
@@ -63,12 +69,12 @@ const Upload = memo(({ reload }: { reload: Dispatch<SetStateAction<number>> }) =
           }}
         />
       )}
-      {!result.image && (
+      {!result.base64 && (
         <CaptureProvider
           maxWidth={CAPTURE_PROPERTY.maxWidth}
           compress={CAPTURE_PROPERTY.compress}
           onCapture={(e) => {
-            setResult(e);
+            if (e[0]) setResult(e[0]);
           }}
         >
           <Button className='btn-block'>
