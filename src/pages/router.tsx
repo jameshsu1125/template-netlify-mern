@@ -89,7 +89,7 @@ export default RoutePages;
 
 export const UserRoutePages = memo(() => {
   const ComponentLoader = useCallback(() => {
-    const Element = lazy(() => import('./game/index.tsx'));
+    const Element = lazy(() => import('./home/index.tsx'));
     if (!Element) return null;
     return (
       <Suspense fallback=''>
