@@ -5,7 +5,6 @@
   "type": "module",
   "scripts": {
     "dev": "node scripts/dev.js",
-    "dev:serve": "concurrently \"npm run dev\" \"npm run serve\"",
     "build": "tsc && vite build",
     "preview": "vite preview",
     "rm": "rm -rf node_modules/ dist/ package-lock.json",
