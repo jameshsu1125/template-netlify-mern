@@ -10,9 +10,7 @@
     "preview": "vite preview",
     "rm": "rm -rf node_modules/ dist/ package-lock.json",
     "lint": "eslint . --ext ts,tsx --report-unused-disable-directives --max-warnings 0",
-    "deploy": "NODE_ENV=production netlify deploy --dir=dist",
-    "deploy:prod": "NODE_ENV=production netlify deploy --dir=dist --prod",
-    "serve": "NODE_ENV=local netlify dev --dir=dist"
+    "deploy": "node ./scripts/deploy.js"
   },
   "dependencies": {
     "@auth0/auth0-react": "^2.24.1",
@@ -65,6 +63,7 @@
     "eslint-plugin-react-refresh": "^0.5.6",
     "express": "^5.2.1",
     "gh-pages": "^6.3.0",
+    "inquirer": "^14.2.2",
     "less": "^4.9.1",
     "mongoose": "^9.9.4",
     "msw": "^2.15.0",
