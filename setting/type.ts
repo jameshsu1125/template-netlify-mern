@@ -4,6 +4,8 @@ export enum IType {
   Number = 'Number',
   Boolean = 'Boolean',
   Date = 'Date',
+  Array = 'Array',
+  Object = 'Object',
 }
 
 export type TUploadRespond = {
