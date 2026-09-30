@@ -13,6 +13,7 @@ const AdminApp = () => {
   return (
     <Auth0Provider
       domain={import.meta.env.VITE_AUTH0_DOMAIN}
+      cacheLocation='localstorage'
       clientId={
         location.hostname === 'localhost'
           ? import.meta.env.VITE_AUTH0_CLIENT_ID_DEV
