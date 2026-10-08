@@ -77,10 +77,10 @@ const Upload = memo(({ reload }: { reload: Dispatch<SetStateAction<number>> }) =
             if (e[0]) setResult(e[0]);
           }}
         >
-          <Button className='btn-block'>
+          <span className='btn btn-block'>
             <FaImage />
             Capture
-          </Button>
+          </span>
         </CaptureProvider>
       )}
     </div>
