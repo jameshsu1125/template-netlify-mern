@@ -100,14 +100,7 @@ export interface IState {
 }
 
 export interface IAction {
-  state:
-    | Partial<IState>
-    | Partial<TLoadingProcessState>
-    | Partial<TStatusState>
-    | Partial<TAlertState>
-    | Partial<TModalState>
-    | Partial<TUserState>
-    | Partial<TAlbumState>;
+  state: IState | Partial<IState[ActionType]>;
   type: ActionType;
 }
 
