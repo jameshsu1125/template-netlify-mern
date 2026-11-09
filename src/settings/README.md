@@ -78,7 +78,8 @@ const Demo = () => {
 | 型別 | 說明 |
 | :-- | :-- |
 | `IState` | 整個全域狀態 |
-| `IAction` | dispatch 的參數：`{ type: ActionType; state: Partial<...> }` |
+| `IAction` | dispatch 的參數，依 `type` 分流的 union：`{ type: K; state: Partial<TActionStateMap[K]> }`，選了 `type`，`state` 只接受該區塊的欄位 |
+| `TActionStateMap` | 每個 `ActionType` 對應的 state 型別；新增 `ActionType` 時在 `IState` 補一筆 |
 | `TContext` | `Context` 的值：`[IState, Dispatch<IAction>]` |
 | `IReactProps` | 只有 `children` 的 props，元件需要接收子元素時使用 |
 | `IEnabled` | `{ enabled: boolean }` |

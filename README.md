@@ -159,7 +159,7 @@ npm run dev
 | `BUNNY_FOLDER_NAME` | 否 | 根資料夾名稱，預設為空 |
 | `BUNNY_REGION` | 否 | 區域代碼，預設 `SG` |
 
-> `.env.defaults` 目前只列出 MongoDB、Cloudinary 與管理員 email；BunnyCDN 與 `CLOUD_STORAGE_TYPE` 是程式碼支援、但範本檔尚未列出的變數，需要時請自行加入。
+> 兩份 `.env.defaults` 已列出所有程式碼使用的變數，複製成 `.env.local` 後填入實際值即可。
 
 ### 前端：`src/pages/.env.local`
 

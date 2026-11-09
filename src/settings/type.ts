@@ -99,10 +99,13 @@ export interface IState {
   [ActionType.Album]: TAlbumState;
 }
 
-export interface IAction {
-  state: IState | Partial<IState[ActionType]>;
-  type: ActionType;
-}
+// 每個 ActionType 對應的 state 型別；新增 ActionType 時在 IState 補一筆
+export type TActionStateMap = IState;
+
+// discriminated union：選了 type，state 就只會提示該 type 的欄位（可只傳部分欄位）
+export type IAction = {
+  [K in ActionType]: { type: K; state: Partial<TActionStateMap[K]> };
+}[ActionType];
 
 export type TContext = [IState, Dispatch<IAction>];
 
