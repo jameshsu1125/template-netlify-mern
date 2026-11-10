@@ -117,13 +117,13 @@ Vite + React 19 + TypeScript 前端，搭配 Netlify Functions（Express + serve
 | `npm run dev`     | `node scripts/dev.js`：先跑 `netlify dev --dir=dist`（`localhost:8888`），等出現 `Local dev server ready` 再跑 `vite --host`（`5173`，HTTPS，自動開瀏覽器），`/api` 代理到 `8888` |
 | `npm run build`   | `tsc && vite build`，輸出到 `dist/`                                                                                                                                               |
 | `npm run preview` | 預覽 `dist/`                                                                                                                                                                      |
-| `npm run lint`    | `eslint . --ext ts,tsx --report-unused-disable-directives --max-warnings 0`（**目前無法執行**，見 17.1）                                                                          |
+| `npm run lint`    | `eslint . --ext ts,tsx --report-unused-disable-directives --max-warnings 0`（使用 `eslint.config.js` flat config；已關閉 `no-explicit-any`、`react-refresh/only-export-components`、`react-hooks/exhaustive-deps`）                                                                          |
 | `npm run deploy`  | 互動式選單：`gh-pages` / `netlify-draft` / `netlify-prod`（**不會先 build**）                                                                                                     |
 | `npm run rm`      | 刪 `node_modules/`、`dist/`、`package-lock.json`（需使用者明確要求）                                                                                                              |
 
 - 需要全域安裝 `netlify-cli`，Node v18 以上。
 - 舊文件提過的 `npm run serve`、`npm run dev:serve` **不存在**，不要使用。
-- 專案沒有測試框架。**目前可用的驗證**：`npx tsc --noEmit`（或 `npm run build`）+ 手動在瀏覽器確認；`npm run lint` 修好之前無法當驗證手段。
+- 專案沒有測試框架。**目前可用的驗證**：`npx tsc --noEmit`（或 `npm run build`）+ 手動在瀏覽器確認；`npm run lint` 也可作為檢查手段。
 
 ## 4. 目錄結構
 
@@ -746,7 +746,7 @@ export const SETTING = {
 
 下列是目前已知、尚未處理的問題。**修改相關檔案時順手修正並更新本節**；沒被要求時不要擅自大改。
 
-1. **`npm run lint` 目前無法執行**：專案裝的是 ESLint 10，需要 `eslint.config.*`（flat config），但專案仍是舊式 `.eslintrc.cjs`，`npx eslint src` 會報 `couldn't find an eslint.config.* file`。修復方向是改寫成 flat config（可參考 `template-vite-react` 的 `eslint.config.js`）。修好前驗證只能靠 `npx tsc --noEmit` / `npm run build`。
+1. **已修正**：`npm run lint` 原本因缺少 flat config 無法執行，現在使用 `eslint.config.js`（規則沿用舊 `.eslintrc.cjs`，另關閉 `react-hooks/exhaustive-deps`）。
 2. **`netlify/functions/api/api.ts` 上傳路由有除錯殘留** `console.log(folder)`。
 3. **圖片類路由的刪除失敗訊息**在 `catch` 內用了 `uploadError`，所以錯誤文字顯示 `Upload failed`。
 4. **已修正**：兩份 `.env.defaults` 已補齊所有程式碼使用的變數，`vite-env.d.ts` 也補上 `VITE_API_PATH_DEV`、`VITE_AUTH0_CLIENT_ID_DEV`。新增變數時請四處同步（見 5 章）。
@@ -762,7 +762,7 @@ export const SETTING = {
 
 ## 18. 完成前檢查清單
 
-- [ ] `npx tsc --noEmit` / `npm run build` 零錯誤（`npm run lint` 修好前無法使用）。
+- [ ] `npx tsc --noEmit` / `npm run build` 零錯誤，且 `npm run lint` 零錯誤。
 - [ ] 沒有未使用的 import / 變數 / 參數。
 - [ ] 命名符合 2.1；前端匯入使用 `@/`，後端使用相對路徑。
 - [ ] 資料請求都走 `src/hooks/`，元件內沒有直接 `fetch`。

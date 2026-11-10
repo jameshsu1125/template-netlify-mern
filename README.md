@@ -425,7 +425,7 @@ npm run deploy
 
 詳細說明可參考 [Naming Conventions](https://medium.com/@code.ceeker/naming-conventions-camel-case-pascal-case-kebab-case-and-more-dc4e515b9652)。
 
-程式碼格式由 Prettier（`.prettierrc`）與 ESLint（`.eslintrc.cjs`）把關：單引號、JSX 單引號、2 空格縮排、每行 100 字元。
+程式碼格式由 Prettier（`.prettierrc`）與 ESLint（`eslint.config.js`）把關：單引號、JSX 單引號、2 空格縮排、每行 100 字元。
 
 ## 相依套件安全性（npm audit）
 
