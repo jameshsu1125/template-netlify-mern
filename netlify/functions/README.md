@@ -62,7 +62,7 @@ serverless-http → Express → router.post('/select')
 
 | 方法與路徑 | 請求內容 | 說明 |
 | :-- | :-- | :-- |
-| `POST /api/upload` | `{ image, folder? }`，`image` 是含前綴的 Base64 字串 | 先用 sharp 轉成 WebP（品質 80）再上傳，回傳 `data`（Cloudinary 模式是 Cloudinary 的回應，BunnyCDN 模式是補齊欄位後的相同結構） |
+| `POST /api/upload` | `{ image, folder? }`，`image` 是含前綴的 Base64 字串 | 不轉檔：BunnyCDN 以 `jpeg` 上傳，Cloudinary 直接上傳原 Base64，回傳 `data`（Cloudinary 模式是 Cloudinary 的回應，BunnyCDN 模式是補齊欄位後的相同結構） |
 | `POST /api/search` | `{ folder }` | 列出資料夾內容。BunnyCDN 模式下 `'*'` 代表根目錄，資料夾排在前面 |
 | `POST /api/remove` | `{ public_id }` | 刪除單一檔案或資料夾 |
 | `POST /api/removeMany` | `{ public_ids: [...] }` | 刪除多個檔案 |

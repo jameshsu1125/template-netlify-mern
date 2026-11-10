@@ -247,7 +247,7 @@ export default function Demo() {
 
 ### useUpload
 
-上傳一張圖片。圖片以 Base64 字串（含 `data:image/...;base64,` 前綴）傳送，後端會用 sharp 轉成 WebP（品質 80）後再儲存。
+上傳一張圖片。圖片以 Base64 字串（含 `data:image/...;base64,` 前綴）傳送，後端不轉檔，直接儲存。
 
 ```tsx
 import useUpload from '@/hooks/useUpload';

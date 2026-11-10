@@ -130,7 +130,7 @@ const AlbumPage = () => (
 ## 注意事項
 
 - 確認列的文字寫著「from cloudinary」，即使實際使用的是 BunnyCDN；如需調整，修改 `tr.tsx` 內的訊息。
-- 上傳之後後端會轉成 WebP，所以最終檔案的格式永遠是 `.webp`。
+- 後端不轉檔，最終檔案格式取決於前端壓縮的結果。
 - 「Manage」分頁的 id 是 `Manage`，上傳完成後靠它切回分頁（見 [tab](../tab/README.md)）。
 - 元件內的 `Tab` 使用固定的 radio name，同一個畫面不要同時放兩個相簿或兩組 `Tab`。
 - `tr.tsx` 的 `key` 使用 `JSON.stringify(item)`，列表很大時會有效能成本。

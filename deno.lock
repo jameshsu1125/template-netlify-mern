@@ -63,7 +63,6 @@
         "npm:react-router-dom@^7.18.3",
         "npm:react@^19.2.8",
         "npm:serverless-http@4",
-        "npm:sharp@~0.35.4",
         "npm:tailwind-merge@^3.6.0",
         "npm:tailwindcss@^4.3.3",
         "npm:ts-toolbelt@^9.6.0",

@@ -76,7 +76,7 @@ Vite + React 19（src/）
                                     ▼
                          Express（netlify/functions/api/api.ts）
                            ├─ MongoDB（mongoose）：select / insert / update / delete
-                           └─ 圖片儲存：Cloudinary 或 BunnyCDN（sharp 先轉成 webp）
+                           └─ 圖片儲存：Cloudinary 或 BunnyCDN
 ```
 
 主要套件：
@@ -89,7 +89,7 @@ Vite + React 19（src/）
 | 登入 | Auth0（`@auth0/auth0-react`） |
 | 富文字 | Tiptap 3 |
 | 後端 | Express、serverless-http、mongoose |
-| 圖片 | Cloudinary、BunnyCDN（`lesca-node-bunnycdn`）、sharp |
+| 圖片 | Cloudinary、BunnyCDN（`lesca-node-bunnycdn`） |
 | API Mock | MSW、@faker-js/faker |
 
 ## 快速開始

@@ -16,7 +16,6 @@ import select from './select';
 import update from './update';
 import BunnyCDN from 'lesca-node-bunnycdn';
 import { CloudinaryUploadedResult, TUploadRespond } from '../../../setting/type';
-import sharp from 'sharp';
 
 dotenv.config({ path: `.env.${process.env.NODE_ENV}` });
 const app = express();
@@ -141,27 +140,17 @@ router.post(`/${REST_PATH.upload}`, async (req, res) => {
       return;
     }
 
-    const sharpConfig: { format?: 'jpeg' | 'png' | 'webp'; quality?: number } = {
-      format: 'webp',
-      quality: 80,
-    };
-
-    const buffer = await sharp(Buffer.from(base64Image.split(',')[1], 'base64'))
-      .toFormat(sharpConfig.format || 'webp', { quality: sharpConfig.quality || 80 })
-      .toBuffer();
-
     if (storageType === 'cloudinary') {
       const folder = `${process.env.CLOUDINARY_BASE_FOLDER}${req.body.folder ? `/${req.body.folder}` : ''}`;
-      const base64String = `data:image/webp;base64,${buffer.toString('base64')}`;
-      cloudinary.v2.uploader.upload(base64String, { folder }, (error, result) => {
+      cloudinary.v2.uploader.upload(base64Image, { folder }, (error, result) => {
         if (error) res.status(200).json({ res: false, msg: error });
         else res.status(200).json({ res: true, msg: messages.updateSuccess, data: result });
       });
     } else {
       const folder = req.body.folder || '';
-      console.log(folder);
       const result = await BunnyCDN.upload({
-        buffer,
+        format: 'jpeg',
+        buffer: Buffer.from(base64Image.split(',')[1], 'base64'),
         folder,
         ...bunnyCdnConfig,
       });
@@ -173,7 +162,7 @@ router.post(`/${REST_PATH.upload}`, async (req, res) => {
         signature: '',
         width: 0,
         height: 0,
-        format: public_id.split('.').pop() || 'webp',
+        format: public_id.split('.').pop() || 'jpeg',
         resource_type: 'image',
         created_at: '',
         tags: [],

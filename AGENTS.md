@@ -42,7 +42,7 @@ Vite + React 19 + TypeScript 前端，搭配 Netlify Functions（Express + serve
 | 登入    | `@auth0/auth0-react`（只用於後台 `/admin`）                                             |
 | API     | 前端 `lesca-fetcher`；後端 Express 5 + `serverless-http`，部署成單一 Netlify Function   |
 | 資料庫  | MongoDB + mongoose 9（model 由 `setting/index.ts` 自動產生）                            |
-| 圖片    | Cloudinary 或 BunnyCDN（`lesca-node-bunnycdn`），上傳前用 `sharp` 轉 WebP               |
+| 圖片    | Cloudinary 或 BunnyCDN（`lesca-node-bunnycdn`），後端不轉檔                       |
 | Mock    | `msw` 3 + `@faker-js/faker`                                                             |
 | 其他    | `lesca-react-capture-button`（選圖壓縮）、`lesca-local-storage`、`lesca-atobtoa`        |
 | 部署    | Netlify（`netlify-cli`）、`gh-pages`（只有靜態前端，沒有 API）                          |
@@ -504,7 +504,7 @@ Props：`children`、`className`（`twMerge('btn', className)`，後者覆蓋）
 
 - 傳給刪除 API 的識別值：勾選框 `pixels === 0` 用 `secure_url` 否則 `public_id`；單張 delete 按鈕固定 `public_id`；資料夾 delete 用 `secure_url`。**BunnyCDN 模式下單張刪除是否可行尚未實測**（後端收的是 `href`）。
 - 確認列文字寫「from cloudinary」，即使用 BunnyCDN。
-- 上傳後後端轉 WebP，最終格式永遠 `.webp`。
+- 後端不轉檔：BunnyCDN 模式以 `jpeg` 上傳，Cloudinary 模式直接上傳前端送來的 Base64；最終格式取決於前端壓縮結果。
 - `tr.tsx` 的 `key` 用 `JSON.stringify(item)`，列表大時有效能成本。
 
 ### 8.9 `Tiptab`
@@ -594,7 +594,7 @@ const [respond, run] = useXxx(); // readonly [state, fetch]
 | `POST /api/insertMany` | `{ collection, data: [...] }`                 | 同上                                           | `insert.ts`                  |
 | `POST /api/update`     | `{ collection, data: { _id, data } }`         | `{ res, msg, collection }`                     | `update.ts`                  |
 | `POST /api/delete`     | `{ collection, data: { _id } }`               | `{ res, msg, collection }`                     | `delete.ts`                  |
-| `POST /api/upload`     | `{ image, folder? }`（Base64 含前綴）         | `data` 為 `TUploadRespond`                     | `api.ts`（sharp → WebP q80） |
+| `POST /api/upload`     | `{ image, folder? }`（Base64 含前綴）         | `data` 為 `TUploadRespond`                     | `api.ts`（不轉檔）                |
 | `POST /api/search`     | `{ folder }`                                  | 資料夾內容（BunnyCDN：`'*'` 為根，資料夾排前） | `api.ts`                     |
 | `POST /api/remove`     | `{ public_id }`                               | —                                              | `api.ts`                     |
 | `POST /api/removeMany` | `{ public_ids: [] }`                          | —                                              | `api.ts`                     |
