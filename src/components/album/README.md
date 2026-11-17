@@ -89,3 +89,5 @@ import Album from '@/components/album';
 - Cloudinary 模式的 `remove` 用 `uploader.destroy`，刪不了資料夾，會顯示後端的失敗訊息。
 - 確認框與上傳佇列是 `z-50`，在全域 Modal（`z-40`）之上。
 - 單張上傳上限 10MB（壓縮後的大小）。
+- 在編輯器 Modal（`picker`）內上傳時若關閉 Modal，相簿元件卸載，**佇列中尚未上傳的圖片會被放棄**；確認框、上傳佇列與新資料夾視窗用 `createPortal` 掛到 `document.body`，避免被 Modal 的 `modal-box` 裁切。
+- Cloudinary 模式的「刪除資料夾」不會真的刪除（後端只刪單一 asset），可能仍顯示成功訊息；這次的範圍不處理。

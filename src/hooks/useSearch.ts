@@ -2,7 +2,7 @@ import { REST_PATH } from '@/settings/config';
 import { Context } from '@/settings/constant';
 import { ActionType } from '@/settings/type';
 import { post } from '@/settings/fetcher';
-import { useContext, useEffect, useState } from 'react';
+import { useContext, useEffect, useRef, useState } from 'react';
 import { TUploadResult } from '../../setting';
 
 type T = {
@@ -20,13 +20,16 @@ const useSearch = ({ auto = true, silent = false }: TOption = {}) => {
   const [content, setContext] = useContext(Context);
   const folder = content[ActionType.Album].folder;
   const [state, setState] = useState<TUploadResult | undefined>();
+  // only the latest request may update `state`, so a slow older answer never wins
+  const latest = useRef(0);
 
   const fetch = async (parm: T) => {
     if (!silent) setContext({ type: ActionType.LoadingProcess, state: { enabled: true } });
     let respond: TUploadResult | undefined;
+    const id = ++latest.current;
     try {
       respond = await post<TUploadResult>(REST_PATH.search, parm);
-      setState(respond);
+      if (id === latest.current) setState(respond);
     } catch (e) {
       if (!silent) alert(e);
     }

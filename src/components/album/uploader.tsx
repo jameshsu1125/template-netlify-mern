@@ -4,6 +4,7 @@ import { Context } from '@/settings/constant';
 import { ActionType } from '@/settings/type';
 import { memo, ReactNode, useContext, useEffect, useRef, useState } from 'react';
 import { FaCheck, FaFolderPlus, FaUpload, FaXmark } from 'react-icons/fa6';
+import { createPortal } from 'react-dom';
 import { twMerge } from 'tailwind-merge';
 import { AlbumContext, dropTree, joinPath, TQueueItem } from './config';
 
@@ -48,7 +49,14 @@ const useEnqueue = () => {
             status: 'waiting',
           };
         } catch (e) {
-          return { id, name: file.name, base64: '', folder, status: 'error', msg: String(e) };
+          return {
+            id,
+            name: file.name,
+            base64: '',
+            folder: toStorageFolder(folder),
+            status: 'error',
+            msg: String(e),
+          };
         }
       }),
     );
@@ -114,42 +122,44 @@ export const NewFolderButton = memo(() => {
         <FaFolderPlus />
         新資料夾
       </button>
-      {open && (
-        <dialog className='modal modal-open z-50' open>
-          <div className='modal-box'>
-            <h3 className='text-lg font-bold'>新資料夾</h3>
-            <p className='py-2 text-sm opacity-70'>
-              儲存空間沒有空資料夾，建立時要同時上傳第一批圖片。
-            </p>
-            <input
-              autoFocus
-              className={twMerge('input w-full', error ? 'input-error' : '')}
-              placeholder='資料夾名稱'
-              value={name}
-              onChange={(e) => setName(e.target.value)}
-            />
-            {error && <p className='text-error mt-1 text-sm'>{error}</p>}
-            <div className='modal-action'>
-              <button type='button' className='btn btn-ghost' onClick={() => setOpen(false)}>
-                取消
-              </button>
-              <FileButton
-                inputRef={fileRef}
-                className={twMerge('btn-md btn-primary', !value || error ? 'btn-disabled' : '')}
-                onFiles={(files) => {
-                  enqueue(files, joinPath(folder, value));
-                  setState((S) => ({ ...S, tree: dropTree(S.tree, folder) }));
-                  setName('');
-                  setOpen(false);
-                }}
-              >
-                選擇圖片並建立
-              </FileButton>
+      {open &&
+        createPortal(
+          <dialog className='modal modal-open z-50' open>
+            <div className='modal-box'>
+              <h3 className='text-lg font-bold'>新資料夾</h3>
+              <p className='py-2 text-sm opacity-70'>
+                儲存空間沒有空資料夾，建立時要同時上傳第一批圖片。
+              </p>
+              <input
+                autoFocus
+                className={twMerge('input w-full', error ? 'input-error' : '')}
+                placeholder='資料夾名稱'
+                value={name}
+                onChange={(e) => setName(e.target.value)}
+              />
+              {error && <p className='text-error mt-1 text-sm'>{error}</p>}
+              <div className='modal-action'>
+                <button type='button' className='btn btn-ghost' onClick={() => setOpen(false)}>
+                  取消
+                </button>
+                <FileButton
+                  inputRef={fileRef}
+                  className={twMerge('btn-md btn-primary', !value || error ? 'btn-disabled' : '')}
+                  onFiles={(files) => {
+                    enqueue(files, joinPath(folder, value));
+                    setState((S) => ({ ...S, tree: dropTree(S.tree, folder) }));
+                    setName('');
+                    setOpen(false);
+                  }}
+                >
+                  選擇圖片並建立
+                </FileButton>
+              </div>
             </div>
-          </div>
-          <div className='modal-backdrop' onClick={() => setOpen(false)} />
-        </dialog>
-      )}
+            <div className='modal-backdrop' onClick={() => setOpen(false)} />
+          </dialog>,
+          document.body,
+        )}
     </>
   );
 });
@@ -233,7 +243,7 @@ export const UploadQueue = memo(() => {
   const finished = queue.every((item) => item.status === 'done' || item.status === 'error');
   const doneCount = queue.filter((item) => item.status === 'done').length;
 
-  return (
+  return createPortal(
     <div className='card bg-base-100 fixed right-4 bottom-4 z-50 w-80 shadow-xl'>
       <div className='card-body gap-2 p-4'>
         <div className='flex items-center'>
@@ -281,6 +291,7 @@ export const UploadQueue = memo(() => {
           ))}
         </ul>
       </div>
-    </div>
+    </div>,
+    document.body,
   );
 });

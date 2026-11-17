@@ -3,6 +3,7 @@ import useRemoveMany from '@/hooks/useRemoveMany';
 import { Context } from '@/settings/constant';
 import { ActionType, AlertType } from '@/settings/type';
 import { memo, useContext, useEffect, useRef } from 'react';
+import { createPortal } from 'react-dom';
 import { IRespond } from '../../../setting';
 import { AlbumContext, dropTree, removeKey, TConfirm } from './config';
 
@@ -30,6 +31,7 @@ const AlbumConfirm = memo(() => {
     setState((S) => {
       // folders are only deleted from their parent, so refreshing the current level is enough
       const tree = dropTree(S.tree, folder);
+      if (!respond.res) return { ...S, confirm: null, reload: S.reload + 1 };
       const detailGone = S.detail && done.public_id.includes(S.detail.public_id);
       const detailKeyGone = S.detail && done.public_id.includes(removeKey(S.detail));
       return {
@@ -50,7 +52,8 @@ const AlbumConfirm = memo(() => {
   const { title, body, public_id } = state.confirm;
   const close = () => setState((S) => ({ ...S, confirm: null }));
 
-  return (
+  // portal: inside the editor modal a transformed modal-box would trap position: fixed
+  return createPortal(
     <dialog className='modal modal-open z-50' open>
       <div className='modal-box'>
         <h3 className='text-lg font-bold'>{title}</h3>
@@ -73,7 +76,8 @@ const AlbumConfirm = memo(() => {
         </div>
       </div>
       <div className='modal-backdrop' onClick={close} />
-    </dialog>
+    </dialog>,
+    document.body,
   );
 });
 export default AlbumConfirm;

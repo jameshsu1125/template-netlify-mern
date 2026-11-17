@@ -244,9 +244,9 @@ router.post(`/${REST_PATH.search}`, async (req, res) => {
       Promise.all([
         cloudinary.v2.search.expression(`folder="${path}"`).execute(),
         // sub folders are optional: a failure here must not hide the files
-        cloudinary.v2.api
-          .sub_folders(path)
-          .catch(() => ({ folders: [] as { name: string; path: string }[] })),
+        (path ? cloudinary.v2.api.sub_folders(path) : cloudinary.v2.api.root_folders()).catch(
+          () => ({ folders: [] as { name: string; path: string }[] }),
+        ),
       ])
         .then(([result, sub]) => {
           const folders = (sub.folders as { name: string; path: string }[]).map((item) =>

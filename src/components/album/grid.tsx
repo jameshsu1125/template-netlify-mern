@@ -1,7 +1,7 @@
 import useSearch from '@/hooks/useSearch';
 import { Context } from '@/settings/constant';
 import { ActionType } from '@/settings/type';
-import { memo, useContext, useEffect } from 'react';
+import { memo, useContext, useEffect, useRef } from 'react';
 import { MdDeleteOutline } from 'react-icons/md';
 import { AlbumContext, folderNames } from './config';
 import Item from './item';
@@ -11,6 +11,10 @@ const Grid = memo(() => {
   const [state, setState] = useContext(AlbumContext);
   const folder = context[ActionType.Album].folder;
   const [respond, fetch] = useSearch();
+
+  // the folder the latest request was sent for
+  const asked = useRef(folder);
+  asked.current = folder;
 
   // a new folder starts with nothing selected
   useEffect(() => {
@@ -23,7 +27,7 @@ const Grid = memo(() => {
 
   // the grid already knows the sub folders, hand them to the tree
   useEffect(() => {
-    if (respond?.res) {
+    if (respond?.res && asked.current === folder) {
       const names = folderNames(respond.data);
       setState((S) => ({ ...S, tree: { ...S.tree, [folder]: names } }));
     }
