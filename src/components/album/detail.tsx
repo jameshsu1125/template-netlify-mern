@@ -2,10 +2,14 @@ import { Context } from '@/settings/constant';
 import { ActionType, AlertType } from '@/settings/type';
 import { useCopyToClipboard } from '@uidotdev/usehooks';
 import { memo, useContext } from 'react';
-import { FaArrowUpRightFromSquare, FaCopy, FaPlus, FaXmark } from 'react-icons/fa6';
+import { FaArrowUpRightFromSquare, FaCopy, FaPlus, FaRegImage, FaXmark } from 'react-icons/fa6';
 import { MdDeleteOutline } from 'react-icons/md';
 import { AlbumContext, fileName } from './config';
 import { useImageSize } from './item';
+
+const PANEL = 'card card-border card-sm bg-base-100 w-full shrink-0 lg:sticky lg:top-0 lg:w-72';
+// fixed height, so a tall or wide image never changes the panel size
+const FIGURE = 'bg-base-200 relative h-48';
 
 const Detail = memo(() => {
   const [, setContext] = useContext(Context);
@@ -13,7 +17,24 @@ const Detail = memo(() => {
   const [, copy] = useCopyToClipboard();
   const item = state.detail;
   const size = useImageSize(item);
-  if (!item) return null;
+  // the panel is always on screen so picking an image never shifts the layout
+  if (!item)
+    return (
+      <aside className={PANEL}>
+        <figure className={FIGURE}>
+          <FaRegImage className='text-base-content/25 size-12' />
+        </figure>
+        <div className='card-body'>
+          <h3 className='card-title text-base-content/60 text-base'>圖片資訊</h3>
+          <p className='text-base-content/60 text-sm'>點一張縮圖，這裡會顯示尺寸、路徑與操作。</p>
+          <div className='card-actions flex-col items-stretch'>
+            <button type='button' className='btn' disabled>
+              {state.mode === 'picker' ? '插入' : '複製網址'}
+            </button>
+          </div>
+        </div>
+      </aside>
+    );
 
   const name = fileName(item);
   const path = item.folder ? `${item.folder}/${name}` : name;
@@ -49,9 +70,9 @@ const Detail = memo(() => {
     }));
 
   return (
-    <aside className='card card-border card-sm bg-base-100 w-full shrink-0 lg:sticky lg:top-0 lg:w-72'>
-      <figure className='bg-base-200 relative'>
-        <img src={item.secure_url} alt={name} className='max-h-72 w-full object-contain' />
+    <aside className={PANEL}>
+      <figure className={FIGURE}>
+        <img src={item.secure_url} alt={name} className='size-full object-contain' />
         <button
           type='button'
           className='btn btn-circle btn-sm absolute top-2 right-2'

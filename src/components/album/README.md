@@ -92,3 +92,4 @@ import Album from '@/components/album';
 - 在編輯器 Modal（`picker`）內上傳時若關閉 Modal，相簿元件卸載，**佇列中尚未上傳的圖片會被放棄**；確認框、上傳佇列與新資料夾視窗用 `createPortal` 掛到 `document.body`，避免被 Modal 的 `modal-box` 裁切。
 - Cloudinary 模式的「刪除資料夾」不會真的刪除（後端只刪單一 asset），可能仍顯示成功訊息；這次的範圍不處理。
 - 介面全部使用 daisyUI 元件：`navbar`、`breadcrumbs`、`menu`（資料夾樹）、`card`（縮圖、詳細面板、上傳佇列）、`indicator` + `badge`（選取順序）、`checkbox`、`alert` + `avatar-group` + `join`（批次操作）、`list`、`modal`、`fieldset`、`toast`、`progress`、`dropdown`。
+- 為了避免點選時畫面跳動：詳細面板與批次操作列一開始就顯示（未選取時是空狀態、按鈕停用）；縮圖卡片一開始就有透明的 `ring-2`，選取時只換顏色；選取編號徽章以淡入淡出出現。

@@ -30,7 +30,7 @@ const FolderItem = memo(({ item }: { item: TUploadRespond }) => {
     setContext({ type: ActionType.Album, state: { folder: joinPath(folder, item.filename) } });
 
   return (
-    <div className='card card-sm card-border bg-base-100 hover:bg-base-200 transition-colors'>
+    <div className='card card-sm card-border bg-base-100 hover:bg-base-200 ring-2 ring-transparent transition-colors'>
       <figure className='bg-base-200 aspect-square cursor-pointer' onClick={open}>
         <FaFolder className='text-base-content/40 size-14' />
       </figure>
@@ -87,16 +87,21 @@ const ImageItem = memo(({ item }: { item: TUploadRespond }) => {
 
   return (
     <div className='indicator w-full'>
-      {checked && (
-        <span className='indicator-item indicator-start badge badge-primary z-[1] size-7 rounded-full p-0 font-bold shadow-sm'>
-          {order}
-        </span>
-      )}
+      <span
+        aria-hidden={!checked}
+        className={twMerge(
+          'indicator-item indicator-start badge badge-primary z-[1] size-7 rounded-full p-0 font-bold shadow-sm transition',
+          checked ? 'scale-100 opacity-100' : 'scale-50 opacity-0',
+        )}
+      >
+        {order || ''}
+      </span>
       <div
         className={twMerge(
-          'card card-sm card-border bg-base-100 w-full cursor-pointer transition-shadow',
-          checked ? 'border-primary ring-primary ring-2' : '',
-          active && !checked ? 'border-base-content/40 ring-base-content/40 ring-2' : '',
+          // the ring is always there and only changes color, so selecting never shifts anything
+          'card card-sm card-border bg-base-100 w-full cursor-pointer ring-2 ring-transparent transition-colors',
+          checked ? 'border-primary ring-primary' : '',
+          active && !checked ? 'border-base-content/40 ring-base-content/40' : '',
         )}
         onClick={() => setState((S) => ({ ...S, detail: item }))}
       >

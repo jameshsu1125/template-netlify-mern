@@ -36,6 +36,7 @@ const Grid = memo(() => {
     }
   }, [respond]);
 
+  const count = state.selected.length;
   const data = respond?.res ? respond.data || [] : [];
   // selected images in the order they were picked
   const picked = state.selected
@@ -44,53 +45,62 @@ const Grid = memo(() => {
 
   return (
     <div className='flex min-w-0 flex-1 flex-col gap-3'>
-      {state.selected.length > 0 && (
-        <div role='status' className='alert alert-soft sticky top-0 z-10 shadow-sm'>
-          <div className='avatar-group -space-x-4'>
-            {picked.slice(0, MAX_AVATAR).map((item) => (
-              <div key={removeKey(item)} className='avatar'>
-                <div className='w-9'>
-                  <img src={item.secure_url} alt={fileName(item)} />
-                </div>
+      <div role='status' className='alert alert-soft sticky top-0 z-10 shadow-sm'>
+        <div className='avatar-group -space-x-4'>
+          {count === 0 && (
+            <div className='avatar avatar-placeholder'>
+              <div className='bg-base-300 text-base-content/40 w-9'>
+                <FaRegImages />
               </div>
-            ))}
-            {state.selected.length > MAX_AVATAR && (
-              <div className='avatar avatar-placeholder'>
-                <div className='bg-neutral text-neutral-content w-9'>
-                  <span className='text-xs'>+{state.selected.length - MAX_AVATAR}</span>
-                </div>
+            </div>
+          )}
+          {picked.slice(0, MAX_AVATAR).map((item) => (
+            <div key={removeKey(item)} className='avatar'>
+              <div className='w-9'>
+                <img src={item.secure_url} alt={fileName(item)} />
               </div>
-            )}
-          </div>
-          <span>已選 {state.selected.length} 張</span>
-          <div className='join'>
-            <button
-              type='button'
-              className='btn btn-sm join-item'
-              onClick={() => setState((S) => ({ ...S, selected: [] }))}
-            >
-              取消選取
-            </button>
-            <button
-              type='button'
-              className='btn btn-sm btn-error join-item'
-              onClick={() =>
-                setState((S) => ({
-                  ...S,
-                  confirm: {
-                    title: '刪除圖片',
-                    body: `確定要刪除選取的 ${S.selected.length} 張圖片嗎？此動作無法復原。`,
-                    public_id: S.selected,
-                  },
-                }))
-              }
-            >
-              <MdDeleteOutline />
-              刪除
-            </button>
-          </div>
+            </div>
+          ))}
+          {state.selected.length > MAX_AVATAR && (
+            <div className='avatar avatar-placeholder'>
+              <div className='bg-neutral text-neutral-content w-9'>
+                <span className='text-xs'>+{state.selected.length - MAX_AVATAR}</span>
+              </div>
+            </div>
+          )}
         </div>
-      )}
+        <span className={count ? '' : 'text-base-content/60'}>
+          {count ? `已選 ${count} 張` : '勾選縮圖下方的方塊，可以一次選取多張'}
+        </span>
+        <div className='join'>
+          <button
+            type='button'
+            className='btn btn-sm join-item'
+            disabled={!count}
+            onClick={() => setState((S) => ({ ...S, selected: [] }))}
+          >
+            取消選取
+          </button>
+          <button
+            type='button'
+            className='btn btn-sm btn-error join-item'
+            disabled={!count}
+            onClick={() =>
+              setState((S) => ({
+                ...S,
+                confirm: {
+                  title: '刪除圖片',
+                  body: `確定要刪除選取的 ${S.selected.length} 張圖片嗎？此動作無法復原。`,
+                  public_id: S.selected,
+                },
+              }))
+            }
+          >
+            <MdDeleteOutline />
+            刪除
+          </button>
+        </div>
+      </div>
       {respond && !respond.res && (
         <div role='alert' className='alert alert-error alert-soft'>
           {respond.msg || '讀取失敗'}
