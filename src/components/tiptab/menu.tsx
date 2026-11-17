@@ -63,15 +63,19 @@ const MenuBar = memo(({ editor }: { editor: Editor }) => {
   });
 
   const addImage = useCallback(() => {
+    // forget the last pick, so closing the modal without one inserts nothing
+    copiedTextRef.current = '';
+    setContext({ type: ActionType.Album, state: { copiedText: '' } });
     setContext({
       type: ActionType.Modal,
       state: {
         enabled: true,
         title: ModalTitle,
-        body: <Album />,
+        body: <Album mode='picker' />,
         onClose: () => {
           if (!copiedTextRef.current) return;
           editor.chain().focus().setImage({ src: copiedTextRef.current }).run();
+          copiedTextRef.current = '';
         },
       },
     });

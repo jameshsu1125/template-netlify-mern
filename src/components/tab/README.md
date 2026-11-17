@@ -23,20 +23,20 @@ const Demo = () => (
 
 ### `Tab`
 
-| 名稱 | 型別 | 說明 |
-| :-- | :-- | :-- |
+| 名稱       | 型別        | 說明                 |
+| :--------- | :---------- | :------------------- |
 | `children` | `ReactNode` | 放入多個 `Tab.Panel` |
 
 渲染成 `<div role="tablist" class="tabs tabs-lifted">`。
 
 ### `Tab.Panel`
 
-| 名稱 | 型別 | 必填 | 預設值 | 說明 |
-| :-- | :-- | :-: | :-- | :-- |
-| `label` | `string` | 是 | — | 分頁標籤文字（同時是無障礙的 `aria-label`） |
-| `children` | `ReactNode` | 否 | — | 面板內容 |
-| `id` | `string` | 否 | — | 加在 radio `<input>` 上的 id，可用來以程式切換分頁 |
-| `defaultChecked` | `boolean` | 否 | `false` | 是否預設選取這個分頁 |
+| 名稱             | 型別        | 必填 | 預設值  | 說明                                               |
+| :--------------- | :---------- | :--: | :------ | :------------------------------------------------- |
+| `label`          | `string`    |  是  | —       | 分頁標籤文字（同時是無障礙的 `aria-label`）        |
+| `children`       | `ReactNode` |  否  | —       | 面板內容                                           |
+| `id`             | `string`    |  否  | —       | 加在 radio `<input>` 上的 id，可用來以程式切換分頁 |
+| `defaultChecked` | `boolean`   |  否  | `false` | 是否預設選取這個分頁                               |
 
 ## 行為說明
 

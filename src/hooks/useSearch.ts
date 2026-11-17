@@ -2,34 +2,46 @@ import { REST_PATH } from '@/settings/config';
 import { Context } from '@/settings/constant';
 import { ActionType } from '@/settings/type';
 import { post } from '@/settings/fetcher';
-import { useContext, useEffect, useState } from 'react';
+import { useContext, useEffect, useRef, useState } from 'react';
 import { TUploadResult } from '../../setting';
 
 type T = {
   folder: string;
 };
 
-const useSearch = () => {
+type TOption = {
+  /** false: do not query `album.folder` on mount and whenever it changes */
+  auto?: boolean;
+  /** true: do not toggle the full screen LoadingProcess */
+  silent?: boolean;
+};
+
+const useSearch = ({ auto = true, silent = false }: TOption = {}) => {
   const [content, setContext] = useContext(Context);
   const folder = content[ActionType.Album].folder;
   const [state, setState] = useState<TUploadResult | undefined>();
+  // only the latest request may update `state`, so a slow older answer never wins
+  const latest = useRef(0);
 
   const fetch = async (parm: T) => {
-    setContext({ type: ActionType.LoadingProcess, state: { enabled: true } });
+    if (!silent) setContext({ type: ActionType.LoadingProcess, state: { enabled: true } });
+    let respond: TUploadResult | undefined;
+    const id = ++latest.current;
     try {
-      const respond = await post<TUploadResult>(REST_PATH.search, parm);
-      setState(respond);
+      respond = await post<TUploadResult>(REST_PATH.search, parm);
+      if (id === latest.current) setState(respond);
     } catch (e) {
-      alert(e);
+      if (!silent) alert(e);
     }
-    setContext({ type: ActionType.LoadingProcess, state: { enabled: false } });
+    if (!silent) setContext({ type: ActionType.LoadingProcess, state: { enabled: false } });
+    return respond;
   };
 
   useEffect(() => {
     const initialFetch = async () => {
       await fetch({ folder });
     };
-    initialFetch();
+    if (auto) initialFetch();
   }, [folder]);
 
   return [state, fetch] as const;

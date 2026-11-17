@@ -201,16 +201,62 @@ router.post(`/${REST_PATH.upload}`, async (req, res) => {
   }
 });
 
+/** cloudinary full folder path; '*' and empty mean the base folder */
+const cloudinaryPath = (folder?: string) => {
+  const base = process.env.CLOUDINARY_BASE_FOLDER || '';
+  if (!folder || folder === '*') return base;
+  return base ? `${base}/${folder}` : folder;
+};
+
+/** a folder entry shaped like a listed file, so both storages answer search the same way */
+const toFolderItem = (name: string, public_id: string, folder: string): TUploadRespond => ({
+  access_control: null,
+  access_mode: '',
+  aspect_ratio: 0,
+  asset_id: '',
+  backup_bytes: 0,
+  bytes: 0,
+  created_at: '',
+  created_by: { access_key: '' },
+  etag: '',
+  filename: name,
+  folder,
+  format: '',
+  height: 0,
+  pixels: 0,
+  public_id,
+  resource_type: 'folder',
+  secure_url: '',
+  status: 'available',
+  type: 'folder',
+  uploaded_at: '',
+  uploaded_by: { access_key: '' },
+  url: '',
+  version: 0,
+  width: 0,
+});
+
 router.post(`/${REST_PATH.search}`, async (req, res) => {
   try {
     if (storageType === 'cloudinary') {
-      cloudinary.v2.search
-        .expression(
-          `folder=${process.env.CLOUDINARY_BASE_FOLDER}${req.body.folder ? `/${req.body.folder}` : ''}`,
-        )
-        .execute()
-        .then((result) => {
-          res.status(200).json({ res: true, msg: messages.searchSuccess, data: result.resources });
+      const path = cloudinaryPath(req.body.folder);
+      const parent = req.body.folder && req.body.folder !== '*' ? req.body.folder : '';
+      Promise.all([
+        cloudinary.v2.search.expression(`folder="${path}"`).execute(),
+        // sub folders are optional: a failure here must not hide the files
+        (path ? cloudinary.v2.api.sub_folders(path) : cloudinary.v2.api.root_folders()).catch(
+          () => ({ folders: [] as { name: string; path: string }[] }),
+        ),
+      ])
+        .then(([result, sub]) => {
+          const folders = (sub.folders as { name: string; path: string }[]).map((item) =>
+            toFolderItem(item.name, `${item.path}/`, parent),
+          );
+          res.status(200).json({
+            res: true,
+            msg: messages.searchSuccess,
+            data: [...folders, ...result.resources],
+          });
         })
         .catch(() => {
           res.status(200).json({ res: false, msg: messages.searchError });

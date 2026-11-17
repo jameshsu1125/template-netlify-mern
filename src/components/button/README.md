@@ -21,11 +21,11 @@ const Demo = () => (
 
 ## Props
 
-| 名稱 | 型別 | 預設值 | 說明 |
-| :-- | :-- | :-- | :-- |
-| `children` | `ReactNode` | — | 按鈕內容，可放文字或圖示 |
-| `className` | `string` | `''` | 額外的 class，會與 `btn` 合併 |
-| `onClick` | `() => void` | — | 點擊事件，**不會**收到 event 物件 |
+| 名稱        | 型別         | 預設值 | 說明                              |
+| :---------- | :----------- | :----- | :-------------------------------- |
+| `children`  | `ReactNode`  | —      | 按鈕內容，可放文字或圖示          |
+| `className` | `string`     | `''`   | 額外的 class，會與 `btn` 合併     |
+| `onClick`   | `() => void` | —      | 點擊事件，**不會**收到 event 物件 |
 
 所有 Props 都是唯讀（`ReadyOnly`）。
 

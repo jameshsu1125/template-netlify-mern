@@ -277,11 +277,13 @@ export default function Demo({ base64 }: { base64: string }) {
 }
 ```
 
-| 項目                     | 說明                                                                |
-| :----------------------- | :------------------------------------------------------------------ |
-| `run({ image, folder })` | `image` 為 Base64 字串；`folder` 為資料夾名稱，傳空字串代表根目錄   |
-| 成功                     | `respond.res === true`，`respond.data` 內含圖片網址（`secure_url`） |
-| 限制                     | 單次請求上限 10 MB                                                  |
+| 項目                          | 說明                                                                                           |
+| :---------------------------- | :--------------------------------------------------------------------------------------------- |
+| `run({ image, folder })`      | `image` 為 Base64 字串；`folder` 為資料夾名稱，傳空字串代表根目錄                              |
+| 成功                          | `respond.res === true`，`respond.data` 內含圖片網址（`secure_url`）                            |
+| 限制                          | 單次請求上限 10 MB                                                                             |
+| `useUpload({ silent: true })` | 不開關全螢幕 `LoadingProcess`，請求例外時回 `{ res: false, msg }` 而不丟出（相簿上傳佇列使用） |
+| 回傳值                        | `run()` 回傳 `Promise<IRespond>`，可直接 `await` 取得結果                                      |
 
 ### useSearch
 
@@ -304,12 +306,14 @@ export default function Demo() {
 }
 ```
 
-| 項目              | 說明                                          |
-| :---------------- | :-------------------------------------------- |
-| `run({ folder })` | `'*'` 代表根目錄                              |
-| `respond` 型別    | `TUploadResult`，`data` 是 `TUploadRespond[]` |
-| 排序              | BunnyCDN 模式下資料夾會排在檔案前面           |
-| 錯誤              | 請求拋出例外時會用 `alert()` 顯示錯誤         |
+| 項目                          | 說明                                                                                 |
+| :---------------------------- | :----------------------------------------------------------------------------------- |
+| `run({ folder })`             | `'*'` 代表根目錄；回傳 `Promise<TUploadResult \| undefined>`（例外時為 `undefined`） |
+| `useSearch({ auto: false })`  | 不自動查詢 `album.folder`，只在呼叫 `run` 時查（相簿資料夾樹使用）                   |
+| `useSearch({ silent: true })` | 不開關 `LoadingProcess`，例外時也不 `alert()`                                        |
+| `respond` 型別                | `TUploadResult`，`data` 是 `TUploadRespond[]`                                        |
+| 排序                          | BunnyCDN 模式下資料夾會排在檔案前面                                                  |
+| 錯誤                          | 請求拋出例外時會用 `alert()` 顯示錯誤                                                |
 
 ### useRemove
 

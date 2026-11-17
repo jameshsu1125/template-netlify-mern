@@ -4,10 +4,10 @@
 
 ## 檔案一覽
 
-| 檔案 | 用途 |
-| :-- | :-- |
-| `browser.ts` | 建立 MSW worker（`setupWorker(...handlers)`） |
-| `handlers.ts` | 定義要攔截哪些請求、回傳什麼 |
+| 檔案                          | 用途                                                  |
+| :---------------------------- | :---------------------------------------------------- |
+| `browser.ts`                  | 建立 MSW worker（`setupWorker(...handlers)`）         |
+| `handlers.ts`                 | 定義要攔截哪些請求、回傳什麼                          |
 | `public/mockServiceWorker.js` | MSW 的 Service Worker 腳本，由 MSW 產生，請勿手動修改 |
 
 ## 如何啟用
@@ -34,10 +34,10 @@
 
 ## 目前的 handlers
 
-| 方法與路徑 | 回應 |
-| :-- | :-- |
+| 方法與路徑      | 回應                                                            |
+| :-------------- | :-------------------------------------------------------------- |
 | `GET` `connect` | 回傳 faker 產生的假資料（`userId`、`id`、`title`、`completed`） |
-| `GET` `/api` | 狀態碼 `404`，訊息 `Out Of Service` |
+| `GET` `/api`    | 狀態碼 `404`，訊息 `Out Of Service`                             |
 
 > 目前的 `connect` handler 回傳的欄位與真實 API 不同（真實回應是 `{ res, msg }`），只是範例。如果前端程式依賴 `respond.res`，請改寫成符合 `IRespond` 的格式。
 

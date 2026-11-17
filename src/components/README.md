@@ -4,18 +4,18 @@
 
 ## 元件一覽
 
-| 元件 | 類型 | 用途 | 說明文件 |
-| :-- | :-- | :-- | :-- |
-| `loadingProcess` | 全域提示 | 全螢幕讀取中畫面，有 8 種動畫 | [README](loadingProcess/README.md) |
-| `alert` | 全域提示 | 右下角的短暫訊息（資訊、成功、警告、錯誤） | [README](alert/README.md) |
-| `modal` | 全域提示 | 置中的對話視窗，可放任意內容與按鈕 | [README](modal/README.md) |
-| `confirm` | 通用 | 頂部確認列（Accept／Deny） | [README](confirm/README.md) |
-| `button` | 通用 | daisyUI 按鈕的簡單封裝，可用 class 覆寫樣式 | [README](button/README.md) |
-| `tab` | 通用 | 分頁標籤（`Tab` 與 `Tab.Panel`） | [README](tab/README.md) |
-| `drawer` | 版型 | 後台版面：側邊欄、導覽列、使用者列 | [README](drawer/README.md) |
-| `album` | 功能 | 圖片管理：瀏覽、上傳、複製網址、刪除 | [README](album/README.md) |
-| `tiptab` | 功能 | Tiptap 富文字編輯器，可從相簿插入圖片 | [README](tiptab/README.md) |
-| `userInfo` | 版型 | 使用者資訊側欄（目前沒有被任何頁面使用） | [README](userInfo/README.md) |
+| 元件             | 類型     | 用途                                                              | 說明文件                           |
+| :--------------- | :------- | :---------------------------------------------------------------- | :--------------------------------- |
+| `loadingProcess` | 全域提示 | 全螢幕讀取中畫面，有 8 種動畫                                     | [README](loadingProcess/README.md) |
+| `alert`          | 全域提示 | 右下角的短暫訊息（資訊、成功、警告、錯誤）                        | [README](alert/README.md)          |
+| `modal`          | 全域提示 | 置中的對話視窗，可放任意內容與按鈕                                | [README](modal/README.md)          |
+| `confirm`        | 通用     | 頂部確認列（Accept／Deny）                                        | [README](confirm/README.md)        |
+| `button`         | 通用     | daisyUI 按鈕的簡單封裝，可用 class 覆寫樣式                       | [README](button/README.md)         |
+| `tab`            | 通用     | 分頁標籤（`Tab` 與 `Tab.Panel`）                                  | [README](tab/README.md)            |
+| `drawer`         | 版型     | 後台版面：側邊欄、導覽列、使用者列                                | [README](drawer/README.md)         |
+| `album`          | 功能     | 圖片管理：資料夾樹、縮圖瀏覽、拖放多張上傳、複製網址 / 插入、刪除 | [README](album/README.md)          |
+| `tiptab`         | 功能     | Tiptap 富文字編輯器，可從相簿插入圖片                             | [README](tiptab/README.md)         |
+| `userInfo`       | 版型     | 使用者資訊側欄（目前沒有被任何頁面使用）                          | [README](userInfo/README.md)       |
 
 ### 三種「全域提示」與一般元件的差別
 
@@ -50,7 +50,7 @@ Drawer（後台版面）
      ├─ Album 頁 ─────────── album 元件
      └─ Editor 頁 ────────── tiptab 元件
                                 └─ 「新增圖片」按鈕 → 開啟 Modal，內容是 album 元件
-                                       └─ album 內使用 tab、confirm、button
+                                       └─ album 以 `mode='picker'` 顯示，詳細面板按「插入」
 ```
 
 ## 使用的樣式工具
@@ -77,12 +77,15 @@ Drawer（後台版面）
 一句話說明用途。
 
 ## 基本用法
+
 （可直接複製使用的範例）
 
 ## Props
+
 | 名稱 | 型別 | 預設值 | 說明 |
 
 ## 行為說明
+
 （內部運作、與全域狀態的互動）
 
 ## 注意事項

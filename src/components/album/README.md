@@ -1,135 +1,95 @@
-# album：相簿（圖片管理）
+# Album 相簿
 
-完整的圖片管理介面：瀏覽資料夾與圖片、上傳新圖片、複製圖片網址、刪除單張或多張圖片、刪除資料夾。圖片實際儲存在 Cloudinary 或 BunnyCDN（由後端環境變數決定）。
+圖片管理元件：左側資料夾樹、中間縮圖格狀、右側詳細面板。可以拖放或選檔一次上傳多張圖片到目前所在的資料夾，複製圖片網址，刪除單張、多張或整個資料夾。
 
 ## 基本用法
-
-直接放進頁面即可，不需要任何 Props：
 
 ```tsx
 import Album from '@/components/album';
 
-const AlbumPage = () => (
-  <div className='w-full'>
-    <Album />
-  </div>
-);
+// 相簿頁
+<Album />
+
+// 編輯器插圖用：詳細面板的主按鈕變成「插入」
+<Album mode='picker' />
 ```
 
-它有兩個地方會用到：
+需要放在全域 `Context.Provider` 內（會用到 `Alert`、`Modal`、`LoadingProcess` 與 `album` 狀態）。
 
-| 位置 | 說明 |
-| :-- | :-- |
-| `src/pages/album` | 獨立的相簿頁面 |
-| `src/components/tiptab/menu.tsx` | 編輯器的「新增圖片」按鈕，把相簿放進 Modal，挑選圖片網址 |
+## Props
 
-## 畫面與功能
+| 名稱   | 型別                   | 預設       | 說明                                                                                                       |
+| :----- | :--------------------- | :--------- | :--------------------------------------------------------------------------------------------------------- |
+| `mode` | `'manage' \| 'picker'` | `'manage'` | `picker`：資料夾樹收進工具列的「資料夾」下拉按鈕；詳細面板按「插入」會寫入 `album.copiedText` 並關閉 Modal |
 
-元件由兩個分頁組成（使用 [tab](../tab/README.md)）：
+## 畫面
 
-### Manage（管理）
+```text
+[資料夾▾] 相簿 › products › 2026            [新資料夾] [上傳]
+┌──────────┬───────────────────────────────┬───────────────┐
+│ 資料夾樹 │ 已選 2 張   [刪除] [取消選取] │ 詳細面板      │
+│ ▾ 相簿   │ 📁 📁 🖼 🖼 🖼                │ 大圖、尺寸、路徑 │
+│   › a    │ 🖼 🖼 🖼 …（可拖放上傳）       │ [複製網址/插入] │
+└──────────┴───────────────────────────────┴───────────────┘
+                                          右下角：上傳佇列
+```
 
-顯示目前資料夾的內容，每一列是一個圖片或資料夾：
+- 資料夾樹只在 `lg`（1024px）以上且 `manage` 模式顯示在左側；其他情況收進工具列的下拉按鈕。
+- 詳細面板在點了圖片後才出現；窄螢幕排在格狀下方。
 
-| 項目 | 圖片 | 資料夾 |
-| :-- | :-- | :-- |
-| 縮圖 | 圖片縮圖，點擊在新分頁開啟 | 資料夾圖示，點擊進入 |
-| 名稱 | `資料夾/檔名.副檔名` | 同左 |
-| 尺寸 | 寬 x 高；後端沒有提供時，會在瀏覽器載入圖片後自行量測，量不到顯示 `unknown` | — |
-| 勾選框 | 有（可多選） | 沒有 |
-| 按鈕 | `open`（新分頁開啟）、`copy`（複製網址）、`delete`（刪除） | `open`（進入資料夾）、`delete`（刪除資料夾） |
+## 操作
 
-其他行為：
+| 動作         | 怎麼做                                                                                                                       |
+| :----------- | :--------------------------------------------------------------------------------------------------------------------------- |
+| 切換資料夾   | 點資料夾樹節點、格狀中的資料夾卡片，或麵包屑                                                                                 |
+| 展開資料夾樹 | 點節點左邊的箭頭；第一次展開才向後端查詢該層                                                                                 |
+| 看圖片資訊   | 點縮圖，右側出現詳細面板                                                                                                     |
+| 複製網址     | 詳細面板「複製網址」                                                                                                         |
+| 上傳         | 「上傳」按鈕（可多選），或把圖片拖到格狀區域；一律上傳到**目前資料夾**                                                       |
+| 新資料夾     | 「新資料夾」輸入名稱後選圖片，圖片會上傳到 `目前資料夾/名稱`（儲存服務沒有空資料夾）                                         |
+| 刪除單張     | 詳細面板「刪除」                                                                                                             |
+| 刪除多張     | 勾選縮圖卡片下方的勾選框：被選的卡片加上主色外框，圖片左上角（卡片內）的徽章顯示選取順序（1、2、3…）；上方提示列依序疊放已選縮圖，按「刪除」 |
+| 刪除資料夾   | 資料夾卡片右上角「⋮」→「刪除資料夾」（Cloudinary 模式不支援）                                                                |
 
-- 進入子資料夾後，列表最上方會多一列「up folder...」，按 `open` 回到根目錄。
-- 勾選至少一張圖片後，下方出現「REMOVE SELECTED」按鈕，可以一次刪除多張。
-- 所有刪除都會先彈出頂部的[確認列](../confirm/README.md)，按 Accept 才會真的刪除。
-- 刪除完成後顯示成功或失敗的 Alert，並重新載入列表。
+所有刪除都會先跳出置中的確認框。
 
-### Upload（上傳）
+## 上傳流程
 
-1. 按「Capture」選擇圖片（使用 `lesca-react-capture-button`，會依 `CAPTURE_PROPERTY` 縮小到最大寬度 500px 並壓縮）。
-2. 預覽圖片與尺寸，可輸入要上傳到的資料夾名稱（留空代表根目錄）。
-3. 按「upload now」上傳。
-4. 成功後清除預覽，約 0.5 秒後自動切回 Manage 分頁並重新載入。
-
-## 檔案結構
-
-| 檔案 | 說明 |
-| :-- | :-- |
-| `index.tsx` | 容器：提供 `AlbumContext`、顯示確認列、放入兩個分頁 |
-| `config.tsx` | 元件內部的狀態型別、初始值與 `AlbumContext` |
-| `list.tsx` | Manage 分頁：取得圖片列表、處理刪除請求與結果 |
-| `table.tsx` | 圖片表格（表頭、表尾、列） |
-| `tr.tsx` | 表格的單一列：縮圖、名稱、尺寸、操作按鈕 |
-| `upload.tsx` | Upload 分頁：選圖、預覽、上傳 |
+1. 選到的圖片在瀏覽器以 canvas 壓縮：寬度最多 `CAPTURE_PROPERTY.maxWidth`（500px），JPEG 品質 `CAPTURE_PROPERTY.compress`（0.3）。
+2. 加入右下角的上傳佇列，目標資料夾在加入當下決定（之後切換資料夾不影響）。
+3. 一次上傳一張（`useUpload({ silent: true })`，不開全螢幕 Loading），每張顯示等待 / 上傳中 / 完成 / 失敗；失敗的那張可按「重試」，其他張照常進行。
+4. 全部結束後重新查詢目前資料夾、清空資料夾樹快取。
 
 ## 狀態
 
-元件有**兩份**狀態，不要混淆：
+| 狀態                           | 範圍     | 內容                                                                                |
+| :----------------------------- | :------- | :---------------------------------------------------------------------------------- |
+| `AlbumContext`（`config.tsx`） | 元件內部 | `mode`、`selected`、`detail`、`tree`、`expanded`、`queue`、`confirm`、`reload`      |
+| `context[ActionType.Album]`    | 全域     | `folder`（目前資料夾相對路徑，`'*'` 為根目錄）、`copiedText`（`picker` 選取的網址） |
 
-### 1. 元件內部的 `AlbumContext`（`config.tsx`）
+## 檔案
 
-只在相簿元件內部共用，用來處理「刪除確認」流程：
-
-| 欄位 | 型別 | 說明 |
-| :-- | :-- | :-- |
-| `enabled` | `boolean` | 是否顯示確認列 |
-| `body` | `string` | 確認列的問題文字 |
-| `public_id` | `string[]` | 待刪除項目的識別值 |
-| `submit` | `boolean` | 使用者按下 Accept 後變為 `true`，通知清單發出刪除請求 |
-
-### 2. 全域狀態 `context[ActionType.Album]`（`src/settings`）
-
-跨元件共用：
-
-| 欄位 | 預設值 | 說明 |
-| :-- | :-- | :-- |
-| `folder` | `'*'` | 目前所在的資料夾，`'*'` 代表根目錄。改變時 `useSearch` 會自動重新查詢 |
-| `copiedText` | `''` | 最近一次複製的圖片網址。編輯器用它取得要插入的圖片 |
-
-## 資料流程
-
-```text
-進入頁面
-  └─ useSearch（folder = context.album.folder）→ POST /api/search → 顯示列表
-
-按 delete
-  └─ AlbumContext 設定 enabled、body、public_id → 顯示確認列
-       ├─ Deny   → 關閉，submit = false
-       └─ Accept → 關閉，submit = true
-            └─ list.tsx 偵測 submit
-                 ├─ 1 筆  → useRemove     → POST /api/remove
-                 └─ 多筆  → useRemoveMany → POST /api/removeMany
-                      └─ 顯示 Alert、列表重新載入（reload key + 1）
-
-按 copy
-  └─ 複製網址到剪貼簿 → 顯示 Alert「網址已經複製到剪貼簿」
-       → 寫入 context.album.copiedText → 關閉 Modal（在編輯器內使用時）
-```
-
-## 與後端的對應
-
-| 動作 | Hook | API |
-| :-- | :-- | :-- |
-| 列出 | `useSearch` | `POST /api/search` |
-| 上傳 | `useUpload` | `POST /api/upload` |
-| 刪除單張 | `useRemove` | `POST /api/remove` |
-| 刪除多張 | `useRemoveMany` | `POST /api/removeMany` |
-
-傳給刪除 API 的識別值依操作而不同（見 `tr.tsx`）：
-
-| 操作 | 傳送的值 |
-| :-- | :-- |
-| 勾選框（多選刪除） | `pixels === 0`（通常是 BunnyCDN）時用 `secure_url`，否則用 `public_id` |
-| 單張圖片的 `delete` 按鈕 | `public_id` |
-| 資料夾的 `delete` 按鈕 | `public_id`（結尾帶 `/`，後端靠這個判斷是資料夾） |
-
-> BunnyCDN 模式下，`search` 回傳的 `public_id` 是完整儲存路徑（例：`inquiry/001/photo.jpeg`，資料夾結尾帶 `/`），後端 `remove` / `removeMany` 接受儲存路徑或 CDN 網址，並拒絕空值、`/`、`..`、根資料夾本身等可能波及整個相簿的值。已對真實 BunnyCDN 實測：根目錄檔案（`secure_url`）、子資料夾檔案（`public_id`）、資料夾（`public_id`）皆可刪除。注意：`upload` 回傳的 `public_id` 只是檔名，不能直接拿去刪，請用 `search` 的結果。
+| 檔案             | 內容                                                                           |
+| :--------------- | :----------------------------------------------------------------------------- |
+| `index.tsx`      | 版面、`mode` prop                                                              |
+| `config.tsx`     | 型別、初始值、`joinPath`、`parentPath`、`removeKey`、`dropTree`、`folderNames` |
+| `breadcrumb.tsx` | 麵包屑                                                                         |
+| `tree.tsx`       | 資料夾樹（逐層載入）                                                           |
+| `grid.tsx`       | 縮圖格狀、批次操作列、空狀態                                                   |
+| `item.tsx`       | 圖片 / 資料夾卡片、`useImageSize`                                              |
+| `detail.tsx`     | 詳細面板                                                                       |
+| `confirm.tsx`    | 刪除確認框與刪除後的狀態整理                                                   |
+| `uploader.tsx`   | `UploadButton`、`NewFolderButton`、`DropZone`、`UploadQueue`                   |
 
 ## 注意事項
 
-- 後端不轉檔，最終檔案格式取決於前端壓縮的結果。
-- 「Manage」分頁的 id 是 `Manage`，上傳完成後靠它切回分頁（見 [tab](../tab/README.md)）。
-- 元件內的 `Tab` 使用固定的 radio name，同一個畫面不要同時放兩個相簿或兩組 `Tab`。
-- `tr.tsx` 的 `key` 使用 `JSON.stringify(item)`，列表很大時會有效能成本。
+- 資料夾路徑由前端組成（`父路徑/名稱`），不使用後端回傳的 `folder` 欄位（BunnyCDN 可能帶有 `BUNNY_FOLDER_NAME` 前綴）。
+- 刪除識別值：勾選框用 `removeKey`（`pixels === 0` 用 `secure_url`，否則 `public_id`）；詳細面板用 `public_id`；資料夾用結尾 `/` 的 `public_id`。
+- BunnyCDN 回傳的寬高是 0，縮圖與面板在瀏覽器端量測。
+- Cloudinary 模式的 `remove` 用 `uploader.destroy`，刪不了資料夾，會顯示後端的失敗訊息。
+- 確認框與上傳佇列是 `z-50`，在全域 Modal（`z-40`）之上。
+- 單張上傳上限 10MB（壓縮後的大小）。
+- 在編輯器 Modal（`picker`）內上傳時若關閉 Modal，相簿元件卸載，**佇列中尚未上傳的圖片會被放棄**；確認框、上傳佇列與新資料夾視窗用 `createPortal` 掛到 `document.body`，避免被 Modal 的 `modal-box` 裁切。
+- Cloudinary 模式的「刪除資料夾」不會真的刪除（後端只刪單一 asset），可能仍顯示成功訊息；這次的範圍不處理。
+- 介面全部使用 daisyUI 元件：`navbar`、`breadcrumbs`、`menu`（資料夾樹）、`card`（縮圖、詳細面板、上傳佇列）、`indicator` + `badge`（選取順序）、`checkbox`、`alert` + `avatar-group` + `join`（批次操作）、`list`、`modal`、`fieldset`、`toast`、`progress`、`dropdown`。
+- 為了避免點選時畫面跳動：詳細面板與批次操作列一開始就顯示（未選取時是空狀態、按鈕停用）；縮圖卡片一開始就有透明的 `ring-2`，選取時只換顏色；選取編號徽章以淡入淡出出現。

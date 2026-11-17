@@ -18,28 +18,28 @@ const Page = () => (
 
 ## Props
 
-| 名稱 | 型別 | 說明 |
-| :-- | :-- | :-- |
+| 名稱       | 型別        | 說明                             |
+| :--------- | :---------- | :------------------------------- |
 | `children` | `ReactNode` | 顯示在右側（手機版為下方）的內容 |
 
 ## 顯示內容
 
 使用者資料來自全域狀態 `context[ActionType.User]`。
 
-| 區塊 | 說明 |
-| :-- | :-- |
-| 頭像 | 使用者的 `picture` |
-| 權限圖示 | 依 `type` 變化，滑過顯示權限文字 |
+| 區塊         | 說明                                                    |
+| :----------- | :------------------------------------------------------ |
+| 頭像         | 使用者的 `picture`                                      |
+| 權限圖示     | 依 `type` 變化，滑過顯示權限文字                        |
 | 用戶列表連結 | 只有 `admin` 看得到，連結到第一個 collection（`/user`） |
-| 登出 | 呼叫 Auth0 的 `logout()` |
+| 登出         | 呼叫 Auth0 的 `logout()`                                |
 
 權限圖示：
 
-| 權限 | 圖示 |
-| :-- | :-- |
-| `admin` | `FaUserGear` |
-| `inHouse` | `FaUserEdit` |
-| `user` | `FaUserCheck` |
+| 權限              | 圖示              |
+| :---------------- | :---------------- |
+| `admin`           | `FaUserGear`      |
+| `inHouse`         | `FaUserEdit`      |
+| `user`            | `FaUserCheck`     |
 | `guest`（及其他） | `PiUserFocusBold` |
 
 ## 注意事項
