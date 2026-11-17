@@ -3,7 +3,7 @@ import { Context } from '@/settings/constant';
 import { ActionType } from '@/settings/type';
 import { memo, useContext, useEffect, useRef } from 'react';
 import { MdDeleteOutline } from 'react-icons/md';
-import { AlbumContext, folderNames } from './config';
+import { AlbumContext, folderNames, removeKey } from './config';
 import Item from './item';
 
 const Grid = memo(() => {
@@ -39,7 +39,28 @@ const Grid = memo(() => {
     <div className='flex min-w-0 flex-1 flex-col gap-3'>
       {state.selected.length > 0 && (
         <div className='bg-neutral text-neutral-content rounded-box sticky top-0 z-10 flex items-center gap-2 px-4 py-2'>
-          <span className='flex-1 text-sm'>已選 {state.selected.length} 張</span>
+          <span className='shrink-0 text-sm'>已選 {state.selected.length} 張</span>
+          <div className='flex min-w-0 flex-1 gap-2 overflow-x-auto py-1'>
+            {state.selected.map((key, index) => {
+              const picked = data.find((item) => removeKey(item) === key);
+              return (
+                <div key={key} className='indicator shrink-0' title={picked?.filename}>
+                  <span className='indicator-item badge badge-primary badge-xs font-bold'>
+                    {index + 1}
+                  </span>
+                  {picked ? (
+                    <img
+                      src={picked.secure_url}
+                      alt={picked.filename}
+                      className='rounded-field h-8 w-8 object-cover'
+                    />
+                  ) : (
+                    <div className='rounded-field bg-base-300 h-8 w-8' />
+                  )}
+                </div>
+              );
+            })}
+          </div>
           <button
             type='button'
             className='btn btn-error btn-sm'

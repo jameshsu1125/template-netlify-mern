@@ -74,15 +74,24 @@ const FolderItem = memo(({ item }: { item: TUploadRespond }) => {
 const ImageItem = memo(({ item }: { item: TUploadRespond }) => {
   const [state, setState] = useContext(AlbumContext);
   const key = removeKey(item);
-  const checked = state.selected.includes(key);
+  // 1-based order in which the image was picked, 0 when not picked
+  const order = state.selected.indexOf(key) + 1;
+  const checked = order > 0;
   const active = state.detail?.secure_url === item.secure_url;
+  const toggle = () =>
+    setState((S) => ({
+      ...S,
+      selected: S.selected.includes(key)
+        ? S.selected.filter((k) => k !== key)
+        : [...S.selected, key],
+    }));
 
   return (
     <div
       className={twMerge(
-        'bg-base-200 rounded-box relative aspect-square cursor-pointer overflow-hidden',
-        active ? 'ring-primary ring-4' : '',
-        checked ? 'ring-secondary ring-2' : '',
+        'bg-base-200 rounded-box relative aspect-square cursor-pointer overflow-hidden transition',
+        active ? 'outline-base-content outline-2 outline-offset-2 outline-dashed' : '',
+        checked ? 'ring-primary ring-offset-base-100 ring-4 ring-offset-2' : '',
       )}
       onClick={() => setState((S) => ({ ...S, detail: item }))}
     >
@@ -90,22 +99,29 @@ const ImageItem = memo(({ item }: { item: TUploadRespond }) => {
         src={item.secure_url}
         alt={item.filename}
         loading='lazy'
-        className='h-full w-full object-cover'
+        className={twMerge('h-full w-full object-cover transition', checked ? 'scale-90' : '')}
       />
-      <input
-        type='checkbox'
-        aria-label={`選取 ${item.filename}`}
-        className='checkbox checkbox-sm checkbox-primary bg-base-100 absolute top-2 left-2'
-        checked={checked}
-        onClick={(e) => e.stopPropagation()}
-        onChange={(e) => {
-          const on = e.target.checked;
-          setState((S) => ({
-            ...S,
-            selected: on ? [...S.selected, key] : S.selected.filter((k) => k !== key),
-          }));
+      {checked && <div className='bg-primary/25 pointer-events-none absolute inset-0' />}
+      <button
+        type='button'
+        role='checkbox'
+        aria-checked={checked}
+        aria-label={
+          checked ? `取消選取 ${item.filename}（第 ${order} 張）` : `選取 ${item.filename}`
+        }
+        className={twMerge(
+          'absolute top-2 left-2 flex h-8 w-8 items-center justify-center rounded-full border-2 text-sm font-bold shadow transition',
+          checked
+            ? 'bg-primary text-primary-content border-primary-content'
+            : 'bg-base-100/70 border-base-100 hover:bg-base-100',
+        )}
+        onClick={(e) => {
+          e.stopPropagation();
+          toggle();
         }}
-      />
+      >
+        {checked ? order : ''}
+      </button>
       <div className='bg-base-100/80 absolute right-0 bottom-0 left-0 truncate px-2 py-1 text-xs'>
         {item.filename}
         {item.format && !item.filename.endsWith(`.${item.format}`) ? `.${item.format}` : ''}
