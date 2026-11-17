@@ -14,7 +14,7 @@ const Confirm = memo(({ body, onConfirm, onCancel }: T) => {
         xmlns='http://www.w3.org/2000/svg'
         fill='none'
         viewBox='0 0 24 24'
-        className='h-6 w-6 shrink-0 stroke-info'
+        className='stroke-info h-6 w-6 shrink-0'
       >
         <path
           strokeLinecap='round'

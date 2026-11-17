@@ -423,18 +423,18 @@ export const Reducer = (state: IState, action: IAction): IState => {
 
 ### 8.0 元件一覽
 
-| 元件             | 類型     | 誰渲染                                       | 資料來源                         |
-| :--------------- | :------- | :------------------------------------------- | :------------------------------- |
-| `loadingProcess` | 全域提示 | `app.tsx`（`enabled` 時）；登入流程也直接用  | `context.loadingProcess`         |
-| `alert`          | 全域提示 | `app.tsx`（僅 `AdminApp`）                   | `context.alert`                  |
-| `modal`          | 全域提示 | `app.tsx`（僅 `AdminApp`）                   | `context.modal`                  |
-| `confirm`        | 通用     | 使用端（條件渲染）                           | Props                            |
-| `button`         | 通用     | 使用端                                       | Props                            |
-| `tab`            | 通用     | 使用端                                       | Props                            |
-| `drawer`         | 版型     | `router.tsx` 的 `DrawerPage`                 | `context.user`、`SETTING`        |
-| `album`          | 功能     | `pages/album`、`tiptab/menu.tsx`（Modal 內） | `AlbumContext` + `context.album` |
-| `tiptab`         | 功能     | `pages/editor`                               | Props + `context.modal/album`    |
-| `userInfo`       | 版型     | **無人使用**                                 | `context.user`                   |
+| 元件             | 類型     | 誰渲染                                                        | 資料來源                         |
+| :--------------- | :------- | :------------------------------------------------------------ | :------------------------------- |
+| `loadingProcess` | 全域提示 | `app.tsx`（`enabled` 時）；登入流程也直接用                   | `context.loadingProcess`         |
+| `alert`          | 全域提示 | `app.tsx`（僅 `AdminApp`）                                    | `context.alert`                  |
+| `modal`          | 全域提示 | `app.tsx`（僅 `AdminApp`）                                    | `context.modal`                  |
+| `confirm`        | 通用     | 使用端（條件渲染）                                            | Props                            |
+| `button`         | 通用     | 使用端                                                        | Props                            |
+| `tab`            | 通用     | 使用端                                                        | Props                            |
+| `drawer`         | 版型     | `router.tsx` 的 `DrawerPage`                                  | `context.user`、`SETTING`        |
+| `album`          | 功能     | `pages/album`、`tiptab/menu.tsx`（Modal 內，`mode='picker'`） | `AlbumContext` + `context.album` |
+| `tiptab`         | 功能     | `pages/editor`                                                | Props + `context.modal/album`    |
+| `userInfo`       | 版型     | **無人使用**                                                  | `context.user`                   |
 
 `loadingProcess`、`alert`、`modal` **不要自己 `<Alert />` 放進畫面**，只更新全域狀態，由 `app.tsx` 渲染。
 
@@ -503,31 +503,41 @@ Props：`children`、`className`（`twMerge('btn', className)`，後者覆蓋）
 
 ### 8.8 `Album`
 
-無 props。圖片管理：Manage 分頁（瀏覽、勾選多選、`open` / `copy` / `delete`）與 Upload 分頁（`lesca-react-capture-button` 選圖，依 `CAPTURE_PROPERTY` 縮到最大寬 500px、壓縮 0.3）。
+Props：`mode?: 'manage' | 'picker'`（預設 `manage`；`picker` 給編輯器 Modal 用，詳細面板主按鈕變「插入」，資料夾樹收進工具列的下拉按鈕）。
+
+版面：工具列（資料夾下拉〔窄螢幕 / picker〕、麵包屑、新資料夾、上傳）＋ 左側資料夾樹（`lg` 以上）＋ 中間縮圖格狀（拖放區）＋ 右側詳細面板（點圖才出現）。勾選縮圖後格狀上方浮出批次操作列；右下角是上傳佇列。
 
 **兩份狀態，不要混淆**：
 
-| 狀態                                 | 範圍     | 內容                                                                                                |
-| :----------------------------------- | :------- | :-------------------------------------------------------------------------------------------------- |
-| `AlbumContext`（`album/config.tsx`） | 元件內部 | 刪除確認流程：`enabled`、`body`、`public_id: string[]`、`submit`                                    |
-| `context[ActionType.Album]`          | 全域     | `folder`（`'*'` 為根目錄，改變時 `useSearch` 自動重查）、`copiedText`（最近複製的網址，編輯器取用） |
+| 狀態                                 | 範圍     | 內容                                                                                                                                |
+| :----------------------------------- | :------- | :---------------------------------------------------------------------------------------------------------------------------------- |
+| `AlbumContext`（`album/config.tsx`） | 元件內部 | `mode`、`selected`（勾選的刪除識別值）、`detail`、`tree`（資料夾路徑 → 子資料夾名稱快取）、`expanded`、`queue`、`confirm`、`reload` |
+| `context[ActionType.Album]`          | 全域     | `folder`（目前資料夾相對路徑，`'*'` 為根；改變時格狀自動重查）、`copiedText`（picker 選的網址，編輯器取用）                         |
 
-流程：進頁面 `useSearch` → 按 delete 設定 `AlbumContext` 顯示 `Confirm` → Accept 後 `submit=true` → `list.tsx` 偵測並呼叫 `useRemove`（1 筆）或 `useRemoveMany`（多筆）→ Alert + 列表重載（`reload` key + 1）。按 `copy` → 複製網址、Alert、寫入 `copiedText`、關閉 Modal。
+流程：
 
-檔案：`index.tsx`（容器）、`config.tsx`、`list.tsx`、`table.tsx`、`tr.tsx`、`upload.tsx`。
+- 資料夾樹逐層載入：展開節點時以 `useSearch({ auto: false, silent: true })` 查該層並寫入 `tree`；格狀查到的子資料夾也會寫入 `tree`。
+- 資料夾路徑由前端組（`joinPath(parent, name)`），不讀回應的 `folder` 欄位（可能含 `BUNNY_FOLDER_NAME` 前綴）。
+- 上傳：「上傳」按鈕（可多選）或拖放到格狀 → 瀏覽器以 canvas 依 `CAPTURE_PROPERTY`（最大寬 500px、JPEG 品質 0.3）壓縮 → 進 `queue` → `useUpload({ silent: true })` 逐張上傳，失敗可重試 → 全部結束後 `reload + 1` 並清空樹快取。目標資料夾在加入佇列當下決定。
+- 「新資料夾」= 輸入名稱後選圖，上傳到 `目前/名稱`（儲存服務沒有空資料夾）。
+- 刪除：詳細面板、批次操作列、資料夾卡片選單 → `confirm.tsx` 的置中確認框 → `useRemove`（1 筆）或 `useRemoveMany`（多筆）→ Alert + 重查。
+
+檔案：`index.tsx`（版面）、`config.tsx`（型別、初始值、`joinPath` / `parentPath` / `removeKey` / `dropTree` / `folderNames`）、`tree.tsx`、`breadcrumb.tsx`、`grid.tsx`、`item.tsx`（含 `useImageSize`）、`detail.tsx`、`confirm.tsx`、`uploader.tsx`（`UploadButton`、`NewFolderButton`、`DropZone`、`UploadQueue`）。
 
 注意：
 
-- 傳給刪除 API 的識別值：勾選框 `pixels === 0` 用 `secure_url` 否則 `public_id`；單張 delete 按鈕固定 `public_id`；資料夾 delete 用 `public_id`（結尾 `/`）。BunnyCDN 的 `search` 回傳完整儲存路徑當 `public_id`，後端用 `toBunnyPath` 驗證後直接打 Storage API；三種刪除已實測。`upload` 回傳的 `public_id` 只是檔名，不可拿去刪。
-- 後端不轉檔：BunnyCDN 模式以 `jpeg` 上傳，Cloudinary 模式直接上傳前端送來的 Base64；最終格式取決於前端壓縮結果。
-- `tr.tsx` 的 `key` 用 `JSON.stringify(item)`，列表大時有效能成本。
+- 傳給刪除 API 的識別值：勾選框 `pixels === 0` 用 `secure_url` 否則 `public_id`（`removeKey`）；詳細面板固定 `public_id`；資料夾用 `public_id`（結尾 `/`）。BunnyCDN 的 `search` 回傳完整儲存路徑當 `public_id`，後端用 `toBunnyPath` 驗證後直接打 Storage API。`upload` 回傳的 `public_id` 只是檔名，不可拿去刪。
+- **Cloudinary 模式不能刪資料夾**（後端 `remove` 用 `uploader.destroy`）；按了會顯示後端的失敗訊息。
+- 後端不轉檔：BunnyCDN 模式以 `jpeg` 上傳，Cloudinary 模式直接上傳前端送來的 Base64。
+- 確認框與上傳佇列是 `z-50`，蓋在全域 Modal（`z-40`）之上。
+- 不再使用 `Tab`、`Confirm`、`lesca-react-capture-button`。
 
 ### 8.9 `Tiptab`
 
 Props：`html: string`（與編輯器目前內容不同時會自動覆蓋）、`onSave(html)`（元件不會自己儲存）。
 
 - 擴充：`StarterKit`、`TextStyle`、`Image`（`inline: true`、可縮放、固定長寬比）。新增功能：`index.tsx` 的 `extensions` 加擴充 + `menu.tsx` 加按鈕。
-- 插圖流程：工具列「新增圖片」→ 開 Modal（`title: 'Album'`，`body: <Album />`）→ 相簿 `copy` 寫入 `album.copiedText` 並關 Modal → Modal 關閉時（標題為 `Album` 且 `enabled` 變 `false`）把 `copiedText` 當 `src` 插入游標處。
+- 插圖流程：工具列「新增圖片」→ 清空 `album.copiedText` → 開 Modal（`title: 'Album'`，`body: <Album mode='picker' />`）→ 詳細面板「插入」寫入 `album.copiedText` 並關 Modal → Modal 關閉時（標題為 `Album` 且 `enabled` 變 `false`）把 `copiedText` 當 `src` 插入游標處。
 - 需在 `Context.Provider` 內使用；編輯區 `prose`（`@tailwindcss/typography`）、`min-h-44`。
 - 儲存的是 HTML；若用 `dangerouslySetInnerHTML` 顯示使用者輸入，請先淨化（XSS）。
 - `index.less` 引用 `var(--purple-light)`、`var(--black)`，`global.css` 沒定義，實際是瀏覽器預設色。
@@ -562,19 +572,19 @@ const [respond, run] = useXxx(); // readonly [state, fetch]
 
 ### 9.2 Hook 一覽
 
-| Hook            | 檔案               | `run` 參數                                          | API               | 備註                                                                                           |
-| :-------------- | :----------------- | :-------------------------------------------------- | :---------------- | :--------------------------------------------------------------------------------------------- |
-| `useConnect`    | `useConnect.ts`    | 無                                                  | `GET connect`     | `RoutePages` 載入時呼叫一次                                                                    |
-| `useLogin`      | `useLogin.ts`      | 無                                                  | `POST login`      | 身分來自已驗證的 access token；回 `{ res, type, email? }`                                      |
-| `useSelect`     | `useSelect.ts`     | `{ collection }`                                    | `POST select`     | **不開 Loading**；`data` 是 `TType[]`，要特定型別用 `as TType<'user'>[]`                       |
-| `useInsert`     | `useInsert.ts`     | `{ collection, data }`（可省略 `timestamp`）        | `POST insert`     | `respond.data[0]` 是新文件（含 `_id`）                                                         |
-| `useInsertMany` | `useInsert.ts`     | 同上                                                | `POST insertMany` | 與 `useInsert` 共用 `TArgument`，`data` 型別仍是單筆，傳陣列要轉型；回應的 `data` 是新文件陣列 |
-| `useUpdate`     | `useUpdate.ts`     | `{ collection, data: { _id, data: {要改的欄位} } }` | `POST update`     | 欄位可只傳部分；`_id` 格式錯或查無資料回 `res: false`                                          |
-| `useDelete`     | `useDelete.ts`     | `{ collection, data: { _id } }`                     | `POST delete`     |                                                                                                |
-| `useUpload`     | `useUpload.ts`     | `{ image: base64含前綴, folder }`                   | `POST upload`     | `folder` 空字串為根目錄；單次上限 10MB                                                         |
-| `useSearch`     | `useSearch.ts`     | `{ folder }`（`'*'` 根目錄）                        | `POST search`     | **載入時自動查一次**，`album.folder` 改變也會重查；例外時 `alert()`                            |
-| `useRemove`     | `useRemove.ts`     | `{ public_id }`                                     | `POST remove`     | BunnyCDN 模式後端當作儲存路徑 / CDN 網址                                                       |
-| `useRemoveMany` | `useRemoveMany.ts` | `{ public_ids: string[] }`                          | `POST removeMany` |                                                                                                |
+| Hook            | 檔案               | `run` 參數                                          | API               | 備註                                                                                                         |
+| :-------------- | :----------------- | :-------------------------------------------------- | :---------------- | :----------------------------------------------------------------------------------------------------------- |
+| `useConnect`    | `useConnect.ts`    | 無                                                  | `GET connect`     | `RoutePages` 載入時呼叫一次                                                                                  |
+| `useLogin`      | `useLogin.ts`      | 無                                                  | `POST login`      | 身分來自已驗證的 access token；回 `{ res, type, email? }`                                                    |
+| `useSelect`     | `useSelect.ts`     | `{ collection }`                                    | `POST select`     | **不開 Loading**；`data` 是 `TType[]`，要特定型別用 `as TType<'user'>[]`                                     |
+| `useInsert`     | `useInsert.ts`     | `{ collection, data }`（可省略 `timestamp`）        | `POST insert`     | `respond.data[0]` 是新文件（含 `_id`）                                                                       |
+| `useInsertMany` | `useInsert.ts`     | 同上                                                | `POST insertMany` | 與 `useInsert` 共用 `TArgument`，`data` 型別仍是單筆，傳陣列要轉型；回應的 `data` 是新文件陣列               |
+| `useUpdate`     | `useUpdate.ts`     | `{ collection, data: { _id, data: {要改的欄位} } }` | `POST update`     | 欄位可只傳部分；`_id` 格式錯或查無資料回 `res: false`                                                        |
+| `useDelete`     | `useDelete.ts`     | `{ collection, data: { _id } }`                     | `POST delete`     |                                                                                                              |
+| `useUpload`     | `useUpload.ts`     | `{ image: base64含前綴, folder }`                   | `POST upload`     | `folder` 空字串為根目錄；單次上限 10MB；`useUpload({ silent: true })` 不開 Loading、不丟例外；`run` 回傳結果 |
+| `useSearch`     | `useSearch.ts`     | `{ folder }`（`'*'` 根目錄）                        | `POST search`     | **載入時自動查一次**，`album.folder` 改變也會重查；例外時 `alert()`；選項 `{ auto, silent }`；`run` 回傳結果 |
+| `useRemove`     | `useRemove.ts`     | `{ public_id }`                                     | `POST remove`     | BunnyCDN 模式後端當作儲存路徑 / CDN 網址                                                                     |
+| `useRemoveMany` | `useRemoveMany.ts` | `{ public_ids: string[] }`                          | `POST removeMany` |                                                                                                              |
 
 ### 9.3 新增 hook
 

@@ -9,27 +9,36 @@ type T = {
   folder: string;
 };
 
-const useSearch = () => {
+type TOption = {
+  /** false: do not query `album.folder` on mount and whenever it changes */
+  auto?: boolean;
+  /** true: do not toggle the full screen LoadingProcess */
+  silent?: boolean;
+};
+
+const useSearch = ({ auto = true, silent = false }: TOption = {}) => {
   const [content, setContext] = useContext(Context);
   const folder = content[ActionType.Album].folder;
   const [state, setState] = useState<TUploadResult | undefined>();
 
   const fetch = async (parm: T) => {
-    setContext({ type: ActionType.LoadingProcess, state: { enabled: true } });
+    if (!silent) setContext({ type: ActionType.LoadingProcess, state: { enabled: true } });
+    let respond: TUploadResult | undefined;
     try {
-      const respond = await post<TUploadResult>(REST_PATH.search, parm);
+      respond = await post<TUploadResult>(REST_PATH.search, parm);
       setState(respond);
     } catch (e) {
-      alert(e);
+      if (!silent) alert(e);
     }
-    setContext({ type: ActionType.LoadingProcess, state: { enabled: false } });
+    if (!silent) setContext({ type: ActionType.LoadingProcess, state: { enabled: false } });
+    return respond;
   };
 
   useEffect(() => {
     const initialFetch = async () => {
       await fetch({ folder });
     };
-    initialFetch();
+    if (auto) initialFetch();
   }, [folder]);
 
   return [state, fetch] as const;

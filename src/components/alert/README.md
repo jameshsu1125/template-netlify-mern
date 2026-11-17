@@ -33,22 +33,22 @@ const Demo = () => {
 
 這個元件沒有 Props，設定來自 `context[ActionType.Alert]`：
 
-| 欄位 | 型別 | 預設值 | 說明 |
-| :-- | :-- | :-- | :-- |
-| `enabled` | `boolean` | `false` | 是否顯示 |
-| `type` | `AlertType` | `Normal` | 提示類型，決定顏色與圖示 |
-| `body` | `ReactNode` | `'message'` | 訊息內容，可以放文字或任意 React 元素 |
-| `time` | `number` | `5000` | 顯示多久後自動關閉，單位毫秒 |
+| 欄位      | 型別        | 預設值      | 說明                                  |
+| :-------- | :---------- | :---------- | :------------------------------------ |
+| `enabled` | `boolean`   | `false`     | 是否顯示                              |
+| `type`    | `AlertType` | `Normal`    | 提示類型，決定顏色與圖示              |
+| `body`    | `ReactNode` | `'message'` | 訊息內容，可以放文字或任意 React 元素 |
+| `time`    | `number`    | `5000`      | 顯示多久後自動關閉，單位毫秒          |
 
 ### 類型
 
-| 列舉 | 值（daisyUI class） | 圖示 |
-| :-- | :-- | :-- |
-| `AlertType.Normal` | `''` | 藍色資訊圖示 |
-| `AlertType.Info` | `'alert-info'` | 資訊 |
-| `AlertType.Success` | `'alert-success'` | 打勾 |
-| `AlertType.Warning` | `'alert-warning'` | 警告三角形 |
-| `AlertType.Error` | `'alert-error'` | 叉叉 |
+| 列舉                | 值（daisyUI class） | 圖示         |
+| :------------------ | :------------------ | :----------- |
+| `AlertType.Normal`  | `''`                | 藍色資訊圖示 |
+| `AlertType.Info`    | `'alert-info'`      | 資訊         |
+| `AlertType.Success` | `'alert-success'`   | 打勾         |
+| `AlertType.Warning` | `'alert-warning'`   | 警告三角形   |
+| `AlertType.Error`   | `'alert-error'`     | 叉叉         |
 
 ## 行為說明
 
@@ -59,10 +59,10 @@ const Demo = () => {
 
 ## 檔案
 
-| 檔案 | 說明 |
-| :-- | :-- |
-| `index.tsx` | 元件本體 |
-| `icon.tsx` | `info`、`success`、`warning`、`error`、`normal` 五個圖示 |
+| 檔案        | 說明                                                     |
+| :---------- | :------------------------------------------------------- |
+| `index.tsx` | 元件本體                                                 |
+| `icon.tsx`  | `info`、`success`、`warning`、`error`、`normal` 五個圖示 |
 
 ## 注意事項
 

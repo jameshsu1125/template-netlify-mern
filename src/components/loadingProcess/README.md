@@ -20,8 +20,7 @@ const Demo = () => {
       state: { enabled: true, type: LoadingProcessType.Bars, body: '處理中…' },
     });
 
-  const stop = () =>
-    setContext({ type: ActionType.LoadingProcess, state: { enabled: false } });
+  const stop = () => setContext({ type: ActionType.LoadingProcess, state: { enabled: false } });
 
   return (
     <>
@@ -38,24 +37,24 @@ const Demo = () => {
 
 這個元件沒有 Props，所有設定都來自 `context[ActionType.LoadingProcess]`：
 
-| 欄位 | 型別 | 預設值 | 說明 |
-| :-- | :-- | :-- | :-- |
-| `enabled` | `boolean` | `false` | 是否顯示 |
-| `type` | `LoadingProcessType` | `Spokes` | 動畫樣式 |
-| `body` | `ReactNode` | `'loading'` | 圖示下方的文字，設為空字串 `''` 則不顯示文字 |
+| 欄位      | 型別                 | 預設值      | 說明                                         |
+| :-------- | :------------------- | :---------- | :------------------------------------------- |
+| `enabled` | `boolean`            | `false`     | 是否顯示                                     |
+| `type`    | `LoadingProcessType` | `Spokes`    | 動畫樣式                                     |
+| `body`    | `ReactNode`          | `'loading'` | 圖示下方的文字，設為空字串 `''` 則不顯示文字 |
 
 ### 動畫樣式
 
-| 列舉 | 值 | 圖檔 |
-| :-- | :-- | :-- |
-| `LoadingProcessType.Ball` | `'balls'` | `svg/loading-balls.svg` |
-| `LoadingProcessType.Bars` | `'bars'` | `svg/loading-bars.svg` |
-| `LoadingProcessType.Bubbles` | `'bubbles'` | `svg/loading-bubbles.svg` |
-| `LoadingProcessType.Cubes` | `'cubes'` | `svg/loading-cubes.svg` |
-| `LoadingProcessType.Cylon` | `'cylon'` | `svg/loading-cylon.svg` |
-| `LoadingProcessType.Spin` | `'spin'` | `svg/loading-spin.svg` |
+| 列舉                                 | 值                  | 圖檔                               |
+| :----------------------------------- | :------------------ | :--------------------------------- |
+| `LoadingProcessType.Ball`            | `'balls'`           | `svg/loading-balls.svg`            |
+| `LoadingProcessType.Bars`            | `'bars'`            | `svg/loading-bars.svg`             |
+| `LoadingProcessType.Bubbles`         | `'bubbles'`         | `svg/loading-bubbles.svg`          |
+| `LoadingProcessType.Cubes`           | `'cubes'`           | `svg/loading-cubes.svg`            |
+| `LoadingProcessType.Cylon`           | `'cylon'`           | `svg/loading-cylon.svg`            |
+| `LoadingProcessType.Spin`            | `'spin'`            | `svg/loading-spin.svg`             |
 | `LoadingProcessType.SpinningBubbles` | `'spinningBubbles'` | `svg/loading-spinning-bubbles.svg` |
-| `LoadingProcessType.Spokes` | `'spokes'` | `svg/loading-spokes.svg` |
+| `LoadingProcessType.Spokes`          | `'spokes'`          | `svg/loading-spokes.svg`           |
 
 ## 運作方式
 
@@ -65,11 +64,11 @@ const Demo = () => {
 
 ## 檔案
 
-| 檔案 | 說明 |
-| :-- | :-- |
-| `index.tsx` | 元件本體 |
+| 檔案         | 說明                    |
+| :----------- | :---------------------- |
+| `index.tsx`  | 元件本體                |
 | `index.less` | 把樣式 class 對應到 SVG |
-| `svg/` | 8 個動畫圖檔 |
+| `svg/`       | 8 個動畫圖檔            |
 
 ## 注意事項
 
