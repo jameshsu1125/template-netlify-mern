@@ -573,7 +573,7 @@ const [respond, run] = useXxx(); // readonly [state, fetch]
 | `useDelete`     | `useDelete.ts`     | `{ collection, data: { _id } }`                     | `POST delete`     |                                                                                                |
 | `useUpload`     | `useUpload.ts`     | `{ image: base64含前綴, folder }`                   | `POST upload`     | `folder` 空字串為根目錄；單次上限 10MB                                                         |
 | `useSearch`     | `useSearch.ts`     | `{ folder }`（`'*'` 根目錄）                        | `POST search`     | **載入時自動查一次**，`album.folder` 改變也會重查；例外時 `alert()`                            |
-| `useRemove`     | `useRemove.ts`     | `{ public_id }`                                     | `POST remove`     | BunnyCDN 模式後端當作儲存路徑 / CDN 網址                                                                   |
+| `useRemove`     | `useRemove.ts`     | `{ public_id }`                                     | `POST remove`     | BunnyCDN 模式後端當作儲存路徑 / CDN 網址                                                       |
 | `useRemoveMany` | `useRemoveMany.ts` | `{ public_ids: string[] }`                          | `POST removeMany` |                                                                                                |
 
 ### 9.3 新增 hook
@@ -603,19 +603,19 @@ const [respond, run] = useXxx(); // readonly [state, fetch]
 
 **路由註冊順序有語意**：`GET /connect` 註冊在 `router.use(guard)` **之前**，所以是唯一的公開路由；之後的每條路由都必須帶有效的 Auth0 access token。新增公開路由就放在 `guard` 之前，其餘放之後。連線由 `guard` 統一處理，個別路由不必再 `await connect()`。
 
-| 方法與路徑             | 請求                                  | 成功回應                                       | 處理檔             |
-| :--------------------- | :------------------------------------ | :--------------------------------------------- | :----------------- |
-| `POST /api/login`      | 無（身分來自 access token）           | `{ res: true, type, email }`                   | `api.ts`           |
-| `GET /api/connect`     | —                                     | `{ res, msg }`                                 | `connect.ts`       |
-| `POST /api/select`     | `{ collection }`                      | `{ res, msg, collection, data }`               | `select.ts`        |
-| `POST /api/insert`     | `{ collection, data }`                | 同上，`data: [新文件]`                         | `insert.ts`        |
-| `POST /api/insertMany` | `{ collection, data: [...] }`         | 同上                                           | `insert.ts`        |
-| `POST /api/update`     | `{ collection, data: { _id, data } }` | `{ res, msg, collection }`                     | `update.ts`        |
-| `POST /api/delete`     | `{ collection, data: { _id } }`       | `{ res, msg, collection }`                     | `delete.ts`        |
-| `POST /api/upload`     | `{ image, folder? }`（Base64 含前綴） | `data` 為 `TUploadRespond`                     | `api.ts`（不轉檔） |
-| `POST /api/search`     | `{ folder }`                          | 資料夾內容（BunnyCDN：`'*'` 為根，資料夾排前） | `api.ts`           |
-| `POST /api/remove`     | `{ public_id }`                       | —                                              | `api.ts`           |
-| `POST /api/removeMany` | `{ public_ids: [] }`                  | —                                              | `api.ts`           |
+| 方法與路徑             | 請求                                  | 成功回應                                                            | 處理檔             |
+| :--------------------- | :------------------------------------ | :------------------------------------------------------------------ | :----------------- |
+| `POST /api/login`      | 無（身分來自 access token）           | `{ res: true, type, email }`                                        | `api.ts`           |
+| `GET /api/connect`     | —                                     | `{ res, msg }`                                                      | `connect.ts`       |
+| `POST /api/select`     | `{ collection }`                      | `{ res, msg, collection, data }`                                    | `select.ts`        |
+| `POST /api/insert`     | `{ collection, data }`                | 同上，`data: [新文件]`                                              | `insert.ts`        |
+| `POST /api/insertMany` | `{ collection, data: [...] }`         | 同上                                                                | `insert.ts`        |
+| `POST /api/update`     | `{ collection, data: { _id, data } }` | `{ res, msg, collection }`                                          | `update.ts`        |
+| `POST /api/delete`     | `{ collection, data: { _id } }`       | `{ res, msg, collection }`                                          | `delete.ts`        |
+| `POST /api/upload`     | `{ image, folder? }`（Base64 含前綴） | `data` 為 `TUploadRespond`                                          | `api.ts`（不轉檔） |
+| `POST /api/search`     | `{ folder }`                          | 資料夾內容（`'*'` 為根，資料夾排前；Cloudinary 併入 `sub_folders`） | `api.ts`           |
+| `POST /api/remove`     | `{ public_id }`                       | —                                                                   | `api.ts`           |
+| `POST /api/removeMany` | `{ public_ids: [] }`                  | —                                                                   | `api.ts`           |
 
 - 驗證由 `api/auth.ts` 的 `guard` 處理，collection 檢查由 `guardCollection` 處理（只掛在資料庫路由上）。
 - 狀態碼：`401`（無 header / token 無效 / 無 email claim）、`403`（email 未驗證 / 權限不足）、`400`（collection 不在白名單）、`503`（資料庫連不上）、`500`（伺服器缺 `AUTH0_DOMAIN` 或 `AUTH0_AUDIENCE`）。業務邏輯成功與失敗仍是 `200` + `res`。
