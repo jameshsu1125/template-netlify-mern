@@ -4,7 +4,8 @@ import { memo, useContext, useEffect, useState } from 'react';
 import { FaEllipsisVertical, FaFolder } from 'react-icons/fa6';
 import { twMerge } from 'tailwind-merge';
 import { TUploadRespond } from '../../../setting/type';
-import { AlbumContext, joinPath, removeKey } from './config';
+import { MdDeleteOutline } from 'react-icons/md';
+import { AlbumContext, fileName, joinPath, removeKey } from './config';
 
 /** BunnyCDN answers width/height 0, measure them in the browser instead */
 export const useImageSize = (item: TUploadRespond | null) => {
@@ -25,47 +26,51 @@ const FolderItem = memo(({ item }: { item: TUploadRespond }) => {
   const [context, setContext] = useContext(Context);
   const [, setState] = useContext(AlbumContext);
   const folder = context[ActionType.Album].folder;
+  const open = () =>
+    setContext({ type: ActionType.Album, state: { folder: joinPath(folder, item.filename) } });
 
   return (
-    <div className='group bg-base-200 hover:bg-base-300 rounded-box relative flex aspect-square cursor-pointer flex-col items-center justify-center gap-2 p-2'>
-      <div
-        className='flex h-full w-full flex-col items-center justify-center gap-2'
-        onClick={() =>
-          setContext({ type: ActionType.Album, state: { folder: joinPath(folder, item.filename) } })
-        }
-      >
-        <FaFolder className='text-warning h-12 w-12' />
-        <span className='w-full truncate text-center text-sm'>{item.filename}</span>
-      </div>
-      <div className='dropdown dropdown-end absolute top-1 right-1'>
+    <div className='card card-sm card-border bg-base-100 hover:bg-base-200 transition-colors'>
+      <figure className='bg-base-200 aspect-square cursor-pointer' onClick={open}>
+        <FaFolder className='text-base-content/40 size-14' />
+      </figure>
+      <div className='card-body flex-row items-center gap-1 px-3 py-2'>
         <button
           type='button'
-          tabIndex={0}
-          className='btn btn-ghost btn-xs btn-square'
-          aria-label='更多'
+          className='min-w-0 flex-1 cursor-pointer truncate text-left text-sm font-medium'
+          title={item.filename}
+          onClick={open}
         >
-          <FaEllipsisVertical />
+          {item.filename}
         </button>
-        <ul tabIndex={0} className='menu dropdown-content rounded-box bg-base-100 z-10 w-32 shadow'>
-          <li>
-            <a
-              className='text-error'
-              onClick={() =>
-                setState((S) => ({
-                  ...S,
-                  confirm: {
-                    title: '刪除資料夾',
-                    body: `確定要刪除資料夾「${item.filename}」與裡面所有的檔案嗎？`,
-                    // folders carry a trailing slash, the only signal the backend uses
-                    public_id: [item.public_id],
-                  },
-                }))
-              }
-            >
-              刪除資料夾
-            </a>
-          </li>
-        </ul>
+        <details className='dropdown dropdown-end'>
+          <summary className='btn btn-ghost btn-xs btn-square' aria-label='更多'>
+            <FaEllipsisVertical />
+          </summary>
+          <ul className='menu dropdown-content bg-base-100 rounded-box z-10 w-36 p-2 shadow-sm'>
+            <li>
+              <button
+                type='button'
+                className='text-error'
+                onClick={(e) => {
+                  e.currentTarget.closest('details')?.removeAttribute('open');
+                  setState((S) => ({
+                    ...S,
+                    confirm: {
+                      title: '刪除資料夾',
+                      body: `確定要刪除資料夾「${item.filename}」與裡面所有的檔案嗎？`,
+                      // folders carry a trailing slash, the only signal the backend uses
+                      public_id: [item.public_id],
+                    },
+                  }));
+                }}
+              >
+                <MdDeleteOutline />
+                刪除資料夾
+              </button>
+            </li>
+          </ul>
+        </details>
       </div>
     </div>
   );
@@ -78,53 +83,46 @@ const ImageItem = memo(({ item }: { item: TUploadRespond }) => {
   const order = state.selected.indexOf(key) + 1;
   const checked = order > 0;
   const active = state.detail?.secure_url === item.secure_url;
-  const toggle = () =>
-    setState((S) => ({
-      ...S,
-      selected: S.selected.includes(key)
-        ? S.selected.filter((k) => k !== key)
-        : [...S.selected, key],
-    }));
+  const name = fileName(item);
 
   return (
-    <div
-      className={twMerge(
-        'bg-base-200 rounded-box relative aspect-square cursor-pointer overflow-hidden transition',
-        active ? 'outline-base-content outline-2 outline-offset-2 outline-dashed' : '',
-        checked ? 'ring-primary ring-offset-base-100 ring-4 ring-offset-2' : '',
+    <div className='indicator w-full'>
+      {checked && (
+        <span className='indicator-item indicator-start badge badge-primary z-[1] size-7 rounded-full p-0 font-bold shadow-sm'>
+          {order}
+        </span>
       )}
-      onClick={() => setState((S) => ({ ...S, detail: item }))}
-    >
-      <img
-        src={item.secure_url}
-        alt={item.filename}
-        loading='lazy'
-        className={twMerge('h-full w-full object-cover transition', checked ? 'scale-90' : '')}
-      />
-      {checked && <div className='bg-primary/25 pointer-events-none absolute inset-0' />}
-      <button
-        type='button'
-        role='checkbox'
-        aria-checked={checked}
-        aria-label={
-          checked ? `取消選取 ${item.filename}（第 ${order} 張）` : `選取 ${item.filename}`
-        }
+      <div
         className={twMerge(
-          'absolute top-2 left-2 flex h-8 w-8 items-center justify-center rounded-full border-2 text-sm font-bold shadow transition',
-          checked
-            ? 'bg-primary text-primary-content border-primary-content'
-            : 'bg-base-100/70 border-base-100 hover:bg-base-100',
+          'card card-sm card-border bg-base-100 w-full cursor-pointer transition-shadow',
+          checked ? 'border-primary ring-primary ring-2' : '',
+          active && !checked ? 'border-base-content/40 ring-base-content/40 ring-2' : '',
         )}
-        onClick={(e) => {
-          e.stopPropagation();
-          toggle();
-        }}
+        onClick={() => setState((S) => ({ ...S, detail: item }))}
       >
-        {checked ? order : ''}
-      </button>
-      <div className='bg-base-100/80 absolute right-0 bottom-0 left-0 truncate px-2 py-1 text-xs'>
-        {item.filename}
-        {item.format && !item.filename.endsWith(`.${item.format}`) ? `.${item.format}` : ''}
+        <figure className='bg-base-200 aspect-square'>
+          <img src={item.secure_url} alt={name} loading='lazy' className='size-full object-cover' />
+        </figure>
+        <div className='card-body flex-row items-center gap-2 px-3 py-2'>
+          <input
+            type='checkbox'
+            className='checkbox checkbox-sm checkbox-primary'
+            aria-label={checked ? `取消選取 ${name}（第 ${order} 張）` : `選取 ${name}`}
+            checked={checked}
+            onClick={(e) => e.stopPropagation()}
+            onChange={() =>
+              setState((S) => ({
+                ...S,
+                selected: S.selected.includes(key)
+                  ? S.selected.filter((k) => k !== key)
+                  : [...S.selected, key],
+              }))
+            }
+          />
+          <span className='min-w-0 flex-1 truncate text-sm' title={name}>
+            {name}
+          </span>
+        </div>
       </div>
     </div>
   );

@@ -65,3 +65,9 @@ export const dropTree = (tree: Record<string, string[]>, path: string) => {
 /** names of the folder entries in a search result */
 export const folderNames = (data?: TUploadRespond[]) =>
   (data || []).filter((item) => item.resource_type === 'folder').map((item) => item.filename);
+
+/** file name with its extension, BunnyCDN names already carry one */
+export const fileName = (item: TUploadRespond) =>
+  item.format && !item.filename.endsWith(`.${item.format}`)
+    ? `${item.filename}.${item.format}`
+    : item.filename;

@@ -21,27 +21,27 @@ const Album = memo(({ mode = 'manage' }: T) => {
   return (
     <AlbumContext.Provider value={value}>
       <div className={twMerge('flex w-full flex-col gap-3', picker ? '' : 'p-5')}>
-        <div className='flex flex-wrap items-center gap-2'>
-          {/* narrow screens and the modal fold the tree into a dropdown */}
-          <div className={twMerge('dropdown', picker ? '' : 'lg:hidden')}>
-            <button type='button' tabIndex={0} className='btn btn-sm'>
-              <FaFolderTree />
-              資料夾
-            </button>
-            <div
-              tabIndex={0}
-              className='dropdown-content rounded-box bg-base-100 z-30 max-h-80 w-64 overflow-y-auto p-2 shadow'
-            >
-              <Tree />
-            </div>
+        <div className='navbar bg-base-200 rounded-box min-h-0 gap-2 px-3 py-2'>
+          <div className='navbar-start w-auto min-w-0 flex-1 gap-2'>
+            {/* narrow screens and the modal fold the tree into a dropdown */}
+            <details className={twMerge('dropdown', picker ? '' : 'lg:hidden')}>
+              <summary className='btn btn-sm btn-ghost btn-square' aria-label='資料夾'>
+                <FaFolderTree />
+              </summary>
+              <div className='dropdown-content bg-base-100 rounded-box z-30 max-h-80 w-64 overflow-y-auto shadow-sm'>
+                <Tree />
+              </div>
+            </details>
+            <Breadcrumb />
           </div>
-          <Breadcrumb />
-          <NewFolderButton />
-          <UploadButton />
+          <div className='navbar-end w-auto gap-2'>
+            <NewFolderButton />
+            <UploadButton />
+          </div>
         </div>
         <div className='flex flex-col gap-3 lg:flex-row lg:items-start'>
           {!picker && (
-            <nav className='bg-base-200 rounded-box hidden w-56 shrink-0 lg:block'>
+            <nav className='bg-base-200 rounded-box hidden w-60 shrink-0 lg:sticky lg:top-0 lg:block'>
               <Tree />
             </nav>
           )}

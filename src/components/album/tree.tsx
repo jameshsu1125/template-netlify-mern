@@ -25,7 +25,7 @@ const Node = memo(
     return (
       <li>
         <div
-          className={twMerge('flex gap-1 px-2 py-1', current === path ? 'menu-active' : '')}
+          className={twMerge('flex gap-1.5 pl-1', current === path ? 'menu-active' : '')}
           onClick={() => setContext({ type: ActionType.Album, state: { folder: path } })}
         >
           <button
@@ -45,12 +45,16 @@ const Node = memo(
         {isOpen && (
           <ul>
             {!children && (
-              <li className='px-2 py-1'>
-                <span className='loading loading-dots loading-xs' />
+              <li className='menu-disabled'>
+                <span>
+                  <span className='loading loading-dots loading-xs' />
+                </span>
               </li>
             )}
             {children?.length === 0 && (
-              <li className='px-2 py-1 text-xs opacity-50'>沒有子資料夾</li>
+              <li className='menu-disabled'>
+                <span className='text-xs'>沒有子資料夾</span>
+              </li>
             )}
             {children?.map((child) => (
               <Node key={child} path={joinPath(path, child)} name={child} onExpand={onExpand} />
@@ -75,6 +79,7 @@ const Tree = memo(() => {
 
   return (
     <ul className='menu menu-sm w-full'>
+      <li className='menu-title'>資料夾</li>
       <Node path='*' name='相簿' onExpand={onExpand} />
     </ul>
   );

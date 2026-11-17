@@ -127,17 +127,20 @@ export const NewFolderButton = memo(() => {
           <dialog className='modal modal-open z-50' open>
             <div className='modal-box'>
               <h3 className='text-lg font-bold'>新資料夾</h3>
-              <p className='py-2 text-sm opacity-70'>
-                儲存空間沒有空資料夾，建立時要同時上傳第一批圖片。
-              </p>
-              <input
-                autoFocus
-                className={twMerge('input w-full', error ? 'input-error' : '')}
-                placeholder='資料夾名稱'
-                value={name}
-                onChange={(e) => setName(e.target.value)}
-              />
-              {error && <p className='text-error mt-1 text-sm'>{error}</p>}
+              <fieldset className='fieldset'>
+                <legend className='fieldset-legend'>資料夾名稱</legend>
+                <input
+                  autoFocus
+                  className={twMerge('input w-full', error ? 'input-error' : '')}
+                  placeholder='例如 banner'
+                  value={name}
+                  onChange={(e) => setName(e.target.value)}
+                />
+                <p className={twMerge('label', error ? 'text-error' : '')}>
+                  {error ||
+                    `建立在「${folder === '*' ? '相簿' : folder}」底下，建立時要同時選擇第一批圖片`}
+                </p>
+              </fieldset>
               <div className='modal-action'>
                 <button type='button' className='btn btn-ghost' onClick={() => setOpen(false)}>
                   取消
@@ -195,8 +198,11 @@ export const DropZone = memo(({ children }: { children: ReactNode }) => {
     >
       {children}
       {over && (
-        <div className='bg-primary/10 border-primary text-primary rounded-box pointer-events-none absolute inset-0 z-20 flex items-center justify-center border-2 border-dashed font-bold'>
-          放開以上傳到「{folder === '*' ? '相簿' : folder}」
+        <div className='card card-dash border-primary bg-base-100/90 text-primary pointer-events-none absolute inset-0 z-20'>
+          <div className='card-body items-center justify-center text-center'>
+            <FaUpload className='size-8' />
+            <p className='font-bold'>放開以上傳到「{folder === '*' ? '相簿' : folder}」</p>
+          </div>
         </div>
       )}
     </div>
@@ -244,39 +250,60 @@ export const UploadQueue = memo(() => {
   const doneCount = queue.filter((item) => item.status === 'done').length;
 
   return createPortal(
-    <div className='card bg-base-100 fixed right-4 bottom-4 z-50 w-80 shadow-xl'>
-      <div className='card-body gap-2 p-4'>
-        <div className='flex items-center'>
-          <h3 className='flex-1 text-sm font-bold'>
-            上傳 {doneCount}/{queue.length}
-          </h3>
-          {finished && (
-            <button
-              type='button'
-              className='btn btn-ghost btn-xs btn-square'
-              aria-label='關閉'
-              onClick={() => setState((S) => ({ ...S, queue: [] }))}
-            >
-              <FaXmark />
-            </button>
-          )}
-        </div>
-        <progress className='progress progress-primary' value={doneCount} max={queue.length} />
-        <ul className='max-h-48 overflow-y-auto text-sm'>
-          {queue.map((item) => (
-            <li key={item.id} className='flex items-center gap-2 py-1'>
-              <span className='min-w-0 flex-1 truncate'>{item.name}</span>
-              {item.status === 'waiting' && <span className='text-xs opacity-50'>等待</span>}
-              {item.status === 'uploading' && (
-                <span className='loading loading-spinner loading-xs' />
-              )}
-              {item.status === 'done' && <FaCheck className='text-success' />}
-              {item.status === 'error' && (
-                <>
-                  <span className='text-error max-w-28 truncate text-xs' title={item.msg}>
-                    {item.msg || '失敗'}
+    <div className='toast toast-end z-50'>
+      <div className='card card-border card-sm bg-base-100 w-80 shadow-lg'>
+        <div className='card-body gap-3'>
+          <div className='flex items-center gap-2'>
+            <h3 className='card-title flex-1 text-sm'>
+              {finished ? '上傳完成' : '上傳中'}
+              <span className='badge badge-sm badge-ghost'>
+                {doneCount}/{queue.length}
+              </span>
+            </h3>
+            {finished && (
+              <button
+                type='button'
+                className='btn btn-ghost btn-xs btn-square'
+                aria-label='關閉'
+                onClick={() => setState((S) => ({ ...S, queue: [] }))}
+              >
+                <FaXmark />
+              </button>
+            )}
+          </div>
+          <progress className='progress progress-primary' value={doneCount} max={queue.length} />
+          <ul className='list -mx-3 max-h-56 overflow-y-auto'>
+            {queue.map((item) => (
+              <li key={item.id} className='list-row items-center py-2'>
+                {item.base64 ? (
+                  <img src={item.base64} alt='' className='rounded-field size-8 object-cover' />
+                ) : (
+                  <div className='rounded-field bg-base-200 size-8' />
+                )}
+                <div className='min-w-0'>
+                  <div className='truncate text-sm' title={item.name}>
+                    {item.name}
+                  </div>
+                  {item.status === 'error' && (
+                    <div className='text-error truncate text-xs' title={item.msg}>
+                      {item.msg || '上傳失敗'}
+                    </div>
+                  )}
+                </div>
+                {item.status === 'waiting' && (
+                  <span className='badge badge-sm badge-ghost'>等待</span>
+                )}
+                {item.status === 'uploading' && (
+                  <span className='loading loading-spinner loading-sm' />
+                )}
+                {item.status === 'done' && (
+                  <span className='badge badge-sm badge-success badge-soft'>
+                    <FaCheck />
+                    完成
                   </span>
-                  {item.base64 && (
+                )}
+                {item.status === 'error' &&
+                  (item.base64 ? (
                     <button
                       type='button'
                       className='btn btn-xs'
@@ -284,12 +311,13 @@ export const UploadQueue = memo(() => {
                     >
                       重試
                     </button>
-                  )}
-                </>
-              )}
-            </li>
-          ))}
-        </ul>
+                  ) : (
+                    <span className='badge badge-sm badge-error badge-soft'>失敗</span>
+                  ))}
+              </li>
+            ))}
+          </ul>
+        </div>
       </div>
     </div>,
     document.body,
