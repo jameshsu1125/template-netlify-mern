@@ -86,16 +86,7 @@ const ImageItem = memo(({ item }: { item: TUploadRespond }) => {
   const name = fileName(item);
 
   return (
-    <div className='indicator w-full'>
-      <span
-        aria-hidden={!checked}
-        className={twMerge(
-          'indicator-item indicator-start badge badge-primary z-[1] size-7 rounded-full p-0 font-bold shadow-sm transition',
-          checked ? 'scale-100 opacity-100' : 'scale-50 opacity-0',
-        )}
-      >
-        {order || ''}
-      </span>
+    <div className='w-full'>
       <div
         className={twMerge(
           // the ring is always there and only changes color, so selecting never shifts anything
@@ -105,8 +96,18 @@ const ImageItem = memo(({ item }: { item: TUploadRespond }) => {
         )}
         onClick={() => setState((S) => ({ ...S, detail: item }))}
       >
-        <figure className='bg-base-200 aspect-square'>
+        <figure className='bg-base-200 relative aspect-square'>
           <img src={item.secure_url} alt={name} loading='lazy' className='size-full object-cover' />
+          {/* inside the card, so the sticky selection bar above never covers it */}
+          <span
+            aria-hidden={!checked}
+            className={twMerge(
+              'badge badge-primary absolute top-2 left-2 size-7 rounded-full p-0 font-bold shadow-sm transition',
+              checked ? 'scale-100 opacity-100' : 'scale-50 opacity-0',
+            )}
+          >
+            {order || ''}
+          </span>
         </figure>
         <div className='card-body flex-row items-center gap-2 px-3 py-2'>
           <input
