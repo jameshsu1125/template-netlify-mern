@@ -39,12 +39,12 @@ Vite + React 19 + TypeScript 前端，搭配 Netlify Functions（Express + serve
 | UI      | React 19、`react-router-dom` 7、`react-icons`、Tiptap 3                                 |
 | 語言    | TypeScript 5.9（`strict`、`noUnusedLocals`、`noUnusedParameters`）                      |
 | 樣式    | Tailwind CSS 4（`@tailwindcss/postcss`）+ daisyUI 5 + Less；`tailwind-merge` 合併 class |
-| 登入    | `@auth0/auth0-react`（只用於後台 `/admin`）                                             |
+| 登入    | `@auth0/auth0-react`（前台不用）；後端以 `jose` 驗證 Auth0 access token                 |
 | API     | 前端 `lesca-fetcher`；後端 Express 5 + `serverless-http`，部署成單一 Netlify Function   |
 | 資料庫  | MongoDB + mongoose 9（model 由 `setting/index.ts` 自動產生）                            |
-| 圖片    | Cloudinary 或 BunnyCDN（`lesca-node-bunnycdn`），後端不轉檔                       |
+| 圖片    | Cloudinary 或 BunnyCDN（`lesca-node-bunnycdn`），後端不轉檔                             |
 | Mock    | `msw` 3 + `@faker-js/faker`                                                             |
-| 其他    | `lesca-react-capture-button`（選圖壓縮）、`lesca-local-storage`、`lesca-atobtoa`        |
+| 其他    | `lesca-react-capture-button`（選圖壓縮）、`lesca-local-storage`                         |
 | 部署    | Netlify（`netlify-cli`）、`gh-pages`（只有靜態前端，沒有 API）                          |
 
 模組為 ESM（`package.json` 的 `"type": "module"`）。`scripts/` 內的 `.js` 是 Node ESM，用 `import`，不用 `require`。路徑別名 `@/*` → `src/*`（`tsconfig.json`、`vite.config.ts`）。
@@ -111,15 +111,15 @@ Vite + React 19 + TypeScript 前端，搭配 Netlify Functions（Express + serve
 
 ## 3. 指令
 
-| 指令              | 作用                                                                                                                                                                              |
-| :---------------- | :-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `npm install`     | 安裝依賴（用 npm）                                                                                                                                                                |
-| `npm run dev`     | `node scripts/dev.js`：先跑 `netlify dev --dir=dist`（`localhost:8888`），等出現 `Local dev server ready` 再跑 `vite --host`（`5173`，HTTPS，自動開瀏覽器），`/api` 代理到 `8888` |
-| `npm run build`   | `tsc && vite build`，輸出到 `dist/`                                                                                                                                               |
-| `npm run preview` | 預覽 `dist/`                                                                                                                                                                      |
-| `npm run lint`    | `eslint . --ext ts,tsx --report-unused-disable-directives --max-warnings 0`（使用 `eslint.config.js` flat config；已關閉 `no-explicit-any`、`react-refresh/only-export-components`、`react-hooks/exhaustive-deps`）                                                                          |
-| `npm run deploy`  | 互動式選單：`gh-pages` / `netlify-draft` / `netlify-prod`（**不會先 build**）                                                                                                     |
-| `npm run rm`      | 刪 `node_modules/`、`dist/`、`package-lock.json`（需使用者明確要求）                                                                                                              |
+| 指令              | 作用                                                                                                                                                                                                                |
+| :---------------- | :------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| `npm install`     | 安裝依賴（用 npm）                                                                                                                                                                                                  |
+| `npm run dev`     | `node scripts/dev.js`：先跑 `netlify dev --dir=dist`（`localhost:8888`），等出現 `Local dev server ready` 再跑 `vite --host`（`5173`，HTTPS，自動開瀏覽器），`/api` 代理到 `8888`                                   |
+| `npm run build`   | `tsc && vite build`，輸出到 `dist/`                                                                                                                                                                                 |
+| `npm run preview` | 預覽 `dist/`                                                                                                                                                                                                        |
+| `npm run lint`    | `eslint . --ext ts,tsx --report-unused-disable-directives --max-warnings 0`（使用 `eslint.config.js` flat config；已關閉 `no-explicit-any`、`react-refresh/only-export-components`、`react-hooks/exhaustive-deps`） |
+| `npm run deploy`  | 互動式選單：`gh-pages` / `netlify-draft` / `netlify-prod`（**不會先 build**）                                                                                                                                       |
+| `npm run rm`      | 刪 `node_modules/`、`dist/`、`package-lock.json`（需使用者明確要求）                                                                                                                                                |
 
 - 需要全域安裝 `netlify-cli`，Node v18 以上。
 - 舊文件提過的 `npm run serve`、`npm run dev:serve` **不存在**，不要使用。
@@ -142,7 +142,7 @@ Vite + React 19 + TypeScript 前端，搭配 Netlify Functions（Express + serve
 │   ├── type.ts                    # IType、TUploadRespond、UploadBunnyCDNRespond…
 │   └── README.md
 ├── netlify/functions/             # 後端
-│   ├── api/                       # api.ts（Express 路由）、connect/select/insert/update/delete.ts
+│   ├── api/                       # api.ts（Express 路由）、auth.ts（驗證）、connect/select/insert/update/delete.ts
 │   ├── models.ts                  # 依 SETTING 自動建立 mongoose model
 │   ├── config.ts                  # messages、limit（10mb）
 │   ├── type.ts                    # MongoServerStateType
@@ -165,6 +165,7 @@ Vite + React 19 + TypeScript 前端，搭配 Netlify Functions（Express + serve
     │   └── .env.defaults          # 前端環境變數範本
     ├── settings/                  # ★ 前端全域設定（注意是複數）
     │   ├── constant.ts            # 初始值、Context、Reducer
+    │   ├── fetcher.ts             # ★ post/get 包裝層，每次請求前刷新 Auth0 access token
     │   ├── type.ts                # ActionType、各 state 型別、IState、IAction、TContext
     │   ├── type-unity.ts          # 工具型別（Debug、Equal、ReadyOnly…）
     │   ├── config.ts              # REST_PATH、CAPTURE_PROPERTY
@@ -211,6 +212,9 @@ Vite + React 19 + TypeScript 前端，搭配 Netlify Functions（Express + serve
 | `URI`                                                                                         | 是              | MongoDB 連線字串前半段。後端把 `URI` 與 `DATABASE` **直接相接**，所以 `URI` 結尾要有 `/`                          |
 | `DATABASE`                                                                                    | 是              | 資料庫名稱                                                                                                        |
 | `AMIN_EMAIL`                                                                                  | 是              | 超級管理員 email。**名稱拼成 `AMIN`（少了 D），是程式碼實際名稱，不要「修正」**，除非同時改完所有用到的地方與文件 |
+| `AUTH0_DOMAIN`                                                                                | 是              | Auth0 tenant 網域（不含 `https://`），用來組 issuer 與 JWKS 網址                                                  |
+| `AUTH0_AUDIENCE`                                                                              | 是              | Auth0 API Identifier，必須與 `VITE_AUTH0_AUDIENCE` 一致                                                           |
+| `AUTH0_CLAIMS_NAMESPACE`                                                                      | 否              | 自訂 claim 命名空間，預設 `https://template-netlify-mern/`                                                        |
 | `CLOUD_STORAGE_TYPE`                                                                          | 否              | `cloudinary` 使用 Cloudinary，其他值或不填使用 BunnyCDN                                                           |
 | `CLOUDINARY_NAME` / `CLOUDINARY_API_KEY` / `CLOUDINARY_API_SECRET` / `CLOUDINARY_BASE_FOLDER` | Cloudinary 模式 | Cloudinary 設定                                                                                                   |
 | `BUNNY_PASSWORD`                                                                              | BunnyCDN 模式   | Storage Zone 密碼，預設 `unset`                                                                                   |
@@ -220,22 +224,28 @@ Vite + React 19 + TypeScript 前端，搭配 Netlify Functions（Express + serve
 
 ### 前端變數
 
-| 變數                       | 用途                                       |
-| :------------------------- | :----------------------------------------- |
-| `VITE_TITLE`               | `<title>`、og:title，同時顯示在後台導覽列  |
-| `VITE_SUBSCRIPTION`        | og:description                             |
-| `VITE_URL`                 | og:url；`gh-pages` 部署後開啟的網址        |
-| `VITE_FACEBOOK_ID`         | `fb:app_id`                                |
-| `VITE_DEFAULT_THEME`       | 預設 daisyUI 主題（注入 `index.html`）     |
-| `VITE_404_CONTACT_ADDRESS` | 404 頁「Contact support」連結的 email      |
-| `VITE_MOCKING`             | `'true'` 時啟動 MSW                        |
-| `VITE_API_PATH`            | 正式環境 API 位址；未設定退回 `./api`      |
-| `VITE_API_PATH_DEV`        | `location.hostname === 'localhost'` 時使用 |
-| `VITE_AUTH0_DOMAIN`        | Auth0 網域                                 |
-| `VITE_AUTH0_CLIENT_ID`     | 正式環境 Auth0 Client ID                   |
-| `VITE_AUTH0_CLIENT_ID_DEV` | `localhost` 使用的 Client ID               |
+| 變數                       | 用途                                                 |
+| :------------------------- | :--------------------------------------------------- |
+| `VITE_TITLE`               | `<title>`、og:title，同時顯示在後台導覽列            |
+| `VITE_SUBSCRIPTION`        | og:description                                       |
+| `VITE_URL`                 | og:url；`gh-pages` 部署後開啟的網址                  |
+| `VITE_FACEBOOK_ID`         | `fb:app_id`                                          |
+| `VITE_DEFAULT_THEME`       | 預設 daisyUI 主題（注入 `index.html`）               |
+| `VITE_404_CONTACT_ADDRESS` | 404 頁「Contact support」連結的 email                |
+| `VITE_MOCKING`             | `'true'` 時啟動 MSW                                  |
+| `VITE_API_PATH`            | 正式環境 API 位址；未設定退回 `./api`                |
+| `VITE_API_PATH_DEV`        | `location.hostname === 'localhost'` 時使用           |
+| `VITE_AUTH0_DOMAIN`        | Auth0 網域                                           |
+| `VITE_AUTH0_CLIENT_ID`     | 正式環境 Auth0 Client ID                             |
+| `VITE_AUTH0_CLIENT_ID_DEV` | `localhost` 使用的 Client ID                         |
+| `VITE_AUTH0_AUDIENCE`      | Auth0 API Identifier，須與後端 `AUTH0_AUDIENCE` 一致 |
 
-Auth0 後台要把 `https://localhost:5173/admin` 與 `https://<網域>/admin` 加進 Allowed Callback URLs / Logout URLs / Web Origins。
+Auth0 後台要做三件事（詳見 [README 的 Auth0 設定提醒](README.md#auth0-設定提醒)）：
+
+1. 把 `https://localhost:5173/admin` 與 `https://<網域>/admin` 加進 Allowed Callback URLs / Logout URLs / Web Origins。
+2. 建立一個 API，Identifier 填進 `AUTH0_AUDIENCE` 與 `VITE_AUTH0_AUDIENCE`。**沒有 audience 時 Auth0 只發 opaque token，後端無法驗證。**
+3. 建立 post-login Action，把 `<namespace>email` 與 `<namespace>email_verified` 寫進 access token。
+   **access token 預設不含 email**，少了這步後端一律回 `401 Access token carries no email claim.`。
 
 ## 6. 全域狀態（Context / Reducer）
 
@@ -362,10 +372,16 @@ export const Reducer = (state: IState, action: IAction): IState => {
 
 ### 7.3 後台登入流程（`router.tsx`）
 
-1. `RoutePages` 載入時呼叫 `useConnect` 喚醒資料庫連線（`!res` 才呼叫）。
-2. 顯示：Auth0 `isLoading` → `<LoadingProcess />`；`user` 存在 → `<UserPage />`；否則 `<Login />`。
-3. `UserPage`：把 `<html data-theme>` 設為 `valentine`；拿到 Auth0 `user` 後呼叫 `useLogin`；`res` 為 `true` 就 `setContext({ type: ActionType.User, state: { token, email, name, picture, type } })`；失敗則 `window.location.href = '/'`。
-4. `context[ActionType.User].token` 有值才渲染 `DrawerPage`（`Drawer` + `Routes`），否則顯示 `<LoadingProcess />`（以一般元件使用，沒傳設定）。
+1. `RoutePages` 載入時呼叫 `useConnect` 喚醒資料庫連線（`!res` 才呼叫）。`/api/connect` 是唯一的公開路由。
+2. 顯示順序：`useAuth0().error` 有值 → `<LoginFailed />`；Auth0 `isLoading` → `<LoadingProcess />`；`user` 存在 → `<UserPage />`；否則 `<Login />`。
+   **`error` 分支必留**：Auth0 拒絕請求時（audience 不存在、client 未被授權存取該 API）會帶 `?error=...` 導回 `/admin` 且 `user` 為 `undefined`，少了它會無限跳回登入頁。
+3. `UserPage`：
+   - 設 `<html data-theme>` 為 `valentine`。
+   - **先**以 `setTokenGetter(() => getAccessTokenSilently(), () => loginWithRedirect())` 註冊 token getter（effect 順序不可調換，否則第一個請求沒有 header）。
+   - 拿到 Auth0 `user` 後呼叫 `useLogin` 的 `run()`（**不帶參數**）。
+   - `res` 為 `true` 就取 access token 寫入 `setContext({ type: ActionType.User, state: { token, email, name, picture, type } })`。
+   - 失敗則渲染 `login/failed.tsx` 並顯示後端回的 `msg`。**不要改回 `window.location.href = '/'`**：那會把使用者丟到沒有登出按鈕的前台，並且吞掉失敗原因（驗證失敗有五種不同的 `msg`）。
+4. `context[ActionType.User].token` 有值才渲染 `DrawerPage`。這裡存的是 Auth0 access token，只當「已驗證」的旗標用；實際送出的 header 由 `fetcher.ts` 每次請求前重新取得。
 
 ### 7.4 路由表
 
@@ -502,8 +518,7 @@ Props：`children`、`className`（`twMerge('btn', className)`，後者覆蓋）
 
 注意：
 
-- 傳給刪除 API 的識別值：勾選框 `pixels === 0` 用 `secure_url` 否則 `public_id`；單張 delete 按鈕固定 `public_id`；資料夾 delete 用 `secure_url`。**BunnyCDN 模式下單張刪除是否可行尚未實測**（後端收的是 `href`）。
-- 確認列文字寫「from cloudinary」，即使用 BunnyCDN。
+- 傳給刪除 API 的識別值：勾選框 `pixels === 0` 用 `secure_url` 否則 `public_id`；單張 delete 按鈕固定 `public_id`；資料夾 delete 用 `public_id`（結尾 `/`）。BunnyCDN 的 `search` 回傳完整儲存路徑當 `public_id`，後端用 `toBunnyPath` 驗證後直接打 Storage API；三種刪除已實測。`upload` 回傳的 `public_id` 只是檔名，不可拿去刪。
 - 後端不轉檔：BunnyCDN 模式以 `jpeg` 上傳，Cloudinary 模式直接上傳前端送來的 Base64；最終格式取決於前端壓縮結果。
 - `tr.tsx` 的 `key` 用 `JSON.stringify(item)`，列表大時有效能成本。
 
@@ -540,30 +555,31 @@ const [respond, run] = useXxx(); // readonly [state, fetch]
 
 - `respond` 一開始是 `undefined`，每次 `run` 都會**覆蓋**上一次；用 `useEffect` 監聽它處理結果。同一畫面要同時處理多個請求就各自用獨立的 hook。
 - 大部分 hook 在請求前後自動開關 `LoadingProcess`；**`useSelect` 不會**。
-- **後端一律 HTTP 200**，用 `respond.res`（`boolean`）判斷成功，失敗原因在 `respond.msg`。
+- **業務邏輯一律 HTTP 200**，用 `respond.res`（`boolean`）判斷成功，失敗原因在 `respond.msg`。驗證與連線錯誤例外：`401` / `403` / `400` / `503`（回應格式一樣是 `{ res: false, msg }`）。
+- **hooks 不直接用 `Fetcher`**，一律 import `@/settings/fetcher` 的 `post` / `get`。它在每次請求前用 `getAccessTokenSilently()` 更新 `Authorization` header，access token 過期會自動換新。直接用 `Fetcher` 的請求不會帶 token，後端回 `401`。
 - hook 要在 `Context.Provider` 內使用（呼叫 `useContext(Context)`），`useSelect` 例外。
 - 回應型別：`IRespond = { res, msg, collection, data: TType[] }`；相簿用 `TUploadResult`（`data: TUploadRespond[]`）；`useLogin` 是 `{ res, type, token }`（不是 `IRespond`）。
 
 ### 9.2 Hook 一覽
 
-| Hook            | 檔案               | `run` 參數                                          | API               | 備註                                                                     |
-| :-------------- | :----------------- | :-------------------------------------------------- | :---------------- | :----------------------------------------------------------------------- |
-| `useConnect`    | `useConnect.ts`    | 無                                                  | `GET connect`     | `RoutePages` 載入時呼叫一次                                              |
-| `useLogin`      | `useLogin.ts`      | Auth0 `User`（至少 `email`）                        | `POST login`      | 成功自動 `Fetcher.setJWT(token)`                                         |
-| `useSelect`     | `useSelect.ts`     | `{ collection }`                                    | `POST select`     | **不開 Loading**；`data` 是 `TType[]`，要特定型別用 `as TType<'user'>[]` |
-| `useInsert`     | `useInsert.ts`     | `{ collection, data }`（可省略 `timestamp`）        | `POST insert`     | `respond.data[0]` 是新文件（含 `_id`）                                   |
-| `useInsertMany` | `useInsert.ts`     | 同上                                                | `POST insertMany` | 與 `useInsert` 共用 `TArgument`，`data` 型別仍是單筆，傳陣列要轉型       |
-| `useUpdate`     | `useUpdate.ts`     | `{ collection, data: { _id, data: {要改的欄位} } }` | `POST update`     | 欄位可只傳部分                                                           |
-| `useDelete`     | `useDelete.ts`     | `{ collection, data: { _id } }`                     | `POST delete`     |                                                                          |
-| `useUpload`     | `useUpload.ts`     | `{ image: base64含前綴, folder }`                   | `POST upload`     | `folder` 空字串為根目錄；單次上限 10MB                                   |
-| `useSearch`     | `useSearch.ts`     | `{ folder }`（`'*'` 根目錄）                        | `POST search`     | **載入時自動查一次**，`album.folder` 改變也會重查；例外時 `alert()`      |
-| `useRemove`     | `useRemove.ts`     | `{ public_id }`                                     | `POST remove`     | BunnyCDN 模式後端當作 `href`                                             |
-| `useRemoveMany` | `useRemoveMany.ts` | `{ public_ids: string[] }`                          | `POST removeMany` |                                                                          |
+| Hook            | 檔案               | `run` 參數                                          | API               | 備註                                                                                           |
+| :-------------- | :----------------- | :-------------------------------------------------- | :---------------- | :--------------------------------------------------------------------------------------------- |
+| `useConnect`    | `useConnect.ts`    | 無                                                  | `GET connect`     | `RoutePages` 載入時呼叫一次                                                                    |
+| `useLogin`      | `useLogin.ts`      | 無                                                  | `POST login`      | 身分來自已驗證的 access token；回 `{ res, type, email? }`                                      |
+| `useSelect`     | `useSelect.ts`     | `{ collection }`                                    | `POST select`     | **不開 Loading**；`data` 是 `TType[]`，要特定型別用 `as TType<'user'>[]`                       |
+| `useInsert`     | `useInsert.ts`     | `{ collection, data }`（可省略 `timestamp`）        | `POST insert`     | `respond.data[0]` 是新文件（含 `_id`）                                                         |
+| `useInsertMany` | `useInsert.ts`     | 同上                                                | `POST insertMany` | 與 `useInsert` 共用 `TArgument`，`data` 型別仍是單筆，傳陣列要轉型；回應的 `data` 是新文件陣列 |
+| `useUpdate`     | `useUpdate.ts`     | `{ collection, data: { _id, data: {要改的欄位} } }` | `POST update`     | 欄位可只傳部分；`_id` 格式錯或查無資料回 `res: false`                                          |
+| `useDelete`     | `useDelete.ts`     | `{ collection, data: { _id } }`                     | `POST delete`     |                                                                                                |
+| `useUpload`     | `useUpload.ts`     | `{ image: base64含前綴, folder }`                   | `POST upload`     | `folder` 空字串為根目錄；單次上限 10MB                                                         |
+| `useSearch`     | `useSearch.ts`     | `{ folder }`（`'*'` 根目錄）                        | `POST search`     | **載入時自動查一次**，`album.folder` 改變也會重查；例外時 `alert()`                            |
+| `useRemove`     | `useRemove.ts`     | `{ public_id }`                                     | `POST remove`     | BunnyCDN 模式後端當作儲存路徑 / CDN 網址                                                                   |
+| `useRemoveMany` | `useRemoveMany.ts` | `{ public_ids: string[] }`                          | `POST removeMany` |                                                                                                |
 
 ### 9.3 新增 hook
 
 1. `src/settings/config.ts` 的 `REST_PATH` 加路徑。
-2. 複製最接近的 hook（例如 `useDelete.ts`）：定義 `TArgument`；請求前 `setContext({ type: ActionType.LoadingProcess, state: { enabled: true } })`、請求後關閉；回傳 `[state, fetch] as const`。
+2. 複製最接近的 hook（例如 `useDelete.ts`）：定義 `TArgument`；用 `post<T>()` / `get<T>()`（來自 `@/settings/fetcher`，**不要用 `Fetcher`**）；請求前 `setContext({ type: ActionType.LoadingProcess, state: { enabled: true } })`、請求後關閉；回傳 `[state, fetch] as const`。
 3. 補 `src/mocks/handlers.ts`、`src/hooks/README.md`。
 
 ## 10. 後端 API（Netlify Functions）
@@ -583,33 +599,49 @@ const [respond, run] = useXxx(); // readonly [state, fetch]
 
 ### 10.2 路由
 
-所有路由在 `netlify/functions/api/api.ts`，路徑名稱取自 `REST_PATH`（後端也 import `src/settings/config`，所以那個檔案**不能引入瀏覽器專屬的東西**）。除 `connect` 外，每條路由先 `await connect()`，連不上回 `{ res: false, msg: messages.connectError }`。
+所有路由在 `netlify/functions/api/api.ts`，路徑名稱取自 `REST_PATH`（後端也 import `src/settings/config`，所以那個檔案**不能引入瀏覽器專屬的東西**）。
 
-| 方法與路徑             | 請求                                          | 成功回應                                       | 處理檔                       |
-| :--------------------- | :-------------------------------------------- | :--------------------------------------------- | :--------------------------- |
-| `POST /api/login`      | Auth0 user（`email`、`name?`、`updated_at?`） | `{ res: true, token, type }`                   | `api.ts`                     |
-| `GET /api/connect`     | —                                             | `{ res, msg }`                                 | `connect.ts`                 |
-| `POST /api/select`     | `{ collection }`                              | `{ res, msg, collection, data }`               | `select.ts`                  |
-| `POST /api/insert`     | `{ collection, data }`                        | 同上，`data: [新文件]`                         | `insert.ts`                  |
-| `POST /api/insertMany` | `{ collection, data: [...] }`                 | 同上                                           | `insert.ts`                  |
-| `POST /api/update`     | `{ collection, data: { _id, data } }`         | `{ res, msg, collection }`                     | `update.ts`                  |
-| `POST /api/delete`     | `{ collection, data: { _id } }`               | `{ res, msg, collection }`                     | `delete.ts`                  |
-| `POST /api/upload`     | `{ image, folder? }`（Base64 含前綴）         | `data` 為 `TUploadRespond`                     | `api.ts`（不轉檔）                |
-| `POST /api/search`     | `{ folder }`                                  | 資料夾內容（BunnyCDN：`'*'` 為根，資料夾排前） | `api.ts`                     |
-| `POST /api/remove`     | `{ public_id }`                               | —                                              | `api.ts`                     |
-| `POST /api/removeMany` | `{ public_ids: [] }`                          | —                                              | `api.ts`                     |
+**路由註冊順序有語意**：`GET /connect` 註冊在 `router.use(guard)` **之前**，所以是唯一的公開路由；之後的每條路由都必須帶有效的 Auth0 access token。新增公開路由就放在 `guard` 之前，其餘放之後。連線由 `guard` 統一處理，個別路由不必再 `await connect()`。
 
+| 方法與路徑             | 請求                                  | 成功回應                                       | 處理檔             |
+| :--------------------- | :------------------------------------ | :--------------------------------------------- | :----------------- |
+| `POST /api/login`      | 無（身分來自 access token）           | `{ res: true, type, email }`                   | `api.ts`           |
+| `GET /api/connect`     | —                                     | `{ res, msg }`                                 | `connect.ts`       |
+| `POST /api/select`     | `{ collection }`                      | `{ res, msg, collection, data }`               | `select.ts`        |
+| `POST /api/insert`     | `{ collection, data }`                | 同上，`data: [新文件]`                         | `insert.ts`        |
+| `POST /api/insertMany` | `{ collection, data: [...] }`         | 同上                                           | `insert.ts`        |
+| `POST /api/update`     | `{ collection, data: { _id, data } }` | `{ res, msg, collection }`                     | `update.ts`        |
+| `POST /api/delete`     | `{ collection, data: { _id } }`       | `{ res, msg, collection }`                     | `delete.ts`        |
+| `POST /api/upload`     | `{ image, folder? }`（Base64 含前綴） | `data` 為 `TUploadRespond`                     | `api.ts`（不轉檔） |
+| `POST /api/search`     | `{ folder }`                          | 資料夾內容（BunnyCDN：`'*'` 為根，資料夾排前） | `api.ts`           |
+| `POST /api/remove`     | `{ public_id }`                       | —                                              | `api.ts`           |
+| `POST /api/removeMany` | `{ public_ids: [] }`                  | —                                              | `api.ts`           |
+
+- 驗證由 `api/auth.ts` 的 `guard` 處理，collection 檢查由 `guardCollection` 處理（只掛在資料庫路由上）。
+- 狀態碼：`401`（無 header / token 無效 / 無 email claim）、`403`（email 未驗證 / 權限不足）、`400`（collection 不在白名單）、`503`（資料庫連不上）、`500`（伺服器缺 `AUTH0_DOMAIN` 或 `AUTH0_AUDIENCE`）。業務邏輯成功與失敗仍是 `200` + `res`。
 - 請求大小上限 `limit = '10mb'`（`netlify/functions/config.ts`）；回應訊息文字集中在同檔的 `messages`。
 - 圖片儲存由 `CLOUD_STORAGE_TYPE` 決定（`cloudinary` 或 BunnyCDN）；兩種模式回傳結構一致（`TUploadRespond`）。BunnyCDN 模式很多欄位（`width`、`height`…）填 `0`，相簿元件會在瀏覽器端自行量測。
 
-### 10.3 登入邏輯（`POST /api/login`）
+### 10.3 驗證邏輯（`api/auth.ts`）
 
-1. 資料庫連不上 → `{ res: false, msg }`。
-2. `body.email === process.env.AMIN_EMAIL` → `admin`，名稱預設 `super user`。
-3. 否則讀 `SETTING.mongodb[0]`（user collection），找相同 email 的使用者採用其 `type`。
-4. 找不到 → `{ res: false, type: 'guest' }`。
+`guard`（順序刻意是先驗 token 再連資料庫，避免資料庫故障蓋掉驗證失敗）：
 
-token = `Atobtoa.toBase64({ type, name, email, timestamp })`，**只是 Base64，不是簽章 JWT**。
+1. 缺 `AUTH0_DOMAIN` / `AUTH0_AUDIENCE` → `500`。
+2. 取 `Authorization: Bearer <token>`，沒有 → `401`。
+3. `jose` 的 `createRemoteJWKSet` + `jwtVerify`：issuer `https://${AUTH0_DOMAIN}/`、audience `AUTH0_AUDIENCE`、`algorithms: ['RS256']`，檢查 `exp`。驗不過 → `401`。JWKSet 物件在模組層快取，暖啟動不重抓。
+4. 自訂 claim（命名空間 `AUTH0_CLAIMS_NAMESPACE`，預設 `https://template-netlify-mern/`）：`<ns>email` 不存在 → `401`；`<ns>email_verified !== true` → `403`。
+5. `await connect()`，失敗 → `503`。
+6. `resolveType(email)`：等於 `AMIN_EMAIL` → `admin`（不查 DB）；否則 `models[user].findOne({ email })` 取 `type`；查不到或是 `guest` → `403`。
+7. 通過後把 `{ email, type }` 放到 `req.identity`。
+
+`update` 另外檢查 `data.data`：必須是非空的純物件（非陣列），且沒有任何 key 以 `$` 開頭或含 `.`，否則回 `res: false`。payload 直接進 `findOneAndUpdate`，不擋的話 `$unset` / `$rename` 會被當操作符執行。
+
+`guardCollection`（只掛資料庫路由）：
+
+1. `collection` 不在 `SETTING.mongodb` 清單內 → `400`（同時擋掉 `__proto__` 之類的 model 查找）。
+2. `collection === SETTING.mongodb[0].collection` 且 `req.identity.type !== admin` → `403`。**`select` 也管制**，否則一般使用者能讀到所有人的 email / 權限，或用 `update` 把自己升成 `admin`。
+
+⚠ **後端不再簽發自己的 token**，`lesca-atobtoa` 已從 `api.ts` 移除。`POST /api/login` 只回報 `{ res, type, email }`。
 
 ### 10.4 資料模型（`models.ts`）
 
@@ -624,10 +656,17 @@ token = `Atobtoa.toBase64({ type, name, email, timestamp })`，**只是 Base64�
 | `default: 'Date.now()'`             | 預設為建立當下時間                                                                         |
 | `default: 其他值`                   | 當預設值，但只有**真值**才會設定（`0`、`false` 會被忽略，因為判斷是 `if (value.default)`） |
 
-### 10.5 安全現況（已知限制，非 bug）
+### 10.5 安全現況
 
-- **後端沒有任何驗證**，token 可偽造，CORS 為 `*`，`collection` 名稱由前端傳入。這是範本的已知限制（見根目錄 README「已知限制與安全注意事項」）。
-- 不要在使用者沒要求時當成 bug 順手改；但也**不要假設後端會擋住未授權請求**。使用者要求做權限時，先詢問做法（JWT / 驗證 Auth0 token / middleware / CORS 範圍）。
+**已處理**：除 `GET /api/connect` 外所有路由驗證 Auth0 access token；`collection` 白名單；使用者資料表（含 `select`）限 `admin`；驗證失敗回 `401` / `403`。
+
+**仍是已知限制**（沒被要求時不要順手改，要改先問）：
+
+- **CORS 仍為 `*`**（`netlify.toml` 與 `api.ts` 的 `cors()`）。修改前依 2.6 先向使用者確認。
+- **`GET /api/connect` 公開**，會洩漏資料庫狀態。
+- **圖片路由只檢查登入，不分權限**，任何已驗證使用者都能上傳 / 刪除。
+- **`email_verified` 必須為 `true`**：這是防止他人用第二個 connection 註冊同一 email 冒充管理員的關鍵檢查，但 email 未驗證的管理員會被鎖在外面。
+- Cloudinary 的 `remove` / `removeMany` 未檢查路徑是否在 `CLOUDINARY_BASE_FOLDER` 內。
 
 ## 11. 資料表定義（`setting/`）
 
@@ -690,18 +729,19 @@ export const SETTING = {
 
 ## 15. 修改後必須同步更新的文件
 
-| 你改了                                          | 要同步更新                                                                                                                 |
-| :---------------------------------------------- | :------------------------------------------------------------------------------------------------------------------------- |
-| 元件的 Props、行為、檔案                        | `src/components/<名稱>/README.md`；新增 / 刪除元件還要更新 `src/components/README.md` 一覽表與本檔 8.0                     |
-| 新增或修改 hook                                 | `src/hooks/README.md`、本檔第 9 章                                                                                         |
-| `REST_PATH`、全域狀態欄位、列舉                 | `src/settings/README.md`、本檔第 6 章                                                                                      |
-| `src/settings/type.ts` 的 `IAction` / `Reducer` | 本檔 6.2、6.4，**並同步 `template-vite-react`**                                                                            |
-| API 路由、請求或回應格式                        | `netlify/functions/README.md`、對應 hook 與 mock、本檔第 10 章                                                             |
-| `setting/index.ts` 的 schema                    | `setting/README.md`、本檔第 11 章                                                                                          |
-| 頁面、路由、權限                                | `src/pages/README.md`、本檔第 7 章                                                                                         |
-| 環境變數                                        | 根目錄 `README.md` 環境變數表、對應的 `.env.defaults`（只放變數名稱與空值 / 範例值）、`vite-env.d.ts`（前端）、本檔第 5 章 |
-| `npm run` 指令、腳本                            | 根目錄 README「常用指令」、`scripts/README.md`、本檔第 3、14 章                                                            |
-| 專案規則、結構、陷阱                            | 本檔                                                                                                                       |
+| 你改了                                                  | 要同步更新                                                                                                                                                                            |
+| :------------------------------------------------------ | :------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| 元件的 Props、行為、檔案                                | `src/components/<名稱>/README.md`；新增 / 刪除元件還要更新 `src/components/README.md` 一覽表與本檔 8.0                                                                                |
+| 新增或修改 hook                                         | `src/hooks/README.md`、本檔第 9 章                                                                                                                                                    |
+| `REST_PATH`、全域狀態欄位、列舉                         | `src/settings/README.md`、本檔第 6 章                                                                                                                                                 |
+| `src/settings/type.ts` 的 `IAction` / `Reducer`         | 本檔 6.2、6.4，**並同步 `template-vite-react`**                                                                                                                                       |
+| API 路由、請求或回應格式                                | `netlify/functions/README.md`、對應 hook 與 mock、本檔第 10 章                                                                                                                        |
+| 驗證 / 權限邏輯（`api/auth.ts`、`settings/fetcher.ts`） | `netlify/functions/README.md`、`src/hooks/README.md`、`src/pages/README.md`、`src/settings/README.md`、根目錄 README（Auth0 設定提醒、已知限制、常見問題）、本檔 7.3、9.1、10.3、10.5 |
+| `setting/index.ts` 的 schema                            | `setting/README.md`、本檔第 11 章                                                                                                                                                     |
+| 頁面、路由、權限                                        | `src/pages/README.md`、本檔第 7 章                                                                                                                                                    |
+| 環境變數                                                | 根目錄 `README.md` 環境變數表、對應的 `.env.defaults`（只放變數名稱與空值 / 範例值）、`vite-env.d.ts`（前端）、本檔第 5 章                                                            |
+| `npm run` 指令、腳本                                    | 根目錄 README「常用指令」、`scripts/README.md`、本檔第 3、14 章                                                                                                                       |
+| 專案規則、結構、陷阱                                    | 本檔                                                                                                                                                                                  |
 
 文件撰寫原則：繁體中文、給不熟悉專案的人讀；先寫「這是什麼、怎麼用」再寫細節；範例要能直接複製；只寫程式碼實際做到的事，不確定或沒驗證的行為要明說，不要編造。
 
@@ -747,25 +787,29 @@ export const SETTING = {
 下列是目前已知、尚未處理的問題。**修改相關檔案時順手修正並更新本節**；沒被要求時不要擅自大改。
 
 1. **已修正**：`npm run lint` 原本因缺少 flat config 無法執行，現在使用 `eslint.config.js`（規則沿用舊 `.eslintrc.cjs`，另關閉 `react-hooks/exhaustive-deps`）。
-2. **`netlify/functions/api/api.ts` 上傳路由有除錯殘留** `console.log(folder)`。
-3. **圖片類路由的刪除失敗訊息**在 `catch` 內用了 `uploadError`，所以錯誤文字顯示 `Upload failed`。
+2. **已修正**：上傳路由的 `console.log(folder)` 除錯殘留已不存在。
+3. **已修正**：`remove` / `removeMany` 的 `catch` 改用 `removeError`，不再顯示 `Upload failed`。
 4. **已修正**：兩份 `.env.defaults` 已補齊所有程式碼使用的變數，`vite-env.d.ts` 也補上 `VITE_API_PATH_DEV`、`VITE_AUTH0_CLIENT_ID_DEV`。新增變數時請四處同步（見 5 章）。
 5. **`Cloudinary` 的 `remove` / `removeMany`** 沒有檢查路徑是否在 `CLOUDINARY_BASE_FOLDER` 之內。
 6. **`models.ts` 不支援 `IType.Array` / `IType.Object`**（退回 `String`），且 `default` 為 `0` / `false` 會被忽略。
 7. **`mocks/handlers.ts` 的 `connect` handler** 回傳欄位與真實 API 不符。
 8. **`Tab` 的 radio `name` 固定**，同畫面只能一組。
 9. **`userInfo` 元件、`ActionType.Status`、`TransitionType` 沒有被使用**，刪除前先確認。
-10. **`album` 的 BunnyCDN 單張刪除**是否能成功尚未實測。
+10. **已修正**：BunnyCDN 刪除改為後端自行呼叫 Storage API（不再用套件的 `deleteFile`），並以 `toBunnyPath` 拒絕可能波及整個相簿的值；根目錄檔案、子資料夾檔案、資料夾皆已實測。
 11. **`tiptab/index.less`** 引用未定義的 CSS 變數。
 12. **前台（`UserApp`）沒有 `Alert`、`Modal`**，兩個 App 的 Context 互不相通。
-13. **後端無驗證**（見 10.5）——已知限制，不是待修 bug，除非使用者要求。
+13. **已修正**：後端已驗證 Auth0 access token（`api/auth.ts`），並加上 collection 白名單與使用者資料表的 admin 閘門。剩下的限制見 10.5。
+14. **CORS 仍為 `*`**（`netlify.toml` 與 `api.ts`）。修改前依 2.6 向使用者確認。
+15. **Auth0 設定錯誤的兩種症狀**：導回登入頁並無限循環 = Auth0 拒絕（`useAuth0().error`，例如 audience 不存在或 client 未授權）；顯示 `login/failed.tsx` 並印出後端 `msg` = token 驗過但後端拒絕。兩者現在都會把原因顯示在畫面上。
+16. **email 比對區分大小寫**（`AMIN_EMAIL` 與 `findOne({ email })`），且新增使用者沒有後端的重複檢查。
+17. **`npm install` 有既存的 peer 衝突**：`@tiptap/extension-image@^3.33.1` 與 `@tiptap/core@3.34.0` 不相容，安裝新套件需加 `--legacy-peer-deps`。與驗證改動無關。
 
 ## 18. 完成前檢查清單
 
 - [ ] `npx tsc --noEmit` / `npm run build` 零錯誤，且 `npm run lint` 零錯誤。
 - [ ] 沒有未使用的 import / 變數 / 參數。
 - [ ] 命名符合 2.1；前端匯入使用 `@/`，後端使用相對路徑。
-- [ ] 資料請求都走 `src/hooks/`，元件內沒有直接 `fetch`。
+- [ ] 資料請求都走 `src/hooks/`，元件內沒有直接 `fetch`；hooks 走 `@/settings/fetcher` 的 `post` / `get`，沒有直接用 `Fetcher`（否則不會帶 token）。
 - [ ] 沒有寫死的色碼、API 網址、密碼；沒有讀出或輸出 `.env*` 的實際值。
 - [ ] 動到 `IAction` / `Reducer` / `ActionType` 時，姊妹專案 `template-vite-react` 已同步。
 - [ ] 對應文件已依第 15 章同步更新（含本檔與各資料夾 `README.md`）。

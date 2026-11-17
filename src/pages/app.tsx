@@ -21,6 +21,8 @@ const AdminApp = () => {
       }
       authorizationParams={{
         redirect_uri: window.location.origin + '/admin',
+        audience: import.meta.env.VITE_AUTH0_AUDIENCE,
+        scope: 'openid profile email',
       }}
     >
       <Context.Provider {...{ value }}>

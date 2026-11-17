@@ -1,5 +1,5 @@
 import { ActionType } from '@/settings/type';
-import Fetcher from 'lesca-fetcher';
+import { get } from '@/settings/fetcher';
 import { useContext, useState } from 'react';
 import { REST_PATH } from '../settings/config';
 import { Context } from '../settings/constant';
@@ -10,7 +10,7 @@ const useConnect = () => {
   const [state, setState] = useState<IRespond | undefined>();
   const fetch = async () => {
     setContext({ type: ActionType.LoadingProcess, state: { enabled: true } });
-    const respond = (await Fetcher.get(REST_PATH.connect)) as IRespond;
+    const respond = await get<IRespond>(REST_PATH.connect);
     setState(respond);
     setContext({ type: ActionType.LoadingProcess, state: { enabled: false } });
   };

@@ -1,7 +1,7 @@
 import { REST_PATH } from '@/settings/config';
 import { Context } from '@/settings/constant';
 import { ActionType } from '@/settings/type';
-import Fetcher from 'lesca-fetcher';
+import { post } from '@/settings/fetcher';
 import { useContext, useEffect, useState } from 'react';
 import { TUploadResult } from '../../setting';
 
@@ -17,7 +17,7 @@ const useSearch = () => {
   const fetch = async (parm: T) => {
     setContext({ type: ActionType.LoadingProcess, state: { enabled: true } });
     try {
-      const respond = (await Fetcher.post(REST_PATH.search, parm)) as TUploadResult;
+      const respond = await post<TUploadResult>(REST_PATH.search, parm);
       setState(respond);
     } catch (e) {
       alert(e);

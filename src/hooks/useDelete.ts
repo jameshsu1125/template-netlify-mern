@@ -1,5 +1,5 @@
 import { ActionType } from '@/settings/type';
-import Fetcher from 'lesca-fetcher';
+import { post } from '@/settings/fetcher';
 import { useContext, useState } from 'react';
 import { IRespond } from '../../setting';
 import { REST_PATH } from '../settings/config';
@@ -12,7 +12,7 @@ const useDelete = () => {
   const [state, setState] = useState<IRespond | undefined>();
   const fetch = async (Argument: TArgument) => {
     setContext({ type: ActionType.LoadingProcess, state: { enabled: true } });
-    const respond = (await Fetcher.post(REST_PATH.delete, Argument)) as IRespond;
+    const respond = await post<IRespond>(REST_PATH.delete, Argument);
     setState(respond);
     setContext({ type: ActionType.LoadingProcess, state: { enabled: false } });
   };

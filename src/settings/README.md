@@ -4,14 +4,15 @@
 
 ## 檔案一覽
 
-| 檔案 | 用途 |
-| :-- | :-- |
-| `constant.ts` | 全域狀態的初始值、`Context`、`Reducer` |
-| `type.ts` | 列舉（`ActionType`、`AlertType`、`UserType`…）與全域狀態的型別 |
-| `type-unity.ts` | 共用的 TypeScript 工具型別（`Debug`、`Equal`、`ReadyOnly`…） |
-| `config.ts` | API 路徑名稱 `REST_PATH`、圖片擷取設定 `CAPTURE_PROPERTY` |
-| `config.less` | Less 斷點變數 `@SM`（768px）、`@MD`（1024px）、`@LG`（1280px），給 `.less` 檔 `@import` |
-| `global.css` | 全域樣式，並載入 `tailwind.config.css`（Tailwind 與 daisyUI） |
+| 檔案            | 用途                                                                                                                          |
+| :-------------- | :---------------------------------------------------------------------------------------------------------------------------- |
+| `constant.ts`   | 全域狀態的初始值、`Context`、`Reducer`                                                                                        |
+| `type.ts`       | 列舉（`ActionType`、`AlertType`、`UserType`…）與全域狀態的型別                                                                |
+| `type-unity.ts` | 共用的 TypeScript 工具型別（`Debug`、`Equal`、`ReadyOnly`…）                                                                  |
+| `config.ts`     | API 路徑名稱 `REST_PATH`、圖片擷取設定 `CAPTURE_PROPERTY`                                                                     |
+| `fetcher.ts`    | `post` / `get` 包裝層。每次請求前用 Auth0 的 `getAccessTokenSilently()` 更新 `Authorization` header，hooks 一律透過它呼叫 API |
+| `config.less`   | Less 斷點變數 `@SM`（768px）、`@MD`（1024px）、`@LG`（1280px），給 `.less` 檔 `@import`                                       |
+| `global.css`    | 全域樣式，並載入 `tailwind.config.css`（Tailwind 與 daisyUI）                                                                 |
 
 ## 全域狀態
 
@@ -21,14 +22,14 @@
 
 `IState` 由六個區塊組成，每個區塊對應一個 `ActionType`：
 
-| `ActionType` | 狀態名稱 | 欄位 | 預設值 | 負責顯示的元件 |
-| :-- | :-- | :-- | :-- | :-- |
-| `LoadingProcess` (`'loadingProcess'`) | `LoadingProcessState` | `enabled`、`type`、`body` | `false`、`Spokes`、`'loading'` | [loadingProcess](../components/loadingProcess/README.md) |
-| `Status` (`'status'`) | `StatusState` | `enabled` | `false` | 目前沒有元件使用 |
-| `Alert` (`'alert'`) | `AlertState` | `enabled`、`type`、`body`、`time` | `false`、`Normal`、`'message'`、`5000` | [alert](../components/alert/README.md) |
-| `Modal` (`'modal'`) | `ModalState` | `enabled`、`title`、`body`、`label`、`storage`、`onClose` | `false`、`'title'`、`'message'`、`'close'`、`{}`、空函式 | [modal](../components/modal/README.md) |
-| `User` (`'user'`) | `UserState` | `type`、`name`、`email`、`picture`、`token` | `Guest`、`'guest'`、`'demo@host.com'`、Gravatar 預設圖、`''` | [drawer](../components/drawer/README.md)（`userBar`、`navBar`） |
-| `Album` (`'album'`) | `AlbumState` | `folder`、`copiedText` | `'*'`、`''` | [album](../components/album/README.md) |
+| `ActionType`                          | 狀態名稱              | 欄位                                                                                | 預設值                                                       | 負責顯示的元件                                                  |
+| :------------------------------------ | :-------------------- | :---------------------------------------------------------------------------------- | :----------------------------------------------------------- | :-------------------------------------------------------------- |
+| `LoadingProcess` (`'loadingProcess'`) | `LoadingProcessState` | `enabled`、`type`、`body`                                                           | `false`、`Spokes`、`'loading'`                               | [loadingProcess](../components/loadingProcess/README.md)        |
+| `Status` (`'status'`)                 | `StatusState`         | `enabled`                                                                           | `false`                                                      | 目前沒有元件使用                                                |
+| `Alert` (`'alert'`)                   | `AlertState`          | `enabled`、`type`、`body`、`time`                                                   | `false`、`Normal`、`'message'`、`5000`                       | [alert](../components/alert/README.md)                          |
+| `Modal` (`'modal'`)                   | `ModalState`          | `enabled`、`title`、`body`、`label`、`storage`、`onClose`                           | `false`、`'title'`、`'message'`、`'close'`、`{}`、空函式     | [modal](../components/modal/README.md)                          |
+| `User` (`'user'`)                     | `UserState`           | `type`、`name`、`email`、`picture`、`token`（Auth0 access token，只當已驗證的旗標） | `Guest`、`'guest'`、`'demo@host.com'`、Gravatar 預設圖、`''` | [drawer](../components/drawer/README.md)（`userBar`、`navBar`） |
+| `Album` (`'album'`)                   | `AlbumState`          | `folder`、`copiedText`                                                              | `'*'`、`''`                                                  | [album](../components/album/README.md)                          |
 
 ### 如何更新狀態
 
@@ -65,35 +66,35 @@ const Demo = () => {
 
 ### 列舉（`type.ts`）
 
-| 列舉 | 值 | 說明 |
-| :-- | :-- | :-- |
-| `ActionType` | `LoadingProcess`、`Status`、`Alert`、`Modal`、`User`、`Album` | 全域狀態的分區名稱 |
+| 列舉                 | 值                                                                                          | 說明                                      |
+| :------------------- | :------------------------------------------------------------------------------------------ | :---------------------------------------- |
+| `ActionType`         | `LoadingProcess`、`Status`、`Alert`、`Modal`、`User`、`Album`                               | 全域狀態的分區名稱                        |
 | `LoadingProcessType` | `Ball`(`'balls'`)、`Bars`、`Bubbles`、`Cubes`、`Cylon`、`Spin`、`SpinningBubbles`、`Spokes` | Loading 動畫樣式，值同時是 CSS class 名稱 |
-| `AlertType` | `Normal`(`''`)、`Info`、`Success`、`Warning`、`Error` | 提示類型，值是 daisyUI 的 `alert-*` class |
-| `UserType` | `Admin`(`'admin'`)、`InHouse`(`'inHouse'`)、`User`(`'user'`)、`Guest`(`'guest'`) | 使用者權限 |
-| `TransitionType` | `Unset`、`FadeIn`、`FadeOut`、`DidFadeIn`、`DidFadeOut`、`Loop`、`Stop` | 轉場動畫狀態，目前沒有元件使用 |
+| `AlertType`          | `Normal`(`''`)、`Info`、`Success`、`Warning`、`Error`                                       | 提示類型，值是 daisyUI 的 `alert-*` class |
+| `UserType`           | `Admin`(`'admin'`)、`InHouse`(`'inHouse'`)、`User`(`'user'`)、`Guest`(`'guest'`)            | 使用者權限                                |
+| `TransitionType`     | `Unset`、`FadeIn`、`FadeOut`、`DidFadeIn`、`DidFadeOut`、`Loop`、`Stop`                     | 轉場動畫狀態，目前沒有元件使用            |
 
 ### 常用型別
 
-| 型別 | 說明 |
-| :-- | :-- |
-| `IState` | 整個全域狀態 |
-| `IAction` | dispatch 的參數，依 `type` 分流的 union：`{ type: K; state: Partial<TActionStateMap[K]> }`，選了 `type`，`state` 只接受該區塊的欄位 |
-| `TActionStateMap` | 每個 `ActionType` 對應的 state 型別；新增 `ActionType` 時在 `IState` 補一筆 |
-| `TContext` | `Context` 的值：`[IState, Dispatch<IAction>]` |
-| `IReactProps` | 只有 `children` 的 props，元件需要接收子元素時使用 |
-| `IEnabled` | `{ enabled: boolean }` |
+| 型別              | 說明                                                                                                                                |
+| :---------------- | :---------------------------------------------------------------------------------------------------------------------------------- |
+| `IState`          | 整個全域狀態                                                                                                                        |
+| `IAction`         | dispatch 的參數，依 `type` 分流的 union：`{ type: K; state: Partial<TActionStateMap[K]> }`，選了 `type`，`state` 只接受該區塊的欄位 |
+| `TActionStateMap` | 每個 `ActionType` 對應的 state 型別；新增 `ActionType` 時在 `IState` 補一筆                                                         |
+| `TContext`        | `Context` 的值：`[IState, Dispatch<IAction>]`                                                                                       |
+| `IReactProps`     | 只有 `children` 的 props，元件需要接收子元素時使用                                                                                  |
+| `IEnabled`        | `{ enabled: boolean }`                                                                                                              |
 
 ### 工具型別（`type-unity.ts`）
 
-| 型別 | 用途 |
-| :-- | :-- |
-| `Debug<T>` | 把交集型別展開成一般物件，方便在編輯器看提示 |
-| `Equal<X, Y>` | 判斷兩個型別是否完全相同 |
-| `ReadyOnly<T>` | 所有屬性變成唯讀（名稱拼成 `ReadyOnly`，用法同 `Readonly`） |
-| `Merge<T>` | 遞迴展開巢狀物件 |
-| `Union<U>` | 把聯集轉成交集 |
-| `ExpectValidArgs<FUNC, ARGS>` | 檢查參數是否符合函式簽名 |
+| 型別                          | 用途                                                        |
+| :---------------------------- | :---------------------------------------------------------- |
+| `Debug<T>`                    | 把交集型別展開成一般物件，方便在編輯器看提示                |
+| `Equal<X, Y>`                 | 判斷兩個型別是否完全相同                                    |
+| `ReadyOnly<T>`                | 所有屬性變成唯讀（名稱拼成 `ReadyOnly`，用法同 `Readonly`） |
+| `Merge<T>`                    | 遞迴展開巢狀物件                                            |
+| `Union<U>`                    | 把聯集轉成交集                                              |
+| `ExpectValidArgs<FUNC, ARGS>` | 檢查參數是否符合函式簽名                                    |
 
 每個型別在檔案內都有範例註解。
 
@@ -103,19 +104,19 @@ const Demo = () => {
 
 後端 API 的路徑名稱，hooks 透過它發送請求。新增 API 時要在這裡登記。
 
-| 鍵 | 路徑 | 方法 | 用途 |
-| :-- | :-- | :-- | :-- |
-| `login` | `login` | POST | 登入驗證 |
-| `connect` | `connect` | GET | 檢查資料庫連線 |
-| `select` | `select` | POST | 取得整個 collection |
-| `insert` | `insert` | POST | 新增一筆 |
-| `insertMany` | `insertMany` | POST | 新增多筆 |
-| `delete` | `delete` | POST | 刪除一筆 |
-| `update` | `update` | POST | 更新一筆 |
-| `upload` | `upload` | POST | 上傳圖片 |
-| `search` | `search` | POST | 列出資料夾內的圖片 |
-| `remove` | `remove` | POST | 刪除單一圖片或資料夾 |
-| `removeMany` | `removeMany` | POST | 刪除多張圖片 |
+| 鍵           | 路徑         | 方法 | 用途                 |
+| :----------- | :----------- | :--- | :------------------- |
+| `login`      | `login`      | POST | 登入驗證             |
+| `connect`    | `connect`    | GET  | 檢查資料庫連線       |
+| `select`     | `select`     | POST | 取得整個 collection  |
+| `insert`     | `insert`     | POST | 新增一筆             |
+| `insertMany` | `insertMany` | POST | 新增多筆             |
+| `delete`     | `delete`     | POST | 刪除一筆             |
+| `update`     | `update`     | POST | 更新一筆             |
+| `upload`     | `upload`     | POST | 上傳圖片             |
+| `search`     | `search`     | POST | 列出資料夾內的圖片   |
+| `remove`     | `remove`     | POST | 刪除單一圖片或資料夾 |
+| `removeMany` | `removeMany` | POST | 刪除多張圖片         |
 
 ### `CAPTURE_PROPERTY`
 

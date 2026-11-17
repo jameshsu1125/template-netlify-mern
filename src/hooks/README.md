@@ -10,24 +10,36 @@
 const [respond, run] = useXxx();
 ```
 
-| 回傳值 | 說明 |
-| :-- | :-- |
+| 回傳值    | 說明                                                                      |
+| :-------- | :------------------------------------------------------------------------ |
 | `respond` | 最近一次請求的回應，一開始是 `undefined`。用 `useEffect` 監聽它來處理結果 |
-| `run` | 發出請求的函式，參數依 hook 不同 |
+| `run`     | 發出請求的函式，參數依 hook 不同                                          |
 
 大部分 hook 在請求前後會自動開關全域 Loading（`ActionType.LoadingProcess`），所以呼叫端不需要自己處理讀取畫面。例外是 `useSelect`，它不會開關 Loading。
 
-後端不論成功失敗，HTTP 狀態碼都是 `200`，請用 `respond.res`（`true` 成功、`false` 失敗）判斷結果，失敗原因在 `respond.msg`。
+後端的業務邏輯不論成功失敗，HTTP 狀態碼都是 `200`，請用 `respond.res`（`true` 成功、`false` 失敗）判斷結果，失敗原因在 `respond.msg`。
+驗證與連線問題例外，會回 `401` / `403` / `400` / `503`（回應格式仍是 `{ res: false, msg }`，所以判斷方式不變）。
+
+### Authorization header 怎麼帶
+
+hooks 不直接用 `lesca-fetcher`，而是走 `src/settings/fetcher.ts` 的 `post` / `get`。
+它在**每一次請求之前**呼叫 Auth0 的 `getAccessTokenSilently()` 並更新 `Authorization` header，
+所以 access token 過期時會自動換新，使用者不會被中斷。
+
+getter 由 `src/pages/router.tsx` 的 `UserPage` 以 `setTokenGetter()` 註冊（必須在 `Auth0Provider` 之內）。
+silent refresh 失敗（`login_required`、`consent_required`）時會呼叫 `loginWithRedirect()` 重新登入。
+
+> 新增 hook 時請 import `@/settings/fetcher` 的 `post` / `get`，不要直接用 `Fetcher`，否則請求不會帶 token。
 
 ### 回應型別
 
 ```ts
 // setting/index.ts
 type IRespond = {
-  readonly res: boolean;        // 是否成功
-  readonly msg: string;         // 訊息
-  readonly collection: string;  // 操作的 collection
-  readonly data: TType[];       // 回傳的資料（依 hook 而定）
+  readonly res: boolean; // 是否成功
+  readonly msg: string; // 訊息
+  readonly collection: string; // 操作的 collection
+  readonly data: TType[]; // 回傳的資料（依 hook 而定）
 };
 
 // 相簿相關 hook（useSearch）使用
@@ -41,19 +53,19 @@ type TUploadResult = {
 
 ## Hook 一覽
 
-| Hook | 檔案 | 用途 | 呼叫的 API |
-| :-- | :-- | :-- | :-- |
-| [`useConnect`](#useconnect) | `useConnect.ts` | 檢查資料庫連線 | `GET /api/connect` |
-| [`useLogin`](#uselogin) | `useLogin.ts` | 登入並取得 token | `POST /api/login` |
-| [`useSelect`](#useselect) | `useSelect.ts` | 取得整個 collection | `POST /api/select` |
-| [`useInsert`](#useinsert) | `useInsert.ts` | 新增一筆資料 | `POST /api/insert` |
-| [`useInsertMany`](#useinsertmany) | `useInsert.ts` | 新增多筆資料 | `POST /api/insertMany` |
-| [`useUpdate`](#useupdate) | `useUpdate.ts` | 更新一筆資料 | `POST /api/update` |
-| [`useDelete`](#usedelete) | `useDelete.ts` | 刪除一筆資料 | `POST /api/delete` |
-| [`useUpload`](#useupload) | `useUpload.ts` | 上傳圖片 | `POST /api/upload` |
-| [`useSearch`](#usesearch) | `useSearch.ts` | 列出相簿內容 | `POST /api/search` |
-| [`useRemove`](#useremove) | `useRemove.ts` | 刪除單一圖片或資料夾 | `POST /api/remove` |
-| [`useRemoveMany`](#useremovemany) | `useRemoveMany.ts` | 刪除多張圖片 | `POST /api/removeMany` |
+| Hook                              | 檔案               | 用途                 | 呼叫的 API             |
+| :-------------------------------- | :----------------- | :------------------- | :--------------------- |
+| [`useConnect`](#useconnect)       | `useConnect.ts`    | 檢查資料庫連線       | `GET /api/connect`     |
+| [`useLogin`](#uselogin)           | `useLogin.ts`      | 登入並取得 token     | `POST /api/login`      |
+| [`useSelect`](#useselect)         | `useSelect.ts`     | 取得整個 collection  | `POST /api/select`     |
+| [`useInsert`](#useinsert)         | `useInsert.ts`     | 新增一筆資料         | `POST /api/insert`     |
+| [`useInsertMany`](#useinsertmany) | `useInsert.ts`     | 新增多筆資料         | `POST /api/insertMany` |
+| [`useUpdate`](#useupdate)         | `useUpdate.ts`     | 更新一筆資料         | `POST /api/update`     |
+| [`useDelete`](#usedelete)         | `useDelete.ts`     | 刪除一筆資料         | `POST /api/delete`     |
+| [`useUpload`](#useupload)         | `useUpload.ts`     | 上傳圖片             | `POST /api/upload`     |
+| [`useSearch`](#usesearch)         | `useSearch.ts`     | 列出相簿內容         | `POST /api/search`     |
+| [`useRemove`](#useremove)         | `useRemove.ts`     | 刪除單一圖片或資料夾 | `POST /api/remove`     |
+| [`useRemoveMany`](#useremovemany) | `useRemoveMany.ts` | 刪除多張圖片         | `POST /api/removeMany` |
 
 資料庫類（connect、login、select、insert、update、delete）的後端說明見 [netlify/functions/README.md](../../netlify/functions/README.md)。
 
@@ -80,17 +92,17 @@ export default function Demo() {
 }
 ```
 
-| 項目 | 說明 |
-| :-- | :-- |
-| `run()` | 不需要參數 |
-| 成功 | `respond.res === true`，`msg` 為 `Database connection successful.` 或 `The database is online.` |
-| 失敗 | `respond.res === false`，`msg` 為 `Database connection failed.` |
+| 項目    | 說明                                                                                            |
+| :------ | :---------------------------------------------------------------------------------------------- |
+| `run()` | 不需要參數                                                                                      |
+| 成功    | `respond.res === true`，`msg` 為 `Database connection successful.` 或 `The database is online.` |
+| 失敗    | `respond.res === false`，`msg` 為 `Database connection failed.`                                 |
 
 後台的 `RoutePages` 在載入時會呼叫一次，用來喚醒資料庫連線。
 
 ### useLogin
 
-把 Auth0 的使用者資料送給後端驗證，成功後自動呼叫 `Fetcher.setJWT(token)`，之後的請求會帶上這個 token。
+問後端「我是誰」。**不送任何身分資料**，身分完全來自 `Authorization` header 裡驗證過的 Auth0 access token。
 
 ```tsx
 import useLogin from '@/hooks/useLogin';
@@ -102,22 +114,24 @@ export default function Demo() {
   const [respond, login] = useLogin();
 
   useEffect(() => {
-    if (user) login(user);
+    if (user) login();
   }, [user]);
 
   useEffect(() => {
-    if (respond?.res) console.log(respond.type, respond.token);
+    if (respond?.res) console.log(respond.type, respond.email);
   }, [respond]);
 
   return null;
 }
 ```
 
-| 項目 | 說明 |
-| :-- | :-- |
-| `run(user)` | `user` 為 Auth0 的 `User` 物件，至少需要 `email` |
-| `respond` 型別 | `{ res: boolean; type: UserType; token: string }`（不是 `IRespond`） |
-| 失敗 | `res === false`，`type` 為 `guest`，沒有 `token` |
+| 項目           | 說明                                                                                      |
+| :------------- | :---------------------------------------------------------------------------------------- |
+| `run()`        | 不需要參數                                                                                |
+| `respond` 型別 | `{ res: boolean; type: UserType; email?: string; msg?: string }`（不是 `IRespond`）       |
+| 失敗           | HTTP `401` / `403`，`res === false`，`msg` 說明原因（token 無效、email 未驗證、權限不足） |
+
+使用前必須先用 `setTokenGetter()` 註冊 token getter，否則請求沒有 header，後端會回 `401`。
 
 ### useSelect
 
@@ -138,10 +152,10 @@ export default function Demo() {
 }
 ```
 
-| 項目 | 說明 |
-| :-- | :-- |
-| `run({ collection })` | `collection` 是 `setting/index.ts` 內定義的名稱 |
-| `respond.data` | 該 collection 的所有文件，每筆都含 MongoDB 的 `_id` |
+| 項目                  | 說明                                                |
+| :-------------------- | :-------------------------------------------------- |
+| `run({ collection })` | `collection` 是 `setting/index.ts` 內定義的名稱     |
+| `respond.data`        | 該 collection 的所有文件，每筆都含 MongoDB 的 `_id` |
 
 `respond.data` 的型別是 `TType[]`（所有 collection 型別的聯集），需要特定 collection 的型別時請轉型，例如 `respond.data as TType<'user'>[]`。
 
@@ -170,11 +184,11 @@ export default function Demo() {
 }
 ```
 
-| 項目 | 說明 |
-| :-- | :-- |
+| 項目                        | 說明                                                           |
+| :-------------------------- | :------------------------------------------------------------- |
 | `run({ collection, data })` | `data` 為符合該 collection schema 的物件（可省略 `timestamp`） |
-| `respond.data` | 新增後的文件（含 `_id`），放在陣列的第一個元素 |
-| 失敗 | 欄位驗證失敗時，`msg` 是錯誤物件的 JSON 字串 |
+| `respond.data`              | 新增後的文件（含 `_id`），放在陣列的第一個元素                 |
+| 失敗                        | 欄位驗證失敗時，`msg` 是錯誤物件的 JSON 字串                   |
 
 ### useInsertMany
 
@@ -211,10 +225,10 @@ export default function Demo() {
 }
 ```
 
-| 項目 | 說明 |
-| :-- | :-- |
+| 項目                        | 說明                                                                   |
+| :-------------------------- | :--------------------------------------------------------------------- |
 | `run({ collection, data })` | `data._id` 是要更新的文件 id，`data.data` 是要更新的欄位（可只傳部分） |
-| 成功 | `respond.res === true`，`msg` 為 `Data updated successfully` |
+| 成功                        | `respond.res === true`，`msg` 為 `Data updated successfully`           |
 
 ### useDelete
 
@@ -234,10 +248,10 @@ export default function Demo() {
 }
 ```
 
-| 項目 | 說明 |
-| :-- | :-- |
-| `run({ collection, data })` | `data._id` 是要刪除的文件 id |
-| 成功 | `respond.res === true`，`msg` 為 `Data deleted successfully` |
+| 項目                        | 說明                                                         |
+| :-------------------------- | :----------------------------------------------------------- |
+| `run({ collection, data })` | `data._id` 是要刪除的文件 id                                 |
+| 成功                        | `respond.res === true`，`msg` 為 `Data deleted successfully` |
 
 ---
 
@@ -263,11 +277,11 @@ export default function Demo({ base64 }: { base64: string }) {
 }
 ```
 
-| 項目 | 說明 |
-| :-- | :-- |
-| `run({ image, folder })` | `image` 為 Base64 字串；`folder` 為資料夾名稱，傳空字串代表根目錄 |
-| 成功 | `respond.res === true`，`respond.data` 內含圖片網址（`secure_url`） |
-| 限制 | 單次請求上限 10 MB |
+| 項目                     | 說明                                                                |
+| :----------------------- | :------------------------------------------------------------------ |
+| `run({ image, folder })` | `image` 為 Base64 字串；`folder` 為資料夾名稱，傳空字串代表根目錄   |
+| 成功                     | `respond.res === true`，`respond.data` 內含圖片網址（`secure_url`） |
+| 限制                     | 單次請求上限 10 MB                                                  |
 
 ### useSearch
 
@@ -290,12 +304,12 @@ export default function Demo() {
 }
 ```
 
-| 項目 | 說明 |
-| :-- | :-- |
-| `run({ folder })` | `'*'` 代表根目錄 |
-| `respond` 型別 | `TUploadResult`，`data` 是 `TUploadRespond[]` |
-| 排序 | BunnyCDN 模式下資料夾會排在檔案前面 |
-| 錯誤 | 請求拋出例外時會用 `alert()` 顯示錯誤 |
+| 項目              | 說明                                          |
+| :---------------- | :-------------------------------------------- |
+| `run({ folder })` | `'*'` 代表根目錄                              |
+| `respond` 型別    | `TUploadResult`，`data` 是 `TUploadRespond[]` |
+| 排序              | BunnyCDN 模式下資料夾會排在檔案前面           |
+| 錯誤              | 請求拋出例外時會用 `alert()` 顯示錯誤         |
 
 ### useRemove
 
@@ -308,8 +322,8 @@ const [respond, remove] = useRemove();
 remove({ public_id: 'banner/photo' });
 ```
 
-| 項目 | 說明 |
-| :-- | :-- |
+| 項目                 | 說明                                                                                                                                                 |
+| :------------------- | :--------------------------------------------------------------------------------------------------------------------------------------------------- |
 | `run({ public_id })` | Cloudinary 模式傳 `public_id`；BunnyCDN 模式後端把這個值當作檔案路徑（`href`）。相簿元件實際傳入的值見 [album 的說明](../components/album/README.md) |
 
 ### useRemoveMany
@@ -323,8 +337,8 @@ const [respond, removeMany] = useRemoveMany();
 removeMany({ public_ids: ['banner/a', 'banner/b'] });
 ```
 
-| 項目 | 說明 |
-| :-- | :-- |
+| 項目                  | 說明                         |
+| :-------------------- | :--------------------------- |
 | `run({ public_ids })` | 字串陣列，規則同 `useRemove` |
 
 ---
