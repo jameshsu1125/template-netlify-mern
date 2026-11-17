@@ -23,6 +23,7 @@
     "@uidotdev/usehooks": "^2.4.1",
     "body-parser": "^2.4.0",
     "cloudinary": "^2.11.0",
+    "jose": "^6.2.17",
     "lesca-atobtoa": "^2.0.0",
     "lesca-fetcher": "^3.0.1",
     "lesca-local-storage": "^2.1.1",

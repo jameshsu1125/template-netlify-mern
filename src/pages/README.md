@@ -4,20 +4,20 @@
 
 ## 檔案一覽
 
-| 路徑 | 說明 |
-| :-- | :-- |
-| `index.html` | HTML 範本，`<%= title %>` 等變數由 `vite-plugin-html` 在建置時填入 |
-| `index.tsx` | 啟動程式：初始化 `Fetcher`、視需要啟用 MSW、掛載 React |
-| `app.tsx` | 依網址決定載入後台（`AdminApp`）或前台（`UserApp`），並建立全域狀態 |
-| `router.tsx` | 後台與前台的路由、登入流程 |
-| `home/` | 首頁（目前只是空白佔位） |
-| `login/` | 登入頁 |
-| `user/` | 使用者管理頁（僅管理員） |
-| `album/` | 相簿頁 |
-| `editor/` | 富文字編輯頁 |
-| `error/` | 404 頁 |
-| `LICENSE` | MIT 授權文字 |
-| `.env.defaults` | 前端環境變數範本，複製成 `.env.local` 使用 |
+| 路徑            | 說明                                                                |
+| :-------------- | :------------------------------------------------------------------ |
+| `index.html`    | HTML 範本，`<%= title %>` 等變數由 `vite-plugin-html` 在建置時填入  |
+| `index.tsx`     | 啟動程式：初始化 `Fetcher`、視需要啟用 MSW、掛載 React              |
+| `app.tsx`       | 依網址決定載入後台（`AdminApp`）或前台（`UserApp`），並建立全域狀態 |
+| `router.tsx`    | 後台與前台的路由、登入流程                                          |
+| `home/`         | 首頁（目前只是空白佔位）                                            |
+| `login/`        | 登入頁（`index.tsx`）與登入被拒絕時的畫面（`failed.tsx`）           |
+| `user/`         | 使用者管理頁（僅管理員）                                            |
+| `album/`        | 相簿頁                                                              |
+| `editor/`       | 富文字編輯頁                                                        |
+| `error/`        | 404 頁                                                              |
+| `LICENSE`       | MIT 授權文字                                                        |
+| `.env.defaults` | 前端環境變數範本，複製成 `.env.local` 使用                          |
 
 ## 啟動流程
 
@@ -36,10 +36,10 @@ index.html
 
 `Fetcher` 的 `hostUrl` 依環境決定：
 
-| 環境 | 使用的值 |
-| :-- | :-- |
-| `localhost` | `VITE_API_PATH_DEV` |
-| 其他網域 | `VITE_API_PATH`，未設定則為 `./api` |
+| 環境        | 使用的值                            |
+| :---------- | :---------------------------------- |
+| `localhost` | `VITE_API_PATH_DEV`                 |
+| 其他網域    | `VITE_API_PATH`，未設定則為 `./api` |
 
 ### 後台（`/admin`）
 
@@ -58,21 +58,30 @@ index.html
 
 登入流程由 `router.tsx` 的 `RoutePages` 與 `UserPage` 處理：
 
-1. `RoutePages` 載入時呼叫 `useConnect` 喚醒資料庫連線。
-2. 依狀態顯示：Auth0 載入中 → Loading；已登入 → `UserPage`；未登入 → `Login`。
-3. `UserPage` 拿到 Auth0 使用者後呼叫 `useLogin`，成功就把 token、email、name、picture、權限寫入全域狀態；失敗（資料庫沒有這位使用者）則導回 `/`。
-4. 全域狀態有 token 之後，才渲染 `DrawerPage`（側邊欄加上內容區）。
-5. `UserPage` 會把 `<html>` 的 `data-theme` 設為 `valentine`。
+1. `RoutePages` 載入時呼叫 `useConnect` 喚醒資料庫連線（`/api/connect` 是唯一不需要 token 的路由）。
+2. 依狀態顯示：`useAuth0().error` 有值 → `login/failed.tsx`；Auth0 載入中 → Loading；已登入 → `UserPage`；未登入 → `Login`。
+   **`error` 這個分支不能省**：Auth0 自己拒絕請求時（audience 不存在、應用程式未被授權存取該 API、需要同意畫面）
+   會直接帶著 `?error=...` 導回 `/admin`，`user` 仍是 `undefined`，少了這個分支就會無限跳回登入頁、而且看不到原因。
+3. `UserPage` 掛載時**先**用 `setTokenGetter()` 把 Auth0 的 `getAccessTokenSilently` 註冊給 `src/settings/fetcher.ts`。
+   這個 effect 必須排在呼叫 `useLogin` 的 effect 之前，否則第一個請求不會帶 `Authorization` header。
+4. 拿到 Auth0 使用者後呼叫 `useLogin` 的 `run()`，**不傳任何參數**：身分完全由後端從 access token 驗證得出。
+   成功就把 access token、email、name、picture、權限寫入全域狀態。
+   失敗（token 無效、email 未驗證、使用者清單裡沒有這個 email）則顯示 `login/failed.tsx`，
+   把後端回的 `msg` 直接印在畫面上，並提供「登出」與「重新登入」兩顆按鈕 ——
+   **不要改回導向 `/`**，那會讓使用者卡在沒有登出按鈕的前台，也看不到失敗原因。
+5. 全域狀態有 token 之後，才渲染 `DrawerPage`（側邊欄加上內容區）。
+   這裡的 `token` 存的是 Auth0 access token，只當「已驗證」的旗標；實際送出的 header 由 `fetcher.ts` 每次請求前重新取得。
+6. `UserPage` 會把 `<html>` 的 `data-theme` 設為 `valentine`。
 
 `DrawerPage` 內的路由：
 
-| 網址（含 `/admin` 前綴） | 頁面 | 權限 |
-| :-- | :-- | :-- |
-| `/admin`、`/admin/home` | `home` | 登入即可 |
-| `/admin/user` | `user` | 僅 `admin`，其他權限會被導向 `/home` |
-| `/admin/album` | `album` | 登入即可 |
-| `/admin/editor` | `editor` | 登入即可 |
-| 其他 | `error`（404） | — |
+| 網址（含 `/admin` 前綴） | 頁面           | 權限                                 |
+| :----------------------- | :------------- | :----------------------------------- |
+| `/admin`、`/admin/home`  | `home`         | 登入即可                             |
+| `/admin/user`            | `user`         | 僅 `admin`，其他權限會被導向 `/home` |
+| `/admin/album`           | `album`        | 登入即可                             |
+| `/admin/editor`          | `editor`       | 登入即可                             |
+| 其他                     | `error`（404） | —                                    |
 
 > 權限檢查只存在前端畫面。後端 API 沒有驗證，詳見根目錄 [README 的已知限制](../../README.md#已知限制與安全注意事項)。
 
@@ -84,18 +93,21 @@ index.html
 
 ### login
 
-登入頁，顯示 Auth0 的圖片與「登入」按鈕，按下後呼叫 `loginWithRedirect()` 導向 Auth0。圖片放在 `login/img/`。
+`index.tsx` 是登入頁，顯示 Auth0 的圖片與「登入」按鈕，按下後呼叫 `loginWithRedirect()` 導向 Auth0。圖片放在 `login/img/`。
+
+`failed.tsx` 在兩種情況顯示，Props 只有 `msg: string`：Auth0 自己拒絕請求（`useAuth0().error`），或 Auth0 登入成功但後端拒絕 access token（`useLogin` 回 `res: false`）。
+它一定會提供「登出」與「重新登入」兩顆按鈕，確保登入失敗時使用者不會被卡住。
 
 ### user（使用者管理）
 
 僅管理員可使用。進入時若不是 `admin` 會被導向 `/home`，否則載入 `user` collection 的全部資料。
 
-| 檔案 | 說明 |
-| :-- | :-- |
-| `index.tsx` | 使用者表格（姓名、email、權限、刪除按鈕）與新增表單 |
-| `add.tsx` | 新增表單：姓名、email、權限（`admin`、`inHouse`、`user`）。送出前會先取得全部使用者，email 重複時顯示錯誤提示，不重複才新增 |
-| `delete.tsx` | 刪除按鈕，成功後通知列表重新載入 |
-| `index.less` | 頁面高度樣式（扣掉導覽列，手機版再扣掉一個 48px 的工具列） |
+| 檔案         | 說明                                                                                                                        |
+| :----------- | :-------------------------------------------------------------------------------------------------------------------------- |
+| `index.tsx`  | 使用者表格（姓名、email、權限、刪除按鈕）與新增表單                                                                         |
+| `add.tsx`    | 新增表單：姓名、email、權限（`admin`、`inHouse`、`user`）。送出前會先取得全部使用者，email 重複時顯示錯誤提示，不重複才新增 |
+| `delete.tsx` | 刪除按鈕，成功後通知列表重新載入                                                                                            |
+| `index.less` | 頁面高度樣式（扣掉導覽列，手機版再扣掉一個 48px 的工具列）                                                                  |
 
 新增的使用者只要 email 與 Auth0 登入的 email 相同，就能通過登入驗證。
 

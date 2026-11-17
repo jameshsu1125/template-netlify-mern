@@ -3,12 +3,10 @@ import cloudinary from 'cloudinary';
 import cors from 'cors';
 import dotenv from 'dotenv';
 import express, { Router } from 'express';
-import Atobtoa from 'lesca-atobtoa';
 import serverless from 'serverless-http';
-import { SETTING, TType } from '../../../setting';
 import { REST_PATH } from '../../../src/settings/config';
-import { UserType } from '../../../src/settings/type';
 import { limit, messages } from '../config';
+import { guard, guardCollection, type IAuthedRequest } from './auth';
 import connect from './connect';
 import deleteOne from './delete';
 import insert, { insertMany } from './insert';
@@ -44,92 +42,107 @@ const storageType: 'cloudinary' | 'bunnycdn' =
 app.use(cors({ origin: '*' }));
 app.use(express.json());
 
-const router = Router();
+/** same host rule as lesca-node-bunnycdn: region prefix when one is configured */
+const bunnyStorageHost = () =>
+  bunnyCdnConfig.region ? `${bunnyCdnConfig.region}.storage.bunnycdn.com` : 'storage.bunnycdn.com';
 
-router.post(`/${REST_PATH.login}`, async (req, res) => {
-  const { body } = req;
-  const connection = await connect();
-  if (!connection.res) {
-    res.status(200).json({ res: false, msg: messages.connectError });
-  } else {
-    if (body.email === process.env.AMIN_EMAIL) {
-      const type = UserType.Admin;
-      const name = body.name || 'super user';
-      const timestamp = new Date().toISOString();
-      const data = { type, name, timestamp, email: body.email };
-      const token = Atobtoa.toBase64(data);
-      res.status(200).json({ res: true, token, type });
-    } else {
-      const respond = await select({ collection: SETTING.mongodb[0].collection });
-      const data = respond.data as Extract<TType, { type: string }>[];
-      const matched = data.filter((item) => item.email === body.email);
-      if (matched.length === 0) res.status(200).json({ res: false, type: UserType.Guest });
-      else {
-        const type = matched[0].type as UserType;
-        const name = body.name || '';
-        const timestamp = body.updated_at || new Date().toISOString();
-        const email = matched[0].email;
-        const data = { type, name, email, timestamp };
-        const token = Atobtoa.toBase64(data);
-        res.status(200).json({ res: true, token, type });
-      }
+/** storage path of a listed object, e.g. `inquiry/001/photo.jpeg`, folders keep a trailing slash */
+const bunnyStoragePath = (path: string, objectName: string, isDirectory: boolean) => {
+  const prefix = `/${bunnyCdnConfig.storageZone}/`;
+  const dir = path.startsWith(prefix) ? path.slice(prefix.length) : path.replace(/^\/+/, '');
+  return `${dir}${objectName}${isDirectory ? '/' : ''}`;
+};
+
+/**
+ * turns an album identifier (storage path or CDN url) into a storage path to delete.
+ * returns null when the value could reach more than the one file or folder it names:
+ * `''`, `'/'`, `'inquiry/'` and `..` segments would otherwise wipe the whole album or zone.
+ */
+const toBunnyPath = (value: unknown): string | null => {
+  if (typeof value !== 'string' || value === '') return null;
+
+  let raw = value;
+  if (/^https?:\/\//i.test(raw)) {
+    try {
+      raw = new URL(raw).pathname;
+    } catch {
+      return null;
     }
   }
-});
+
+  let decoded: string;
+  try {
+    decoded = decodeURIComponent(raw);
+  } catch {
+    return null;
+  }
+  if (decoded.includes('\0') || decoded.includes('\\')) return null;
+
+  const isFolder = decoded.endsWith('/');
+  const segments = decoded.split('/').filter((segment) => segment !== '');
+  if (segments.length === 0) return null;
+  if (segments.some((segment) => segment === '.' || segment === '..')) return null;
+
+  // with a root folder configured, the target must live inside it and name something below it
+  const root = bunnyCdnConfig.folderName;
+  if (root && (segments[0] !== root || segments.length < 2)) return null;
+
+  return segments.join('/') + (isFolder ? '/' : '');
+};
+
+/**
+ * deletes one object. the bundled deleteFile() keeps only the first folder level of the href
+ * and never prepends folderName, so nested images silently missed their target
+ */
+const removeFromBunny = async (path: string) => {
+  const response = await fetch(
+    `https://${bunnyStorageHost()}/${bunnyCdnConfig.storageZone}/${path}`,
+    {
+      method: 'DELETE',
+      headers: { AccessKey: bunnyCdnConfig.password },
+    },
+  );
+  return { res: response.status === 200, status: response.status, path };
+};
+
+const router = Router();
 
 router.get(`/${REST_PATH.connect}`, async (_, res) => {
   const respond = await connect();
   res.status(200).json(respond);
 });
 
-router.post(`/${REST_PATH.select}`, async (req, res) => {
-  const connection = await connect();
-  if (!connection.res) {
-    res.status(200).json({ res: false, msg: messages.connectError });
-  } else {
-    const respond = await select(req.body);
-    res.status(200).json(respond);
-  }
+// every route below this line requires a verified Auth0 access token
+router.use(guard);
+
+router.post(`/${REST_PATH.login}`, async (req: IAuthedRequest, res) => {
+  const { identity } = req;
+  res.status(200).json({ res: true, type: identity?.type, email: identity?.email });
 });
 
-router.post(`/${REST_PATH.insert}`, async (req, res) => {
-  const connection = await connect();
-  if (!connection.res) {
-    res.status(200).json({ res: false, msg: messages.connectError });
-  } else {
-    const respond = await insert(req.body);
-    res.status(200).json(respond);
-  }
+router.post(`/${REST_PATH.select}`, guardCollection, async (req, res) => {
+  const respond = await select(req.body);
+  res.status(200).json(respond);
 });
 
-router.post(`/${REST_PATH.insertMany}`, async (req, res) => {
-  const connection = await connect();
-  if (!connection.res) {
-    res.status(200).json({ res: false, msg: messages.connectError });
-  } else {
-    const respond = await insertMany(req.body);
-    res.status(200).json(respond);
-  }
+router.post(`/${REST_PATH.insert}`, guardCollection, async (req, res) => {
+  const respond = await insert(req.body);
+  res.status(200).json(respond);
 });
 
-router.post(`/${REST_PATH.delete}`, async (req, res) => {
-  const connection = await connect();
-  if (!connection.res) {
-    res.status(200).json({ res: false, msg: messages.connectError });
-  } else {
-    const respond = await deleteOne(req.body);
-    res.status(200).json(respond);
-  }
+router.post(`/${REST_PATH.insertMany}`, guardCollection, async (req, res) => {
+  const respond = await insertMany(req.body);
+  res.status(200).json(respond);
 });
 
-router.post(`/${REST_PATH.update}`, async (req, res) => {
-  const connection = await connect();
-  if (!connection.res) {
-    res.status(200).json({ res: false, msg: messages.connectError });
-  } else {
-    const respond = await update(req.body);
-    res.status(200).json(respond);
-  }
+router.post(`/${REST_PATH.delete}`, guardCollection, async (req, res) => {
+  const respond = await deleteOne(req.body);
+  res.status(200).json(respond);
+});
+
+router.post(`/${REST_PATH.update}`, guardCollection, async (req, res) => {
+  const respond = await update(req.body);
+  res.status(200).json(respond);
 });
 
 router.post(`/${REST_PATH.upload}`, async (req, res) => {
@@ -221,11 +234,12 @@ router.post(`/${REST_PATH.search}`, async (req, res) => {
             created_by: { access_key: item.Guid },
             etag: item.Checksum,
             filename: item.ObjectName,
-            folder: item.Path.replace(/\//g, ''),
+            folder: item.Path.replace(`/${bunnyCdnConfig.storageZone}/`, '').replace(/\/$/, ''),
             format: item.ContentType.split('/')[1] || '',
             height: 0,
             pixels: 0,
-            public_id: item.ObjectName,
+            // the full storage path, so delete can address this object without guessing a folder
+            public_id: bunnyStoragePath(item.Path, item.ObjectName, item.IsDirectory),
             resource_type: item.IsDirectory ? 'folder' : 'file',
             secure_url: item.Url,
             status: 'available',
@@ -256,15 +270,18 @@ router.post(`/${REST_PATH.remove}`, async (req, res) => {
         else res.status(200).json({ res: true, msg: messages.removeSuccess, data: result });
       });
     } else {
-      const result = await BunnyCDN.deleteFile({
-        ...bunnyCdnConfig,
-        href: req.body.public_id,
-      });
-      if (result) res.status(200).json({ res: true, msg: messages.removeSuccess, data: result });
-      else res.status(200).json({ res: false, msg: messages.removeError });
+      const path = toBunnyPath(req.body.public_id);
+      if (!path) {
+        res.status(400).json({ res: false, msg: messages.removeInvalidTarget });
+        return;
+      }
+      const result = await removeFromBunny(path);
+      if (result.res)
+        res.status(200).json({ res: true, msg: messages.removeSuccess, data: result });
+      else res.status(200).json({ res: false, msg: messages.removeError, data: result });
     }
   } catch (error) {
-    res.status(200).json({ res: false, msg: messages.uploadError, error });
+    res.status(200).json({ res: false, msg: messages.removeError, error });
   }
 });
 
@@ -276,18 +293,24 @@ router.post(`/${REST_PATH.removeMany}`, async (req, res) => {
         else res.status(200).json({ res: true, msg: messages.removeSuccess, data: result });
       });
     } else {
-      const results = await Promise.all(
-        req.body.public_ids.map(async (public_id: string) => {
-          return await BunnyCDN.deleteFile({
-            ...bunnyCdnConfig,
-            href: public_id,
-          });
-        }),
-      );
-      res.status(200).json({ res: true, msg: messages.removeSuccess, data: results });
+      const ids: unknown[] = Array.isArray(req.body.public_ids) ? req.body.public_ids : [];
+      const paths = ids.map(toBunnyPath);
+      // every target is validated before anything is deleted, so one bad value cannot
+      // leave the album half removed
+      if (paths.length === 0 || paths.some((item) => item === null)) {
+        res.status(400).json({ res: false, msg: messages.removeInvalidTarget });
+        return;
+      }
+      const results = await Promise.all(paths.map((item) => removeFromBunny(item as string)));
+      const allRemoved = results.every((item) => item.res);
+      res.status(200).json({
+        res: allRemoved,
+        msg: allRemoved ? messages.removeSuccess : messages.removeError,
+        data: results,
+      });
     }
   } catch (error) {
-    res.status(200).json({ res: false, msg: messages.uploadError, error });
+    res.status(200).json({ res: false, msg: messages.removeError, error });
   }
 });
 

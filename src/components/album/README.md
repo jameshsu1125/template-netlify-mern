@@ -123,13 +123,12 @@ const AlbumPage = () => (
 | :-- | :-- |
 | 勾選框（多選刪除） | `pixels === 0`（通常是 BunnyCDN）時用 `secure_url`，否則用 `public_id` |
 | 單張圖片的 `delete` 按鈕 | `public_id` |
-| 資料夾的 `delete` 按鈕 | `secure_url` |
+| 資料夾的 `delete` 按鈕 | `public_id`（結尾帶 `/`，後端靠這個判斷是資料夾） |
 
-> 單張刪除固定傳 `public_id`，而 BunnyCDN 模式下的 `public_id` 只是檔名（後端 `search` 把 `ObjectName` 放進去）。後端 `BunnyCDN.deleteFile` 收到的是 `href`，這個組合在 BunnyCDN 模式下是否能刪除成功，文件撰寫時**尚未實際測試**，使用 BunnyCDN 的專案請先驗證。
+> BunnyCDN 模式下，`search` 回傳的 `public_id` 是完整儲存路徑（例：`inquiry/001/photo.jpeg`，資料夾結尾帶 `/`），後端 `remove` / `removeMany` 接受儲存路徑或 CDN 網址，並拒絕空值、`/`、`..`、根資料夾本身等可能波及整個相簿的值。已對真實 BunnyCDN 實測：根目錄檔案（`secure_url`）、子資料夾檔案（`public_id`）、資料夾（`public_id`）皆可刪除。注意：`upload` 回傳的 `public_id` 只是檔名，不能直接拿去刪，請用 `search` 的結果。
 
 ## 注意事項
 
-- 確認列的文字寫著「from cloudinary」，即使實際使用的是 BunnyCDN；如需調整，修改 `tr.tsx` 內的訊息。
 - 後端不轉檔，最終檔案格式取決於前端壓縮的結果。
 - 「Manage」分頁的 id 是 `Manage`，上傳完成後靠它切回分頁（見 [tab](../tab/README.md)）。
 - 元件內的 `Tab` 使用固定的 radio name，同一個畫面不要同時放兩個相簿或兩組 `Tab`。

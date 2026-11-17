@@ -158,8 +158,10 @@ const TR = memo(({ item, check }: TTR) => {
                   setState((S) => ({
                     ...S,
                     enabled: true,
-                    body: `Delete folder "${item.secure_url}" from cloudinary?`,
-                    public_id: [item.secure_url],
+                    body: `Delete folder "${item.filename}"?`,
+                    // public_id carries the storage path and ends with a slash for folders,
+                    // which is the only signal the backend uses to delete a folder
+                    public_id: [item.public_id],
                     submit: false,
                   }));
                 }}
@@ -186,7 +188,7 @@ const TR = memo(({ item, check }: TTR) => {
                   setState((S) => ({
                     ...S,
                     enabled: true,
-                    body: `Delete "${item.folder}/${item.filename}.${item.format}" from cloudinary?`,
+                    body: `Delete "${item.folder}/${item.filename}.${item.format}"?`,
                     public_id: [item.public_id],
                     submit: false,
                   }));

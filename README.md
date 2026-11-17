@@ -50,15 +50,15 @@
 
 ## 功能一覽
 
-| 功能 | 說明 | 位置 |
-| :-- | :-- | :-- |
-| Auth0 登入 | 後台使用 Auth0 登入，登入後由後端比對使用者清單並簽發 token | `src/pages/login`、`src/pages/router.tsx` |
-| 使用者管理 | 管理員可新增、刪除使用者並指定權限（僅 `admin` 可進入） | `src/pages/user` |
-| 相簿 | 瀏覽、上傳、複製網址、刪除圖片與資料夾，支援 Cloudinary 與 BunnyCDN | `src/components/album` |
-| 富文字編輯器 | 以 Tiptap 編輯內容，可從相簿插入圖片，內容存進 MongoDB | `src/pages/editor`、`src/components/tiptab` |
-| 全域提示元件 | Loading、Alert、Modal，透過全域狀態在任何地方呼叫 | `src/components/loadingProcess` 等 |
-| API Mock | 以 MSW 在瀏覽器端攔截 API，沒有後端也能開發 | `src/mocks` |
-| 一鍵部署 | 互動式選擇 gh-pages、Netlify 預覽或 Netlify 正式環境 | `scripts/deploy.js` |
+| 功能         | 說明                                                                               | 位置                                                                       |
+| :----------- | :--------------------------------------------------------------------------------- | :------------------------------------------------------------------------- |
+| Auth0 登入   | 後台使用 Auth0 登入，後端以 JWKS 驗證 Auth0 access token，再比對使用者清單決定權限 | `src/pages/login`、`src/pages/router.tsx`、`netlify/functions/api/auth.ts` |
+| 使用者管理   | 管理員可新增、刪除使用者並指定權限（僅 `admin` 可進入）                            | `src/pages/user`                                                           |
+| 相簿         | 瀏覽、上傳、複製網址、刪除圖片與資料夾，支援 Cloudinary 與 BunnyCDN                | `src/components/album`                                                     |
+| 富文字編輯器 | 以 Tiptap 編輯內容，可從相簿插入圖片，內容存進 MongoDB                             | `src/pages/editor`、`src/components/tiptab`                                |
+| 全域提示元件 | Loading、Alert、Modal，透過全域狀態在任何地方呼叫                                  | `src/components/loadingProcess` 等                                         |
+| API Mock     | 以 MSW 在瀏覽器端攔截 API，沒有後端也能開發                                        | `src/mocks`                                                                |
+| 一鍵部署     | 互動式選擇 gh-pages、Netlify 預覽或 Netlify 正式環境                               | `scripts/deploy.js`                                                        |
 
 ## 技術架構
 
@@ -81,16 +81,16 @@ Vite + React 19（src/）
 
 主要套件：
 
-| 用途 | 套件 |
-| :-- | :-- |
-| 前端框架 | React 19、React Router 7 |
-| 建置工具 | Vite、TypeScript |
-| 樣式 | Tailwind CSS 4 + daisyUI、Less |
-| 登入 | Auth0（`@auth0/auth0-react`） |
-| 富文字 | Tiptap 3 |
-| 後端 | Express、serverless-http、mongoose |
-| 圖片 | Cloudinary、BunnyCDN（`lesca-node-bunnycdn`） |
-| API Mock | MSW、@faker-js/faker |
+| 用途     | 套件                                          |
+| :------- | :-------------------------------------------- |
+| 前端框架 | React 19、React Router 7                      |
+| 建置工具 | Vite、TypeScript                              |
+| 樣式     | Tailwind CSS 4 + daisyUI、Less                |
+| 登入     | Auth0（`@auth0/auth0-react`）                 |
+| 富文字   | Tiptap 3                                      |
+| 後端     | Express、serverless-http、mongoose            |
+| 圖片     | Cloudinary、BunnyCDN（`lesca-node-bunnycdn`） |
+| API Mock | MSW、@faker-js/faker                          |
 
 ## 快速開始
 
@@ -144,20 +144,23 @@ npm run dev
 
 ### 後端：根目錄 `.env.local`
 
-| 變數 | 必填 | 說明 |
-| :-- | :-: | :-- |
-| `URI` | 是 | MongoDB 連線字串前半段。後端實際連線的是 `URI` 與 `DATABASE` 直接相接，所以 `URI` 結尾要包含 `/` |
-| `DATABASE` | 是 | 資料庫名稱 |
-| `AMIN_EMAIL` | 是 | 超級管理員的 email。拼字是 `AMIN`（少了 D），這是程式碼目前使用的名稱，請照寫 |
-| `CLOUD_STORAGE_TYPE` | 否 | 圖片儲存位置，填 `cloudinary` 使用 Cloudinary，其他值或不填則使用 BunnyCDN |
-| `CLOUDINARY_NAME` | 使用 Cloudinary 時 | Cloudinary cloud name |
-| `CLOUDINARY_API_KEY` | 使用 Cloudinary 時 | Cloudinary API key |
-| `CLOUDINARY_API_SECRET` | 使用 Cloudinary 時 | Cloudinary API secret |
-| `CLOUDINARY_BASE_FOLDER` | 使用 Cloudinary 時 | 所有圖片存放的根資料夾 |
-| `BUNNY_PASSWORD` | 使用 BunnyCDN 時 | Storage Zone 的存取密碼，預設 `unset` |
-| `BUNNY_STORAGE_ZONE` | 使用 BunnyCDN 時 | Storage Zone 名稱，預設 `demo` |
-| `BUNNY_FOLDER_NAME` | 否 | 根資料夾名稱，預設為空 |
-| `BUNNY_REGION` | 否 | 區域代碼，預設 `SG` |
+| 變數                     |        必填        | 說明                                                                                                 |
+| :----------------------- | :----------------: | :--------------------------------------------------------------------------------------------------- |
+| `URI`                    |         是         | MongoDB 連線字串前半段。後端實際連線的是 `URI` 與 `DATABASE` 直接相接，所以 `URI` 結尾要包含 `/`     |
+| `DATABASE`               |         是         | 資料庫名稱                                                                                           |
+| `AMIN_EMAIL`             |         是         | 超級管理員的 email。拼字是 `AMIN`（少了 D），這是程式碼目前使用的名稱，請照寫                        |
+| `AUTH0_DOMAIN`           |         是         | Auth0 的 tenant 網域，不含 `https://`，例如 `your-tenant.us.auth0.com`。用來組出 issuer 與 JWKS 網址 |
+| `AUTH0_AUDIENCE`         |         是         | Auth0 API 的 Identifier，必須與前端 `VITE_AUTH0_AUDIENCE` 一致                                       |
+| `AUTH0_CLAIMS_NAMESPACE` |         否         | 自訂 claim 的命名空間，預設 `https://template-netlify-mern/`                                         |
+| `CLOUD_STORAGE_TYPE`     |         否         | 圖片儲存位置，填 `cloudinary` 使用 Cloudinary，其他值或不填則使用 BunnyCDN                           |
+| `CLOUDINARY_NAME`        | 使用 Cloudinary 時 | Cloudinary cloud name                                                                                |
+| `CLOUDINARY_API_KEY`     | 使用 Cloudinary 時 | Cloudinary API key                                                                                   |
+| `CLOUDINARY_API_SECRET`  | 使用 Cloudinary 時 | Cloudinary API secret                                                                                |
+| `CLOUDINARY_BASE_FOLDER` | 使用 Cloudinary 時 | 所有圖片存放的根資料夾                                                                               |
+| `BUNNY_PASSWORD`         |  使用 BunnyCDN 時  | Storage Zone 的存取密碼，預設 `unset`                                                                |
+| `BUNNY_STORAGE_ZONE`     |  使用 BunnyCDN 時  | Storage Zone 名稱，預設 `demo`                                                                       |
+| `BUNNY_FOLDER_NAME`      |         否         | 根資料夾名稱，預設為空                                                                               |
+| `BUNNY_REGION`           |         否         | 區域代碼，預設 `SG`                                                                                  |
 
 > 兩份 `.env.defaults` 已列出所有程式碼使用的變數，複製成 `.env.local` 後填入實際值即可。
 
@@ -165,40 +168,69 @@ npm run dev
 
 前端變數必須以 `VITE_` 開頭，才會被 Vite 打包進瀏覽器端程式碼。
 
-| 變數 | 說明 |
-| :-- | :-- |
-| `VITE_TITLE` | 網站標題，同時顯示在後台導覽列與 HTML `<title>` |
-| `VITE_SUBSCRIPTION` | 網站描述，用於 `og:description` |
-| `VITE_URL` | 網站網址，用於 `og:url`，也是 gh-pages 部署後自動開啟的網址 |
-| `VITE_FACEBOOK_ID` | Facebook App ID，用於 `fb:app_id` |
-| `VITE_DEFAULT_THEME` | 預設的 daisyUI 主題，例如 `light`、`cupcake`、`luxury` |
-| `VITE_404_CONTACT_ADDRESS` | 404 頁面「Contact support」連結使用的 email |
-| `VITE_MOCKING` | 填 `true` 時啟用 MSW，由瀏覽器端攔截 API |
-| `VITE_API_PATH` | 正式環境的 API 位址，不填則使用 `./api` |
-| `VITE_API_PATH_DEV` | 本機開發（hostname 為 `localhost`）的 API 位址 |
-| `VITE_AUTH0_DOMAIN` | Auth0 網域 |
-| `VITE_AUTH0_CLIENT_ID` | 正式環境使用的 Auth0 Client ID |
-| `VITE_AUTH0_CLIENT_ID_DEV` | 本機開發使用的 Auth0 Client ID |
+| 變數                       | 說明                                                        |
+| :------------------------- | :---------------------------------------------------------- |
+| `VITE_TITLE`               | 網站標題，同時顯示在後台導覽列與 HTML `<title>`             |
+| `VITE_SUBSCRIPTION`        | 網站描述，用於 `og:description`                             |
+| `VITE_URL`                 | 網站網址，用於 `og:url`，也是 gh-pages 部署後自動開啟的網址 |
+| `VITE_FACEBOOK_ID`         | Facebook App ID，用於 `fb:app_id`                           |
+| `VITE_DEFAULT_THEME`       | 預設的 daisyUI 主題，例如 `light`、`cupcake`、`luxury`      |
+| `VITE_404_CONTACT_ADDRESS` | 404 頁面「Contact support」連結使用的 email                 |
+| `VITE_MOCKING`             | 填 `true` 時啟用 MSW，由瀏覽器端攔截 API                    |
+| `VITE_API_PATH`            | 正式環境的 API 位址，不填則使用 `./api`                     |
+| `VITE_API_PATH_DEV`        | 本機開發（hostname 為 `localhost`）的 API 位址              |
+| `VITE_AUTH0_DOMAIN`        | Auth0 網域                                                  |
+| `VITE_AUTH0_CLIENT_ID`     | 正式環境使用的 Auth0 Client ID                              |
+| `VITE_AUTH0_CLIENT_ID_DEV` | 本機開發使用的 Auth0 Client ID                              |
+| `VITE_AUTH0_AUDIENCE`      | Auth0 API 的 Identifier，必須與後端 `AUTH0_AUDIENCE` 一致   |
 
 > 請不要把真實的金鑰、密碼提交到版本庫。`.env.local` 已列在 `.gitignore`。
 
 ### Auth0 設定提醒
 
-在 Auth0 的 Application 設定裡，把下列網址加入 Allowed Callback URLs、Allowed Logout URLs 與 Allowed Web Origins：
+後端改為驗證 Auth0 的 access token，所以 Auth0 後台需要做三件事。
+
+**1. Application 的網址白名單**
+
+把下列網址加入 Allowed Callback URLs、Allowed Logout URLs 與 Allowed Web Origins：
 
 - 本機：`https://localhost:5173/admin`
 - 正式環境：`https://你的網域/admin`
 
+**2. 建立一個 API（取得 audience）**
+
+到 Applications → APIs → Create API，Identifier 可以隨意命名（例如 `https://api.你的網域`），
+把它同時填進後端的 `AUTH0_AUDIENCE` 與前端的 `VITE_AUTH0_AUDIENCE`。
+沒有 audience 的話 Auth0 只會發不透明（opaque）的 access token，後端無法驗證。
+
+**3. 建立 Post Login Action（把 email 放進 access token）**
+
+access token 預設**不含** email，必須用 Action 加上自訂 claim。
+到 Actions → Library → Build Custom → 選 Login / Post Login，貼上：
+
+```js
+exports.onExecutePostLogin = async (event, api) => {
+  const namespace = 'https://template-netlify-mern/';
+  api.accessToken.setCustomClaim(`${namespace}email`, event.user.email);
+  api.accessToken.setCustomClaim(`${namespace}email_verified`, event.user.email_verified);
+};
+```
+
+`namespace` 要與後端的 `AUTH0_CLAIMS_NAMESPACE` 相同。存檔後到 Actions → Triggers → post-login
+把它拖進流程並 Apply。少了這一步，後端會回 `401 Access token carries no email claim.`。
+
+> 改過 audience 之後，瀏覽器裡既有的 Auth0 session 必須重新登入一次才會拿到新的 token。
+
 ## 常用指令
 
-| 指令 | 說明 |
-| :-- | :-- |
-| `npm run dev` | 啟動 `netlify dev`，就緒後再啟動 Vite 開發伺服器 |
-| `npm run build` | 先做 TypeScript 型別檢查，再用 Vite 打包到 `dist/` |
-| `npm run preview` | 預覽打包後的結果 |
-| `npm run lint` | 執行 ESLint，有任何警告都會失敗 |
-| `npm run deploy` | 互動式部署（見[建置與部署](#建置與部署)） |
-| `npm run rm` | 刪除 `node_modules/`、`dist/` 與 `package-lock.json`，用於徹底重裝 |
+| 指令              | 說明                                                               |
+| :---------------- | :----------------------------------------------------------------- |
+| `npm run dev`     | 啟動 `netlify dev`，就緒後再啟動 Vite 開發伺服器                   |
+| `npm run build`   | 先做 TypeScript 型別檢查，再用 Vite 打包到 `dist/`                 |
+| `npm run preview` | 預覽打包後的結果                                                   |
+| `npm run lint`    | 執行 ESLint，有任何警告都會失敗                                    |
+| `npm run deploy`  | 互動式部署（見[建置與部署](#建置與部署)）                          |
+| `npm run rm`      | 刪除 `node_modules/`、`dist/` 與 `package-lock.json`，用於徹底重裝 |
 
 專案沒有單元測試，修改完成後請至少確認 `npm run lint` 與 `npm run build` 都能通過。
 
@@ -206,27 +238,27 @@ npm run dev
 
 每個主要資料夾都有自己的說明文件，請從下表進入：
 
-| 路徑 | 內容 | 說明文件 |
-| :-- | :-- | :-- |
-| `src/pages/` | 應用程式進入點、路由與各個頁面 | [src/pages/README.md](src/pages/README.md) |
-| `src/components/` | 共用 UI 元件 | [src/components/README.md](src/components/README.md) |
-| `src/hooks/` | 呼叫後端 API 的 hooks | [src/hooks/README.md](src/hooks/README.md) |
-| `src/settings/` | 全域狀態、型別、設定值 | [src/settings/README.md](src/settings/README.md) |
-| `src/mocks/` | MSW API 模擬 | [src/mocks/README.md](src/mocks/README.md) |
-| `netlify/functions/` | 後端 API 與資料模型 | [netlify/functions/README.md](netlify/functions/README.md) |
-| `setting/` | 資料表 schema 與共用型別 | [setting/README.md](setting/README.md) |
-| `scripts/` | 開發與部署腳本 | [scripts/README.md](scripts/README.md) |
-| `public/` | 靜態資源，打包時原樣複製到 `dist/` | 見下方說明 |
+| 路徑                 | 內容                               | 說明文件                                                   |
+| :------------------- | :--------------------------------- | :--------------------------------------------------------- |
+| `src/pages/`         | 應用程式進入點、路由與各個頁面     | [src/pages/README.md](src/pages/README.md)                 |
+| `src/components/`    | 共用 UI 元件                       | [src/components/README.md](src/components/README.md)       |
+| `src/hooks/`         | 呼叫後端 API 的 hooks              | [src/hooks/README.md](src/hooks/README.md)                 |
+| `src/settings/`      | 全域狀態、型別、設定值             | [src/settings/README.md](src/settings/README.md)           |
+| `src/mocks/`         | MSW API 模擬                       | [src/mocks/README.md](src/mocks/README.md)                 |
+| `netlify/functions/` | 後端 API 與資料模型                | [netlify/functions/README.md](netlify/functions/README.md) |
+| `setting/`           | 資料表 schema 與共用型別           | [setting/README.md](setting/README.md)                     |
+| `scripts/`           | 開發與部署腳本                     | [scripts/README.md](scripts/README.md)                     |
+| `public/`            | 靜態資源，打包時原樣複製到 `dist/` | 見下方說明                                                 |
 
 其他重要檔案：
 
-| 檔案 | 說明 |
-| :-- | :-- |
-| `vite.config.ts` | Vite 設定：根目錄為 `src/pages`、輸出到 `dist`、`@` 別名、`/api` 代理到 `localhost:8888`、注入 HTML 變數 |
-| `netlify.toml` | Netlify 設定：Functions 打包方式、`/api/*` 轉發規則、CORS header |
-| `public/_redirects` | 靜態站轉發：`/api/*` 轉到 Functions，`/admin`、`/album` 回到 `index.html` |
-| `tailwind.config.css` | Tailwind 4 與 daisyUI 設定（啟用全部主題） |
-| `AGENTS.md` | 給 AI coding agent 讀的專案指引（人類不需要閱讀） |
+| 檔案                  | 說明                                                                                                     |
+| :-------------------- | :------------------------------------------------------------------------------------------------------- |
+| `vite.config.ts`      | Vite 設定：根目錄為 `src/pages`、輸出到 `dist`、`@` 別名、`/api` 代理到 `localhost:8888`、注入 HTML 變數 |
+| `netlify.toml`        | Netlify 設定：Functions 打包方式、`/api/*` 轉發規則、CORS header                                         |
+| `public/_redirects`   | 靜態站轉發：`/api/*` 轉到 Functions，`/admin`、`/album` 回到 `index.html`                                |
+| `tailwind.config.css` | Tailwind 4 與 daisyUI 設定（啟用全部主題）                                                               |
+| `AGENTS.md`           | 給 AI coding agent 讀的專案指引（人類不需要閱讀）                                                        |
 
 ## 運作方式
 
@@ -240,12 +272,16 @@ npm run dev
 ### 登入流程
 
 1. 使用者進入 `/admin`，尚未登入時顯示登入頁，按下「登入」會導向 Auth0。
-2. 回到網站後，前端把 Auth0 的使用者資料送到 `POST /api/login`。
-3. 後端判斷身分：
-   - email 等於 `AMIN_EMAIL`：直接視為管理員（`admin`）。
-   - 否則到 `user` 資料表尋找同 email 的使用者，找到就使用該使用者的權限。
-   - 都找不到：回傳失敗，前端會導回首頁 `/`。
-4. 成功時後端回傳 token 與權限，前端把 token 設為後續請求的 JWT，並存進全域狀態，之後才會顯示後台畫面。
+2. 回到網站後，前端向 Auth0 取得 access token（`getAccessTokenSilently()`），並呼叫 `POST /api/login`。
+   請求本身不帶任何身分資料，身分完全來自 `Authorization: Bearer <access token>`。
+3. 後端 `guard` middleware 依序檢查：
+   - 用 Auth0 的 JWKS 驗證簽章，並檢查 `iss`、`aud`、`exp`（演算法限定 RS256）。
+   - 從自訂 claim 取出 `email` 與 `email_verified`，未驗證的 email 一律拒絕。
+   - 連線資料庫後決定權限：email 等於 `AMIN_EMAIL` 視為 `admin`，否則到 `user` 資料表尋找同 email 的使用者。
+   - 查不到或權限是 `guest`：回 `403`，前端導回首頁 `/`。
+4. 成功時後端回傳權限（`type`）與驗證過的 `email`，前端存進全域狀態後才顯示後台畫面。
+5. 之後每一次 API 請求都會先刷新 access token 再送出（`src/settings/fetcher.ts`），
+   所以 token 過期時使用者不會被中斷；silent refresh 失敗才會重新導向登入。
 
 權限共四種：`admin`（管理員）、`inHouse`（內部人員）、`user`（一般使用者）、`guest`（訪客）。目前只有 `admin` 可以進入「使用者列表」。
 
@@ -347,11 +383,11 @@ npm run deploy
 
 執行後會出現選單，可以選擇：
 
-| 選項 | 動作 |
-| :-- | :-- |
-| `gh-pages` | 執行 `gh-pages -d dist` 推到 GitHub Pages，並開啟 `VITE_URL`（僅靜態前端，沒有後端 API） |
-| `netlify-draft` | 以 `netlify deploy --dir=dist` 建立預覽版，並自動開啟預覽網址 |
-| `netlify-prod` | 以 `netlify deploy --prod --dir=dist` 部署正式版，並自動開啟網址 |
+| 選項            | 動作                                                                                     |
+| :-------------- | :--------------------------------------------------------------------------------------- |
+| `gh-pages`      | 執行 `gh-pages -d dist` 推到 GitHub Pages，並開啟 `VITE_URL`（僅靜態前端，沒有後端 API） |
+| `netlify-draft` | 以 `netlify deploy --dir=dist` 建立預覽版，並自動開啟預覽網址                            |
+| `netlify-prod`  | 以 `netlify deploy --prod --dir=dist` 部署正式版，並自動開啟網址                         |
 
 第一次使用 Netlify 前：
 
@@ -376,15 +412,25 @@ npm run deploy
 
 ## 已知限制與安全注意事項
 
-這是範本專案，下列幾點在用於正式環境前請務必檢視：
+這是範本專案，下列幾點在用於正式環境前請務必檢視。
 
-1. **API 沒有驗證。** `select`、`insert`、`update`、`delete`、`upload`、`remove` 等路由都沒有檢查 token，任何知道網址的人都能呼叫。權限判斷目前只發生在前端畫面。
-2. **token 沒有簽章。** 登入後端簽發的 token 只是把使用者資料做 Base64 編碼，並非 JWT，任何人都可以偽造。
-3. **CORS 全開。** `netlify.toml` 與 Express 都允許任何來源（`*`）。
-4. **collection 名稱由前端傳入。** 後端直接用請求中的 `collection` 對應 model，沒有權限控管。
-5. **回應一律 `200`。** 錯誤需要靠 `res` 欄位判斷，不適合直接用 HTTP 狀態碼做監控。
+**已經處理的部分**
 
-建議上線前至少：改用簽章 JWT（或直接驗證 Auth0 的 access token）、在後端加上驗證與權限 middleware、把 CORS 限縮到自己的網域。
+- 除 `GET /api/connect` 以外的所有路由都會驗證 Auth0 access token（`netlify/functions/api/auth.ts`）。
+- `collection` 名稱必須在 `setting/index.ts` 的 `SETTING.mongodb` 之內，未定義的名稱回 `400`。
+- 使用者資料表（`SETTING.mongodb[0]`）的所有操作（含 `select`）限 `admin`，其他權限回 `403`。
+- 驗證失敗回 `401` / `403`，資料庫連不上回 `503`。
+
+**仍需注意**
+
+1. **CORS 全開。** `netlify.toml` 與 Express 都允許任何來源（`*`）。上線前請限縮到自己的網域。
+   token 驗證已經是主要防線，但 CORS 收緊可以減少被濫用的面。
+2. **`GET /api/connect` 是公開的。** 它只回報資料庫是否連得上（登入前就需要呼叫），但會洩漏資料庫狀態。
+3. **業務邏輯路由的回應仍是 `200`。** 成功與失敗都靠 `res` 欄位判斷；只有驗證與連線錯誤使用 HTTP 狀態碼。
+4. **`email_verified` 必須為 `true`。** 這是防止他人用第二個 connection 註冊同一個 email 冒充管理員的關鍵檢查；
+   但也意味著 email 尚未驗證的管理員會被鎖在外面。
+5. **圖片路由只檢查登入，不分權限。** 任何已驗證的使用者都能上傳與刪除圖片。
+6. **Cloudinary 的 `remove` / `removeMany`** 沒有檢查路徑是否在 `CLOUDINARY_BASE_FOLDER` 之內。
 
 ## 常見問題
 
@@ -392,7 +438,17 @@ npm run deploy
 檢查 `.env.local` 的 `URI`、`DATABASE` 是否正確，以及 MongoDB 是否允許你目前的 IP 連線。可以在瀏覽器開啟 `/api/connect` 確認，成功時會回傳 `{ "res": true, ... }`。
 
 **登入後又被導回首頁？**
-代表後端找不到你的 email。請確認 `AMIN_EMAIL` 設為你的 Auth0 登入 email，或已用管理員身分把你的 email 新增到使用者列表。
+代表 `POST /api/login` 回了失敗。打開瀏覽器開發工具的 Network，看那個請求的狀態碼與回應的 `msg`：
+
+| 狀態碼 / `msg`                                  | 原因                                                                                                             |
+| :---------------------------------------------- | :--------------------------------------------------------------------------------------------------------------- |
+| `500` `Auth0 verification is not configured...` | 後端少了 `AUTH0_DOMAIN` 或 `AUTH0_AUDIENCE`                                                                      |
+| `401` `Access token is invalid or expired.`     | `AUTH0_AUDIENCE` 與 `VITE_AUTH0_AUDIENCE` 不一致，或 `AUTH0_DOMAIN` 填錯                                         |
+| `401` `Access token carries no email claim.`    | Auth0 的 post-login Action 沒建立，或建立了但沒拖進 post-login trigger                                           |
+| `403` `Email is not verified.`                  | Auth0 帳號的 email 還沒完成驗證                                                                                  |
+| `403` `Permission denied.`                      | 後端找不到你的 email。確認 `AMIN_EMAIL` 設為你的 Auth0 登入 email，或已用管理員身分把你的 email 新增到使用者列表 |
+
+另外，如果你在加上 `audience` 之前就已經登入過，瀏覽器裡的舊 session 必須重新登入一次才會換到新的 token。
 
 **Auth0 顯示 callback URL mismatch？**
 確認已把 `https://localhost:5173/admin` 加到 Auth0 的 Allowed Callback URLs。
@@ -431,11 +487,11 @@ npm run deploy
 
 `npm audit` 的警告目前都來自開發與建置工具，不會進入正式環境的程式碼：
 
-| 套件 | 影響 |
-| :-- | :-- |
-| `braces`（經由 `vite-plugin-html`、`gh-pages`） | 深層巢狀 pattern 造成 stack 耗盡（DoS），上游尚未釋出修補版 |
-| `shell-quote`（經由 `concurrently`） | `quote()` 指令注入 |
-| `postcss-selector-parser`（經由 `@tailwindcss/typography`） | 解析 selector 時 CPU 耗盡 |
+| 套件                                                        | 影響                                                        |
+| :---------------------------------------------------------- | :---------------------------------------------------------- |
+| `braces`（經由 `vite-plugin-html`、`gh-pages`）             | 深層巢狀 pattern 造成 stack 耗盡（DoS），上游尚未釋出修補版 |
+| `shell-quote`（經由 `concurrently`）                        | `quote()` 指令注入                                          |
+| `postcss-selector-parser`（經由 `@tailwindcss/typography`） | 解析 selector 時 CPU 耗盡                                   |
 
 不建議執行 `npm audit fix --force`，它會把套件降到更舊的版本。較安全的做法是在 `package.json` 用 `overrides` 鎖定已修補的子依賴版本，並在上游修補後再執行 `npm update`。
 
