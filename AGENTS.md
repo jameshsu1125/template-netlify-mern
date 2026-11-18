@@ -813,6 +813,8 @@ export const SETTING = {
 15. **Auth0 設定錯誤的兩種症狀**：導回登入頁並無限循環 = Auth0 拒絕（`useAuth0().error`，例如 audience 不存在或 client 未授權）；顯示 `login/failed.tsx` 並印出後端 `msg` = token 驗過但後端拒絕。兩者現在都會把原因顯示在畫面上。
 16. **email 比對區分大小寫**（`AMIN_EMAIL` 與 `findOne({ email })`），且新增使用者沒有後端的重複檢查。
 17. **`npm install` 有既存的 peer 衝突**：`@tiptap/extension-image@^3.33.1` 與 `@tiptap/core@3.34.0` 不相容，安裝新套件需加 `--legacy-peer-deps`。與驗證改動無關。
+18. **tiptap 版本要整組一起升**：`@tiptap/extension-*` 把 `@tiptap/core` 的 peer 版本釘成**完全相同的版本**（例：`extension-image@3.34.0` 要求 `core@3.34.0`）。只升其中一個、或 `node_modules` 留著舊版，就會出現 17 的 peer 衝突。升級時 `extension-image`、`extension-text-style`、`pm`、`react`、`starter-kit` 五個一起升到同一版，再 `npm install --legacy-peer-deps`。tiptap 本身沒有安全通報。
+19. **`npm audit` 有 16 個 high，實為同一個通報**：`picomatch` ReDoS（GHSA-fc5q-39xc-vjpf，範圍 `<= 4.0.7`，**目前沒有修補版**），其餘 15 個是依賴它的建置 / 開發工具（`vite`、`@vitejs/plugin-react`、`vite-plugin-html`、`@typescript-eslint/*`、`gh-pages` 及其子依賴）。`npm audit --omit=dev` 為 0，不影響正式環境。**不要跑 `npm audit fix --force`**：它建議的版本全是降版，降完漏洞仍在。等 `picomatch` 發修補版後，在 `package.json` 加 `"overrides": { "picomatch": "<修補版>" }`，再跑 `npm install --legacy-peer-deps`、`npm audit`、`npm run build` 驗證（`vite-plugin-html` 走 `picomatch@2`，override 成 4.x 要實際建置確認）。修補版發布後請移除本條。
 
 ## 18. 完成前檢查清單
 
