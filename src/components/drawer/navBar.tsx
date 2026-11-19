@@ -1,73 +1,14 @@
-import { memo, useContext, useRef } from 'react';
+import { memo } from 'react';
 import { BsLayoutSidebarInset } from 'react-icons/bs';
 import { Link } from 'react-router-dom';
 import Storage from 'lesca-local-storage';
-import { Context } from '@/settings/constant';
-import { SETTING } from '../../../setting';
-import { PiUserListFill } from 'react-icons/pi';
-import { UserType } from '@/settings/type';
-
-// TODO: add type for collection
-const NavMenu = memo(({ onClick }: { onClick: () => void }) => {
-  const [context] = useContext(Context);
-  const { user } = context;
-
-  return (
-    <>
-      <ul className='menu dropdown-content bg-base-100 rounded-box z-1 w-52 p-2 shadow-sm'>
-        {user.type === UserType.Admin && (
-          <li>
-            <Link onClick={onClick} to={`/${SETTING.mongodb[0].collection}`}>
-              <PiUserListFill />
-              使用者列表
-            </Link>
-          </li>
-        )}
-        {/* <li>
-        <a>Item 2</a>
-      </li> */}
-      </ul>
-    </>
-  );
-});
 
 const NavBar = memo(() => {
-  const ref = useRef<HTMLDetailsElement>(null);
   const onChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     Storage.set('theme', { checked: e.target.checked });
   };
   return (
     <div className='navbar bg-base-300 z-10 shadow-sm'>
-      <div className='flex-none'>
-        <details ref={ref} className='dropdown'>
-          <div
-            className='fixed top-0 left-0 h-full w-full bg-transparent'
-            onClick={() => {
-              if (ref.current) ref.current.removeAttribute('open');
-            }}
-          />
-          <summary className='btn m-1'>
-            <svg
-              xmlns='http://www.w3.org/2000/svg'
-              fill='none'
-              viewBox='0 0 24 24'
-              className='inline-block h-5 w-5 stroke-current'
-            >
-              <path
-                strokeLinecap='round'
-                strokeLinejoin='round'
-                strokeWidth='2'
-                d='M4 6h16M4 12h16M4 18h16'
-              />
-            </svg>
-          </summary>
-          <NavMenu
-            onClick={() => {
-              if (ref.current) ref.current.removeAttribute('open');
-            }}
-          />
-        </details>
-      </div>
       <div className='flex-1'>
         <Link to='/' className='btn btn-ghost text-xl'>
           {import.meta.env.VITE_TITLE}

@@ -496,9 +496,9 @@ Props：`children`、`className`（`twMerge('btn', className)`，後者覆蓋）
 
 後台外框：`Drawer` props 只有 `children`。使用 daisyUI `drawer lg:drawer-open`，開關靠 id 為 `my-drawer-2` 的 checkbox（頁面中不要再用同 id）。
 
-- `navBar.tsx`：選單（僅 `admin` 看得到「使用者列表」→ `/user`）、標題 `VITE_TITLE`、主題切換（`luxury` ↔ 預設，存 `lesca-local-storage` 的 `theme` 鍵；`luxury` 寫死在 `navBar.tsx`）；`NavBarMobile` 為手機版。
-- `mainBar.tsx`：TOOLS（`Album`、`Editor`）+ COLLECTION LIST（依 `SETTING.mongodb` 自動產生，**略過 index 0**，連結 `/<collection>`）。檔內有 `TODO: add type for collection`。
-- `userBar.tsx`：頭像、名稱、權限（`admin`管理員 / `inHouse`內部人員 / `user`使用者 / `guest`訪客）、登出（Auth0 `logout()`）。
+- `navBar.tsx`：標題 `VITE_TITLE`、主題切換（`luxury` ↔ 預設，存 `lesca-local-storage` 的 `theme` 鍵；`luxury` 寫死在 `navBar.tsx`）；`NavBarMobile` 為手機版。
+- `mainBar.tsx`：`menu` + `menu-title` 三區：工具（`Album`、`Editor`）、資料（依 `SETTING.mongodb` 自動產生，**略過 index 0**，連結 `/<collection>`）、管理（僅 `admin` 看得到「使用者列表」→ `/user`）；以 `useLocation` 標示 `menu-active`。
+- `userBar.tsx`：頭像、名稱、權限 badge（`admin`管理員 / `inHouse`內部人員 / `user`使用者 / `guest`訪客）、登出（Auth0 `logout()`）。
 - 必須在 `BrowserRouter`、`Context.Provider`、Auth0 Provider 內使用。
 
 ### 8.8 `Album`

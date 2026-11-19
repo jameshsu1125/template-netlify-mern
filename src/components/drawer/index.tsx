@@ -30,13 +30,11 @@ const Drawer = memo(({ children }: IReactProps) => {
       </div>
       <div className='drawer-side'>
         <label htmlFor='my-drawer-2' aria-label='close sidebar' className='drawer-overlay'></label>
-        <div className='bg-base-200 flex min-h-full w-full flex-col items-center justify-between overflow-hidden'>
-          <div className='flex w-full flex-col justify-start'>
-            <NavBar />
-            <MainBar />
-          </div>
+        <aside className='bg-base-200 flex min-h-full w-64 flex-col overflow-hidden'>
+          <NavBar />
+          <MainBar />
           <UserBar />
-        </div>
+        </aside>
       </div>
     </div>
   );
