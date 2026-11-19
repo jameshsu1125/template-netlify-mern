@@ -28,6 +28,7 @@ const Alert = memo(() => {
 
   useEffect(() => {
     if (ref.current) clearTimeout(ref.current);
+    // eslint-disable-next-line local/no-timers
     ref.current = setTimeout(() => {
       setContext({ type: ActionType.Alert, state: { enabled: false } });
     }, time);

@@ -2,6 +2,10 @@ import tsParser from '@typescript-eslint/parser';
 import tsPlugin from '@typescript-eslint/eslint-plugin';
 import reactHooks from 'eslint-plugin-react-hooks';
 import reactRefresh from 'eslint-plugin-react-refresh';
+import noConsole from './eslint-rules/no-console.js';
+import noTimers from './eslint-rules/no-timers.js';
+
+const localPlugin = { rules: { 'no-console': noConsole, 'no-timers': noTimers } };
 
 export default [
   { ignores: ['dist', '.netlify','node_modules', 'public', 'netlify', 'db', 'misc'] },
@@ -12,6 +16,7 @@ export default [
       '@typescript-eslint': tsPlugin,
       'react-hooks': reactHooks,
       'react-refresh': reactRefresh,
+      local: localPlugin,
     },
     rules: {
       ...tsPlugin.configs.recommended.rules,
@@ -19,6 +24,8 @@ export default [
       '@typescript-eslint/no-explicit-any': 'off',
       'react-refresh/only-export-components': 'off',
       'react-hooks/exhaustive-deps': 'off',
+      'local/no-console': ['error', { allow: ['warn', 'error'] }],
+      'local/no-timers': ['error', { names: ['setTimeout'] }],
     },
   },
 ];

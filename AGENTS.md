@@ -76,6 +76,8 @@ Vite + React 19 + TypeScript 前端，搭配 Netlify Functions（Express + serve
 - 元件 props 型別以 `T` 開頭（`TProps`）；需要 `children` 時用 `IReactProps`（`src/settings/type.ts`）。
 - enum / type / interface 依 2.1 命名；全域共用型別放 `src/settings/type.ts`。
 - `any` 在 ESLint 設為 `off`，但新程式碼優先寫明確型別。
+- `console.*`（含 `window.console`）由自訂規則 `local/no-console`（`eslint-rules/no-console.js`）擋下，為 `error`（僅 `ts`/`tsx`）；預設只允許 `console.warn`、`console.error`，要調整改 `eslint.config.js` 內 `allow` 選項。除錯用的 `console.log` 提交前要刪掉。例外用 `// eslint-disable-next-line local/no-console`。
+- `setTimeout`（含 `window.`、`globalThis.`、`self.` 寫法）由自訂規則 `local/no-timers`（`eslint-rules/no-timers.js`）擋下，為 `error`（僅 `ts`/`tsx`），禁止使用。要增減禁用的函式，改 `eslint.config.js` 內 `names` 選項。確定要例外時用 `// eslint-disable-next-line local/no-timers`。
 - 提交前 `npm run build`（先跑 `tsc`）必須零錯誤；未使用的 import、變數、參數會直接報錯，要刪掉。
 
 ### 2.3 格式（Prettier）
@@ -117,7 +119,7 @@ Vite + React 19 + TypeScript 前端，搭配 Netlify Functions（Express + serve
 | `npm run dev`     | `node scripts/dev.js`：先跑 `netlify dev --dir=dist`（`localhost:8888`），等出現 `Local dev server ready` 再跑 `vite --host`（`5173`，HTTPS，自動開瀏覽器），`/api` 代理到 `8888`                                   |
 | `npm run build`   | `tsc && vite build`，輸出到 `dist/`                                                                                                                                                                                 |
 | `npm run preview` | 預覽 `dist/`                                                                                                                                                                                                        |
-| `npm run lint`    | `eslint . --ext ts,tsx --report-unused-disable-directives --max-warnings 0`（使用 `eslint.config.js` flat config；已關閉 `no-explicit-any`、`react-refresh/only-export-components`、`react-hooks/exhaustive-deps`） |
+| `npm run lint`    | `eslint . --ext ts,tsx --report-unused-disable-directives --max-warnings 0`（使用 `eslint.config.js` flat config；已關閉 `no-explicit-any`、`react-refresh/only-export-components`、`react-hooks/exhaustive-deps`；另啟用 `local/no-console`、`local/no-timers`） |
 | `npm run deploy`  | 互動式選單：`gh-pages` / `netlify-draft` / `netlify-prod`（**不會先 build**）                                                                                                                                       |
 | `npm run rm`      | 刪 `node_modules/`、`dist/`、`package-lock.json`（需使用者明確要求）                                                                                                                                                |
 
@@ -132,6 +134,7 @@ Vite + React 19 + TypeScript 前端，搭配 Netlify Functions（Express + serve
 ├── AGENTS.md                      # 本檔
 ├── README.md                      # 人類入口文件（環境變數、部署、已知限制）
 ├── netlify.toml                   # functions 設定、/api/* 轉發、CORS header、dev
+├── eslint-rules/                  # 自訂 ESLint 規則（local plugin：no-console.js、no-timers.js）
 ├── tailwind.config.css            # Tailwind v4 + daisyUI
 ├── postcss.config.mjs
 ├── vite.config.ts
