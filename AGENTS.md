@@ -126,6 +126,7 @@ Vite + React 19 + TypeScript 前端，搭配 Netlify Functions（Express + serve
 - 需要全域安裝 `netlify-cli`，Node v18 以上。
 - 舊文件提過的 `npm run serve`、`npm run dev:serve` **不存在**，不要使用。
 - 專案沒有測試框架。**目前可用的驗證**：`npx tsc --noEmit`（或 `npm run build`）+ 手動在瀏覽器確認；`npm run lint` 也可作為檢查手段。
+- CI：`.github/workflows/ci.yml` 在 PR 與 push 到 `main` 時分別跑 `lint`、`build` 兩個 job（`package-lock.json` 不提交，且有 peer 衝突，所以用 `npm install --legacy-peer-deps`）。要擋住未通過的 Merge，需到 GitHub Settings → Branches 替 `main` 設定 branch protection，把這兩個 check 設為必須通過。
 
 ## 4. 目錄結構
 
@@ -134,6 +135,7 @@ Vite + React 19 + TypeScript 前端，搭配 Netlify Functions（Express + serve
 ├── AGENTS.md                      # 本檔
 ├── README.md                      # 人類入口文件（環境變數、部署、已知限制）
 ├── netlify.toml                   # functions 設定、/api/* 轉發、CORS header、dev
+├── .github/workflows/ci.yml       # CI：lint、build
 ├── eslint-rules/                  # 自訂 ESLint 規則（local plugin：no-console.js、no-timers.js）
 ├── tailwind.config.css            # Tailwind v4 + daisyUI
 ├── postcss.config.mjs
